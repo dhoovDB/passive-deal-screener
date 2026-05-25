@@ -1,4 +1,4 @@
-# Roadmap: `passive-deal-screener` Skill
+# passive-deal-screener — Roadmap
 ## Contributing to `alirezarezvani/claude-skills` (via `dhoovDB/claude-skills`)
 
 **Status:** Pre-development  
@@ -380,4 +380,22 @@ The reference files will get better as you read more real deals. Consider a v1.1
 
 ---
 
+## Decision log
+
+*Project and architectural decisions live here. Changes to this repo's CLAUDE.md are logged in CLAUDE.md, not here.*
+
+### 2026-05-24 — Primary deliverable is SKILL.md, not the React artifact
+
+The React artifact (deal-evaluator.jsx) was built first as an analytical prototype in claude.ai. The Claude Code skill is the contribution target. They share analytical logic but serve different surfaces and audiences. Keeping them separate prevents the skill from inheriting UI concerns that do not belong in a markdown-first tool.
+
+### 2026-05-24 — References built before SKILL.md
+
+The skill draws from reference files for all factual claims about market norms, fee ranges, and return expectations. Building the skill before the references are complete means the skill hallucinates its own foundation. Build order is enforced in CLAUDE.md and in this file.
+
+*(Both entries moved here from CLAUDE.md on 2026-05-25 — they are project decisions, per `writing-kit/ROADMAP-TEMPLATE.md`.)*
+
+---
+
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
+
+*Last updated: 2026-05-25*
