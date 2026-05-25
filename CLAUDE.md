@@ -118,20 +118,7 @@ information explicitly, not silently pass over it.
 
 ## Decision log
 
+*Project and architectural decisions are logged in `ROADMAP.md` (including the primary-deliverable and references-first build-order decisions previously kept here). This log tracks changes to this CLAUDE.md only.*
+
 ### 2026-05-24 — Created CLAUDE.md
 woohoo!
-
-### 2026-05-24 — Primary deliverable is SKILL.md, not the React artifact
-
-The React artifact (deal-evaluator.jsx) was built first as an analytical 
-prototype in claude.ai. The Claude Code skill is the contribution target. 
-They share analytical logic but serve different surfaces and audiences. 
-Keeping them separate prevents the skill from inheriting UI concerns that 
-do not belong in a markdown-first tool.
-
-### 2026-05-24 — References built before SKILL.md
-
-The skill draws from reference files for all factual claims about market 
-norms, fee ranges, and return expectations. Building the skill before the 
-references are complete means the skill hallucinates its own foundation. 
-Build order is enforced in this file and in ROADMAP.md.
