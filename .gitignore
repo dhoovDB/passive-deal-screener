@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.local
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+
+# claude.ai React artifact — a separate deliverable from the Claude Code skill.
+# Kept on disk for reference but not tracked here.
+# (see CLAUDE.md: "Do not conflate the SKILL.md and deal-evaluator.jsx surfaces")
+deal-evaluator.jsx
