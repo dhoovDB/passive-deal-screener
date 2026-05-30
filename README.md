@@ -74,18 +74,25 @@ passive-deal-screener/
 ├── ROADMAP.md         # build plan, decision log, v1.0 ship gate
 ├── README.md          # this file — repo-level introduction
 ├── references/
-│   └── 01-asset-class-norms.md   # ✅ shipped — LP factual baseline by asset class
-│
-│ Planned:
+│   ├── 01-asset-class-norms.md   # ✅ shipped — LP factual baseline by asset class
+│   │
+│   │ Planned:
 │   ├── 02-fee-stack-library.md   # every fee, every deal type, with aggressive thresholds
-│   ├── 03-red-flag-library.md    # ≥25 flags, categorized, with severity + response questions
-│   ├── 04-question-bank.md       # ≥20 LP questions, each with good + bad answer signals
-│   └── 05-benchmark-returns.md   # public-market comparators + illiquidity-premium framework
+│   ├── 03-red-flag-library.md    # ≥25 flags, categorized, with severity + response questions;
+│   │                             #   flag IDs in {ASSET_CLASS}-{NN} format
+│   ├── 04-question-bank.md       # ≥20 LP questions, good + bad answer signals; cites ≥5 flag IDs from 03
+│   ├── 05-benchmark-returns.md   # public-market comparators + illiquidity-premium framework
+│   │                             #   (data pull required before writing — see references/data/)
+│   └── data/                     # versioned snapshots from external sources
+│       ├── README.md             #   vintage, source, and update instructions
+│       ├── ncreif-npi-snapshot.md
+│       ├── fred-10yr-snapshot.md
+│       └── preqin-vintage-note.md
 │
 │ Planned (after references):
 │   ├── SKILL.md       # the skill body — workflow, output schema, analyst rules
 │   ├── scripts/       # fee_drag_calculator.py + benchmark_comparator.py
-│   └── examples/      # ≥3 input/output pairs per asset class
+│   └── examples/      # ≥3 input/output pairs per asset class, with anonymized real deals where shareable
 │
 └── deal-evaluator.jsx # gitignored — React artifact companion (claude.ai chat surface)
 ```
@@ -123,7 +130,7 @@ the *skill* (which doesn't ship yet).
 | `references/02-fee-stack-library.md` | Planned (next in build order) |
 | `references/03-red-flag-library.md` | Planned |
 | `references/04-question-bank.md` | Planned |
-| `references/05-benchmark-returns.md` | Planned |
+| `references/05-benchmark-returns.md` | Planned — requires data pull (NCREIF NPI, FRED 10yr, Preqin vintage note) before writing |
 | `SKILL.md` | Planned (after references) |
 | `scripts/` | Planned (after SKILL.md) |
 | `examples/` | Planned (after SKILL.md, ≥3 pairs) |
