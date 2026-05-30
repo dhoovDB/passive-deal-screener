@@ -194,7 +194,7 @@ Each reference is a focused factual baseline that SKILL.md indexes against. Addi
 | File | Load trigger | Status |
 |---|---|---|
 | `01-asset-class-norms.md` | Always (compact baseline) | ✅ Shipped 2026-05-25 |
-| `02-fee-stack-library.md` | Always | Planned |
+| `02-fee-stack-library.md` | Always | ✅ Shipped 2026-05-30 |
 | `03-red-flag-library.md` | Always | Planned |
 | `04-question-bank.md` | Always when a GP is identified | Planned |
 | `05-benchmark-returns.md` | Always for return stress-test | Planned |
@@ -309,7 +309,7 @@ mkdir -p finance/passive-deal-screener/scripts
 
 Build order (matches numbering after the 2026-05-29 reconciliation; numerical = build order):
 1. `references/01-asset-class-norms.md` — factual foundation. ✅ Shipped 2026-05-25.
-2. `references/02-fee-stack-library.md` — needed to write the fee analysis step.
+2. `references/02-fee-stack-library.md` — needed to write the fee analysis step. ✅ Shipped 2026-05-30.
 3. `references/03-red-flag-library.md` — **Stub first:** create the file with flag ID prefixes (`EQUITY`, `HML`, `PREF`, `CREDIT`) and category headers before writing any entries. Flag ID format: `{ASSET_CLASS}-{NN}`. This establishes the cross-reference convention that `04` depends on.
 4. `references/04-question-bank.md` — depends on 03 for cross-references.
 5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
@@ -528,8 +528,21 @@ These resolve the remaining §7 open choices and add several conventions surface
 | 2026-05-30 | Flag ID convention: {ASSET_CLASS}-{NN} | Stub 03 with IDs before entries; 04 entries must cite ≥1 flag ID; prevents PR retrofit pass |
 | 2026-05-30 | Anonymized deal samples in examples/; data snapshots in references/data/ | Real artifacts grounded in practice; deal-evaluator.jsx test runs excluded (gitignored surface) |
 
+### 2026-05-30 — Built `references/02-fee-stack-library.md`
+
+Lands the second reference and the heaviest one in v1.0 — fee inventories across four deal types, waterfall mechanics, total-drag framework. Six non-obvious calls worth recording:
+
+- **Spine is deal type, not asset class.** Multifamily and industrial syndications share the same fee shape; the divergence is whether the deal is equity, preferred equity, hard money, or private credit. The 12 asset classes from `01-asset-class-norms.md` don't drive `02`'s subsections — they fold into a single "applies to" column on each fee row.
+- **`Frequency` is a 6th column on every fee row.** The user-spec'd 5 fields (Fee / Range / Aggressive threshold / Applies to / Notes) silently equates one-time and annual recurring fees, which lands very differently on LP IRR drag. Making Frequency visible per row keeps the drag math derivable from the table alone.
+- **Waterfall mechanics live as an H3 inside Equity Syndications**, not a standalone H2. Reasoning: waterfalls determine how promote pays; promote is an Equity fee; co-locating keeps the reader's mental model intact. Preferred Equity gets a smaller H3 that cross-refs rather than duplicates. *Trade-off:* a standalone H2 would give the topic more skim-visibility but invites scope creep toward the deferred `06-syndication-mechanics-deep-dive.md`.
+- **Plain-English-first framing for waterfall terms.** The canonical industry jargon (American / European) appears parenthetical to the descriptive labels (deal-by-deal / whole-of-fund) on first mention. Reader who knows the jargon gets the cross-reference labels; reader who doesn't learns them inline.
+- **Development-deal fee variations as an H3 inside Equity**, not a 5th deal-type H2. Same reasoning as waterfall — co-locating keeps scope contained. Eval case #5 will surface whether this depth holds; if not, promote to its own H2 in v1.1.
+- **Worked examples use two IRR scenarios (12% and 15% gross)** instead of one. The promote drag scales non-linearly with gross IRR — showing both demonstrates that the same waterfall structure compresses or widens the gross-to-net spread depending on outcome. A single example would risk implying linear drag.
+
+File lands at exactly 300 lines (the convention's TOC threshold is *strictly* >300, so no TOC required). If `03–05` exhibit similar density, the convention may need a revisit — but for now `02` is well-organized enough that scanning the H2 hierarchy serves as a de facto TOC.
+
 ---
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-05-30*
+*Last updated: 2026-05-30 (02-fee-stack-library shipped)*

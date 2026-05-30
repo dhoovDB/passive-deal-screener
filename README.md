@@ -127,7 +127,7 @@ the *skill* (which doesn't ship yet).
 | `CLAUDE.md` (dev guide) | ✅ Shipped |
 | `ROADMAP.md` (build plan + decision log) | ✅ Shipped — schemas for `02–05`, v1.0 ship gate, 8 eval cases all defined |
 | `references/01-asset-class-norms.md` | ✅ Shipped 2026-05-25 |
-| `references/02-fee-stack-library.md` | Planned (next in build order) |
+| `references/02-fee-stack-library.md` | ✅ Shipped 2026-05-30 |
 | `references/03-red-flag-library.md` | Planned |
 | `references/04-question-bank.md` | Planned |
 | `references/05-benchmark-returns.md` | Planned — requires data pull (NCREIF NPI, FRED 10yr, Preqin vintage note) before writing |
