@@ -184,17 +184,59 @@ Expected output: benchmark return for comparable public instrument, illiquidity 
 
 ## 5. Reference Files
 
-Each reference file should have a table of contents at the top if it exceeds 300 lines. Load triggers should be stated explicitly in SKILL.md.
+Each reference is a focused factual baseline that SKILL.md indexes against. Adding a new factual claim to the skill means updating a reference, not the workflow. Files >300 lines should open with a table of contents; load triggers belong in SKILL.md so each reference loads only when relevant. **Numbering matches CLAUDE.md (authoritative).** Mechanics content that doesn't get a standalone file — syndication waterfalls, hard-money LTV/ARV/draw schedules — lives as subsections within the relevant file below (waterfalls in `02-fee-stack-library`, HML-specific red flags in `03-red-flag-library`, etc.).
 
-| File | Load trigger | Key content |
+| File | Load trigger | Status |
 |---|---|---|
-| `01-asset-class-norms.md` | Always (it's short) | Typical return ranges, hold periods, and risk profiles by asset class. Used for stress-testing. |
-| `02-syndication-mechanics.md` | Deal type is equity, preferred equity, or fund | American vs. European waterfall, cumulative vs. non-cumulative preferred, promote structures, clawback mechanics |
-| `03-hard-money-framework.md` | Deal type is HML, bridge, or private credit | ARV, LTV norms, draw schedule risk, borrower qualification signals, default/foreclosure process |
-| `04-gp-evaluation-rubric.md` | Always when a GP/sponsor is identified | Track record green/yellow/red signals, alignment checklist, marketing-heavy language patterns to flag |
-| `05-fee-stack-decoder.md` | Always | Full fee taxonomy by deal type, how to calculate aggregate drag, what each fee should and shouldn't look like |
+| `01-asset-class-norms.md` | Always (compact baseline) | ✅ Shipped 2026-05-25 |
+| `02-fee-stack-library.md` | Always | Planned |
+| `03-red-flag-library.md` | Always | Planned |
+| `04-question-bank.md` | Always when a GP is identified | Planned |
+| `05-benchmark-returns.md` | Always for return stress-test | Planned |
 
-> **Open design choice #5 — Reference file granularity:** You could merge `02` and `03` into a single "deal mechanics" file and split `04` into separate GP track record and GP alignment files. The current split prioritizes loading efficiency (a hard money deal doesn't need waterfall mechanics loaded). Evaluate during testing.
+### 01-asset-class-norms.md — ✅ Shipped 2026-05-25
+
+LP-perspective baseline for the 12 asset classes from `deal-evaluator.jsx`. Each row: typical hold, deal types, net-to-LP IRR range (target + realized where they diverge), risk tier; plus per-class "essential disclosures" so an absent field flags against the baseline. Uses *variable* as a real value where current-cycle norms are unstable (post-2020 office, regulatory STR, mixed-use composites). Categorical provenance — NCREIF / Preqin / ILPA / sector trade groups. Sets the format every subsequent reference follows.
+
+### 02-fee-stack-library.md
+
+**Content scope.** Every fee that can appear in a private real-estate or private-credit deal, grouped by category: acquisition, asset-management, disposition, financing, refinance, debt-service / servicing, promote / carry / waterfall mechanics, and miscellaneous (admin, "investor relations," K-1 prep, sponsor reimbursements). Per fee: typical range (% or $), what aggressive looks like, applicable deal types.
+
+**Format.** Preamble + at-a-glance table (`Fee | Category | Typical range | Aggressive threshold | Applicable deal types`) + per-fee notes where mechanism needs explanation (especially American vs European waterfalls, GP catch-up, clawback). A "total drag" framework explaining how to estimate net IRR delta from a stack (compounds the way `scripts/fee_drag_calculator.py` does). Provenance footer + LAST_UPDATED.
+
+**LP lens reminder.** Fees the LP bears vs fees the operator absorbs — keep that explicit. Skip operator-side cost-of-capital.
+
+**DoD.** Every commonly-disclosed fee mapped; document can answer "what does a 1.5% mgmt + 20% over 8% pref cost an LP over 7 years?" via the total-drag framework; *variable* used where ranges are genuinely cycle-sensitive. <300 lines or TOC at the top.
+
+### 03-red-flag-library.md
+
+**Content scope.** Red flags grouped by category — (a) GP behavior: zero co-invest, prior FTC / SEC action, marketing-heavy language, rapid AUM growth without team scale-up. (b) Structural: European waterfall + high promote, no clawback, GP catch-up at 100%. (c) Financial: T-3 only / no T-12, aggressive exit cap (>50bps below acquisition), refi-dependent business plan, debt maturity inside the business plan. (d) Disclosure: missing financials, no realized exits cited, projections without sensitivity, "track record" that includes unrealized deals. (e) Market-cycle: rent growth in a slowing-cycle market, post-2020 office without occupancy-reset acknowledgement. (f) HML / private-credit specific: LTV-on-ARV without as-is value, geographic concentration, default rate hidden, recovery rate hidden, fund-level leverage stacked on top of loan leverage.
+
+**Format.** Categorized table (`Flag | Severity yellow/red | Mechanism — why it's a flag | Response — what to ask`) + per-flag notes for the high-severity / commonly-misunderstood ones. Severity is assigned from the LP's recovery perspective.
+
+**LP lens reminder.** Each flag is the LP's risk exposure, not an operator's underwriting concern.
+
+**DoD.** ≥25 flags across categories; every flag has severity + mechanism + a one-line response question; HML / private-credit category present (otherwise the skill misclassifies risk on debt deals).
+
+### 04-question-bank.md
+
+**Content scope.** Questions an LP should ask the GP, grouped by category — deal-specific, GP / sponsor-specific, market-specific, fee / structure-specific, risk-specific, exit-specific. Each entry has the differentiator treatment: what a GOOD answer sounds like + what a BAD answer sounds like (the explicit evasion signals — the "what evasion looks like" that distinguishes this skill from existing question generators).
+
+**Format.** Triplet entries — `Question / Good-answer signals / Bad-answer signals` — grouped by category. Cross-reference column or note: "ask this if [red flag] surfaced from 03-red-flag-library." Optional priority tier (must-ask / nice-to-ask).
+
+**LP lens reminder.** Questions about the LP's own decision (capital call timing, K-1 timing, exit-distribution mechanics, secondary-market liquidity) belong here; questions about acquisition strategy or asset management belong to the operator's diligence, not the LP's.
+
+**DoD.** ≥20 questions across categories; every question has bad-answer signals (the differentiator); ≥5 cross-references from `03-red-flag-library.md`.
+
+### 05-benchmark-returns.md
+
+**Content scope.** Public market comparators by deal type: REITs (VNQ, IYR) for equity-style RE; investment-grade corporates (LQD) for stabilized core; high-yield (HYG) and private-credit ETFs (PRIV) for HML / private credit; preferreds (PFF) for preferred equity; broad equity (SPY) as universal anchor. Per comparator: trailing 10yr / 5yr returns with `LAST_UPDATED` date, volatility (std dev), and the best private-deal-type it serves as a comparator for. Plus an **illiquidity-premium framework**: minimum spread an LP should demand over the liquid equivalent (rule of thumb: ≥200bps over the closest public comparator, scaled by lock-up length).
+
+**Format.** Preamble + at-a-glance comparator table (`Ticker | Trailing 10yr | Trailing 5yr | Vol | Best comparator for`) + per-comparator one-paragraph note + illiquidity-premium framework + provenance + LAST_UPDATED stamp at top.
+
+**LP lens reminder.** Returns are net to a public-market investor (post-expense-ratio) — apples-to-apples with net-to-LP private returns. Don't compare gross to net.
+
+**DoD.** ≥6 comparators covering every major private-deal type; illiquidity-premium framework lets the skill output "this deal's claimed net IRR exceeds [comparator] by Xbps — is that enough premium for the lockup?"; LAST_UPDATED visible so the file ages predictably and triggers a refresh task in v1.1.
 
 ---
 
@@ -212,20 +254,23 @@ Do not let scope creep dilute these during development:
 
 ## 7. Open Design Choices (consolidated)
 
-Decisions to make before finalizing files. Document the choice you make and why in the PR description.
+### Resolved (locked in 2026-05-29)
 
-| # | Decision | Options | Recommendation |
-|---|---|---|---|
-| 1 | **Frontmatter tags field** | Include / omit | Check `SKILL-AUTHORING-STANDARD.md` in upstream repo before finalizing |
-| 2 | **Output format** | Markdown (default) / JSON (opt-in) / both | Markdown default; JSON as `--json` flag or "output as JSON" instruction |
-| 3 | **Benchmark data freshness** | Hardcoded with `LAST_UPDATED` / manual `--benchmark-return` flag / API call | Hardcode + manual override; avoids network dependency, keeps stdlib-only |
-| 4 | **Third script** | `deal_scorer.py` composite score / skip | Skip v1.0; false precision risk; add in v1.1 after evals validate usefulness |
-| 5 | **Reference file granularity** | 5 files as proposed / merge deal mechanics / split GP evaluation | Test with 5 files; merge only if SKILL.md routing logic gets unwieldy |
-| 6 | **Domain placement** | `finance/` (existing) / new `private-investing/` domain | `finance/` for v1.0; propose `private-investing/` domain expansion in PR discussion if maintainer agrees |
-| 7 | **Slash command** | Add `/cs:screen-deal` command / skip | Add — consistent with other finance skills; low effort, high discoverability |
-| 8 | **Asset class routing** | Single workflow / branching by deal type | Branch at Step 2 (classify); load relevant reference file; reconverge at output |
-| 9 | **React artifact vs. SKILL.md** | Ship both / SKILL.md only / artifact only | Both — they serve different surfaces (claude.ai chat vs. Claude Code CLI). Document in README. |
-| 10 | **Contribution target** | PR from `dhoovDB` fork to `alirezarezvani` upstream / maintain in fork only | PR to upstream via `dev` branch — this is the stated goal |
+- **Output format** — **Markdown default; JSON opt-in.** SKILL.md emits structured Markdown by default; pass "output as JSON" in the prompt (or the `--json` flag to the scripts) for the JSON shape consumed by the React artifact. Markdown reads naturally in the CLI; JSON keeps the artifact and skill compatible.
+- **Reference file granularity** — **5 files per CLAUDE.md naming** (outputs-focused: asset-class-norms / fee-stack-library / red-flag-library / question-bank / benchmark-returns). The older mechanics-focused list (`02-syndication-mechanics`, `03-hard-money-framework`) is retired; that content is woven into the output-focused files (waterfalls in fee-stack-library, HML mechanics in red-flag-library). Loading efficiency preserved via the load-trigger column in Section 5.
+- **Domain placement** — **`finance/` for v1.0.** Propose a `private-investing/` domain expansion in the PR discussion only if the maintainer raises it; don't lead with a new-domain ask.
+- **Slash command** — **Add `/cs:screen-deal`.** Consistent with other finance skills; low effort, high discoverability.
+- **React artifact vs SKILL.md** — **Ship both.** Different surfaces (claude.ai chat with embedded UI vs Claude Code CLI). The artifact stays in this repo (gitignored); the SKILL.md is the upstream contribution. Documented in the README.
+- **Contribution target** — **PR from `dhoovDB` fork to `alirezarezvani:dev`.** Feature branches targeting `dev`, never `main`.
+
+### Still open
+
+| # | Decision | Options | Lean | When to decide |
+|---|---|---|---|---|
+| 1 | **Frontmatter tags field** | Include / omit | Include if upstream `SKILL-AUTHORING-STANDARD.md` requires it | Before writing SKILL.md frontmatter — read the standard first |
+| 3 | **Benchmark data freshness** | Hardcoded with `LAST_UPDATED` / manual `--benchmark-return` flag / API call | Hardcode + manual override (stdlib-only, no network dependency) | During `05-benchmark-returns.md` build |
+| 4 | **Third script** (`deal_scorer.py`) | Add v1.0 / skip / defer to v1.1 | Skip v1.0 (false-precision risk); revisit post-eval | After the eval suite runs on v1.0 |
+| 8 | **Asset class routing** | Single workflow / branching by deal type | Branch at Step 2 (classify); load the relevant reference file; reconverge at output | During SKILL.md build |
 
 ---
 
@@ -257,28 +302,35 @@ mkdir -p finance/passive-deal-screener/references
 mkdir -p finance/passive-deal-screener/scripts
 ```
 
-Build order:
-1. `references/01-asset-class-norms.md` — start here; this is the factual foundation everything else draws from
-2. `references/05-fee-stack-decoder.md` — needed to write the fee analysis step
-3. `references/02-syndication-mechanics.md`
-4. `references/03-hard-money-framework.md`
-5. `references/04-gp-evaluation-rubric.md`
-6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs. Level 3
+Build order (matches numbering after the 2026-05-29 reconciliation; numerical = build order):
+1. `references/01-asset-class-norms.md` — factual foundation. ✅ Shipped 2026-05-25.
+2. `references/02-fee-stack-library.md` — needed to write the fee analysis step.
+3. `references/03-red-flag-library.md` — the skill's red-flag-detection backbone.
+4. `references/04-question-bank.md` — depends on 03 for cross-references.
+5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
+6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3.
 7. `scripts/fee_drag_calculator.py`
 8. `scripts/benchmark_comparator.py`
-9. `README.md`
+9. `README.md` *(skill-level, at `finance/passive-deal-screener/README.md` in the upstream PR — distinct from this repo's own root `README.md`)*.
 
 ### Phase 3: Test the skill (Claude.ai workflow, per `skill-creator` SKILL.md)
 
 Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren't available. Use the adapted process:
 
-1. Write `evals/evals.json` with 6-8 test cases covering:
-   - Multifamily equity syndication (full offering memo)
-   - Preferred equity deal (sparse email blast)
-   - Hard money fund (platform listing)
-   - Deal with obvious red flags (test flag detection)
-   - Deal missing most disclosures (test missing-disclosure output)
-   - Direct GP email with aggressive return projections (test stress-testing)
+1. Write `evals/evals.json` with the 8 test cases below. Each is chosen to exercise a *distinct* part of the skill so a regression in one is hard to mask. Each reference file should be built against the cases it has to support; SKILL.md should pass all eight before the upstream PR opens.
+
+   | # | Case | What it exercises |
+   |---|---|---|
+   | 1 | Multifamily value-add equity syndication, full offering memo | The default path — happy-case parsing on a complete deal package. Tests deal-snapshot extraction, fee-stack breakdown, GP track record, exit-cap stress-test. |
+   | 2 | Preferred equity deal, sparse email blast | Source-agnostic parsing + missing-disclosures-as-output. The skill should classify it, flag what's absent, and ask the right questions despite the thin input. |
+   | 3 | Hard money / bridge debt fund (platform listing) | Debt-fund workflow branch. Tests `03-red-flag-library`'s HML category (LTV-on-ARV claims, geo concentration, default-rate disclosure). |
+   | 4 | Private credit fund with sector concentration risk | Fee-stack and red-flag interaction. Tests `02-fee-stack-library`'s debt-fund fee subsection + the credit-specific red flags. |
+   | 5 | Development (ground-up) deal with aggressive return projections | Return stress-test against `01-asset-class-norms` development baseline and `05-benchmark-returns` comparators. Tests the illiquidity-premium framework. |
+   | 6 | Office deal in 2026 | Tests the `01-asset-class-norms` *variable* baseline. Output should refuse to give a generic baseline and instead drive the analysis off the deal's own underwriting (occupancy, class, debt maturity). |
+   | 7 | Deal with obvious GP red flags | Multi-flag detection: prior FTC action mentioned, zero co-invest, European waterfall + 50% promote, projections without sensitivity. The skill must list them all with severity. |
+   | 8 | Deal missing nearly all disclosures | Worst-case missing-disclosure case. Output should be 80% "here's what wasn't said" rather than vacuous "looks fine." Tests that absence is first-class. |
+
+   Hold each test input in `evals/inputs/N-<slug>.md`; reference materials (real anonymized deals, where shareable, or constructed synthetic equivalents) cited in `evals/sources.md`.
 
 2. For each test case, load SKILL.md yourself and follow the workflow against the test input. Record outputs in `evals/iteration-1/`.
 
@@ -301,6 +353,15 @@ Before opening the PR, verify:
 - [ ] README.md includes install instructions and usage examples
 - [ ] No hardcoded API keys, credentials, or personally identifying information
 - [ ] Skill passes the security auditor: `python3 engineering/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener/`
+
+**v1.0 ship gate (in addition to the standard checklist above).** The upstream `SKILL-AUTHORING-STANDARD` covers file conventions; the items below are the *content* gates specific to this skill — the standard doesn't know about reference files or evals at this depth.
+
+- [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
+- [ ] Cross-reference integrity: `03-red-flag-library` flags ↔ `04-question-bank` response questions linked; `04` cites ≥5 entries from `03`
+- [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
+- [ ] `evals/evals.json` carries the 8 cases from Phase 3; SKILL.md passes all 8 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
+- [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
+- [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
 
 ### Phase 5: Commit and PR
 
@@ -400,6 +461,21 @@ The skill draws from reference files for all factual claims about market norms, 
 - **Categorical provenance, not point citations.** "Industry survey norms" cites NCREIF (NPI, ODCE), Preqin, ILPA, sector trade groups (NMHC / NAIOP / ICSC / MBA), and a cross-section of LP marketing materials — rather than pinning specific numbers to specific reports. The file lags the cycle; the trade-off is keeping it concise and updatable without invalidating every citation when a vintage rolls.
 - **Absent disclosures are first-class.** Each asset class lists its "essential disclosures" — when a real deal omits one of those against a category that normally has it, that's a flag, not a neutral silence. This wires the CLAUDE.md "missing disclosures as a first-class output" rule into the factual baseline.
 - **Asset-class taxonomy follows the React artifact's `asset_class` enum** so the SKILL.md (Level 2) and the artifact's surface use the same vocabulary.
+
+### 2026-05-29 — ROADMAP buildout: schemas, numbering, gates
+
+Following the first reference shipping, the ROADMAP shifted from "what we plan to build" to "what each unbuilt artifact needs to contain." Four interlocking changes landed in one pass:
+
+- **Reference-file numbering reconciled to CLAUDE.md.** The older ROADMAP §5 list (mechanics-focused: `syndication-mechanics`, `hard-money-framework`, `fee-stack-decoder`, `gp-evaluation-rubric`) is retired in favor of the CLAUDE.md outputs-focused list (`fee-stack-library`, `red-flag-library`, `question-bank`, `benchmark-returns`). CLAUDE.md was authoritative anyway; this aligns the planning doc to it. The mechanics content (waterfalls, LTV / ARV / draw schedules) lives as subsections within the relevant output-focused file — waterfalls in fee-stack, HML mechanics in red-flag-library, etc. Trade: slight loss of standalone discoverability for syndication mechanics; gain: every reference is anchored to a *skill output* the workflow produces.
+- **Per-file content schemas defined up front for `02–05`.** Each unbuilt reference now has scope, format, LP-lens reminder, and DoD pinned in §5 before writing starts. The lesson from building `01` solo: improvising the schema mid-write produces a defensible file, but locking the schema across the set up front guarantees compatibility (column names match, provenance pattern matches, *variable* discipline applies uniformly). The schema also de-risks the SKILL.md write: SKILL.md doesn't ship until the references it indexes against have the shape it expects.
+- **Eight specific eval cases enumerated** in §8 Phase 3, one per distinct skill behavior — happy case (full memo), sparse input, debt fund, private credit, aggressive returns, *variable* baseline (office in 2026), multi-red-flag deal, near-total disclosure absence. Each reference must be built against the case it has to support; SKILL.md ships when all 8 pass.
+- **v1.0 ship gate split from the upstream `SKILL-AUTHORING-STANDARD` checklist.** The upstream standard covers file conventions (frontmatter shape, script `--help`, security auditor); this skill needs *content* gates the standard doesn't know about (5 references built, 8 evals passing, ≥3 examples, cross-reference integrity between `03` and `04`, this repo's own README updated). Phase 4 now carries both checklists.
+
+Open design choices in §7 collapsed from 10 to 4 — six were resolvable now and are recorded as locked. The remaining four (frontmatter tags, benchmark data freshness, third script, asset class routing) each have a clear "when to decide" anchor so they don't get re-litigated.
+
+### 2026-05-29 — Repo-level README.md added
+
+The repo has been public on GitHub since creation but had no front door — anyone landing on it from a portfolio link or search got CLAUDE.md (a dev guide), not a "what is this and who's it for" page. The new root `README.md` is the portfolio-facing introduction: skill name, the differentiated LP-perspective stance, current pre-development status (with the `01` reference already shipped), repo layout, contribution target, and a preview of the workflow the shipped skill will produce. Distinct from the eventual *skill-level* README at `finance/passive-deal-screener/README.md` in the upstream PR — that one carries install instructions and usage examples and ships only once SKILL.md exists.
 
 ---
 
