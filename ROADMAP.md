@@ -251,7 +251,7 @@ Each reference is a focused factual baseline that SKILL.md indexes against. Addi
 |---|---|---|
 | `01-asset-class-norms.md` | Always (compact baseline) | ✅ Shipped 2026-05-25 |
 | `02-fee-stack-library.md` | Always | ✅ Shipped 2026-05-30 |
-| `03-red-flag-library.md` | Always | Planned |
+| `03-red-flag-library.md` | Always | ✅ Shipped 2026-06-01 |
 | `04-question-bank.md` | Always when a GP is identified | Planned |
 | `05-benchmark-returns.md` | Always for return stress-test | Planned |
 
@@ -415,7 +415,7 @@ mkdir -p finance/passive-deal-screener/scripts
 Build order (matches numbering after the 2026-05-29 reconciliation; numerical = build order):
 1. `references/01-asset-class-norms.md` — factual foundation. ✅ Shipped 2026-05-25.
 2. `references/02-fee-stack-library.md` — needed to write the fee analysis step. ✅ Shipped 2026-05-30.
-3. `references/03-red-flag-library.md` — **Stub first:** create the file with flag ID prefixes (`EQUITY`, `HML`, `PREF`, `CREDIT`) and category headers before writing any entries. Flag ID format: `{ASSET_CLASS}-{NN}`. This establishes the cross-reference convention that `04` depends on.
+3. `references/03-red-flag-library.md` — flag ID format `{ASSET_CLASS}-{NN}`, extended with a `GEN-` prefix for cross-asset flags (see 2026-06-01 decision log). Establishes the cross-reference convention `04` depends on. ✅ Shipped 2026-06-01 (34 flags).
 4. `references/04-question-bank.md` — depends on 03 for cross-references.
 5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
 6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3.
@@ -680,8 +680,45 @@ and addressed in this pass:
 6. Eval case #9 added. Tests J-curve / distribution timing analysis — the one
    gap in the original 8-case suite.
 
+### 2026-06-01 — Built `references/03-red-flag-library.md` (third reference file)
+
+Lands the red-flag library — 34 flags across the six planned categories (GP
+behavior, structural, financial, disclosure, market-cycle, hard-money/private-
+credit), comfortably clearing the ≥25-flag DoD. Every flag carries an ID,
+severity (14 RED / 12 YELLOW / 8 YELLOW–RED), a one-line mechanism, and a
+one-line response question — the response questions are the seeds `04-question-
+bank.md` will cite by ID. The six design-review flags added to scope earlier
+today (GEN-05 GP-vs-LP IRR, GEN-06 affiliate stacking, GEN-07 financing story,
+GEN-08 exit-dependent IRR, GEN-10 rate-cap expiry, GEN-11 J-curve) are all in
+with their committed severities. Three non-obvious calls:
+
+- **Flag-ID scheme extended with a `GEN-` prefix — divergence from the §8
+  build-order line.** The build order specified four asset-class prefixes
+  (`EQUITY`, `HML`, `PREF`, `CREDIT`). But the largest categories — GP behavior,
+  disclosure, most structural/financial/market-cycle flags — apply across *all*
+  deal types, and forcing them under `EQUITY-` would misrepresent their scope.
+  Resolution: `GEN-` for cross-asset flags (19 of 34), asset-class prefixes only
+  where a flag is genuinely asset-specific (EQUITY 7, HML 5, CREDIT 2, PREF 1).
+  The ID still encodes scope-of-applicability, which is *more* useful to `04`
+  than an asset-class label would be. Defensible divergence; logged here so a
+  reviewer sees the why.
+- **Severity is RED / YELLOW / YELLOW–RED, the third for boundary flags whose
+  severity depends on the GP's answer** (e.g. affiliate stacking, refi
+  dependence, missing financials). Mirrors the YELLOW–RED usage already in
+  `02-fee-stack-library.md` rather than inventing a new scale.
+- **No new numeric thresholds invented.** Where a flag needs a trigger it
+  borrows one already established in `02` (promote >30%, pref <6%) or a
+  committed analyst rule (exit-dependent IRR >60%); otherwise the flag describes
+  the *pattern* and defers to the deal's own underwriting, per the "no
+  hallucinated ranges" rule. `GEN-17` is an explicit pointer into `01`'s
+  per-class essential disclosures rather than a duplicated list.
+
+File lands at 233 lines with a Contents section up top — under the 300-line TOC
+threshold, but the six-category structure benefits from the index, which also
+doubles as the flag-ID lookup for `04`.
+
 ---
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-01 (design review: schema, analyst rules, flag gaps)*
+*Last updated: 2026-06-01 (03-red-flag-library shipped)*
