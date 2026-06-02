@@ -133,13 +133,69 @@ You are a rigorous private investment analyst...
 ## Step 6: Surface red flags and missing disclosures
 ## Step 7: Generate questions
 ## Step 8: Render verdict
-
-## Output schema
-[required sections and format]
-
-## Analyst rules
-[the skepticism contract — what the skill always does regardless of deal quality]
 ```
+
+## Output schema (required sections, in order)
+
+1. Deal Snapshot — asset class, deal type, sponsor, hold, claimed return.
+   One paragraph, no editorializing.
+
+2. Return Stress-Test — base / bull / bear with the 2–3 swing
+   assumptions called out explicitly. Not just "returns may vary."
+
+3. Where LP Returns Come From — cash flow vs exit vs leverage.
+   Flag if >60% of IRR is exit-dependent or leverage-dependent.
+
+4. Fee Stack Summary — gross-to-net drag in basis points.
+   Total drag figure, not just a list of fees.
+
+5. Red Flags — ranked by severity (RED / YELLOW).
+   Each flag: one-line mechanism + one-line LP exposure.
+
+6. Missing Disclosures — what this deal type normally discloses
+   that this deal didn't. Absence is first-class output.
+
+7. GP Alignment Assessment — co-invest, track record quality
+   (realized exits only), waterfall alignment.
+
+8. Questions for the GP — prioritized, with bad-answer signals.
+   Must-ask separated from nice-to-ask.
+
+9. Diligence Checklist — items still requiring third-party
+   verification before committing capital.
+
+10. Verdict — Pursue / Pass / Pursue with conditions.
+    Reasoning visible, not just the label.
+
+## Analyst rules (the skepticism contract)
+
+These apply regardless of how attractive a deal appears:
+
+- Default to adversarial posture. The job is not to validate the deal
+  but to find the conditions under which it fails. Every analysis starts
+  from "how does this deal protect LP capital?"
+
+- Never compare gross to gross. All return comparisons must be
+  net-to-LP vs net-to-LP, or vs post-expense-ratio public benchmarks.
+  Gross IRR comparisons are not permitted in any output section.
+
+- Flag exit-dependent IRR. If >60% of projected LP return is driven by
+  terminal value or exit cap rate assumption rather than in-place cash
+  flow, call it out explicitly in Section 3 (Where LP Returns Come From)
+  and again in the Verdict.
+
+- Flag leverage-dependent IRR. If the deal's return story depends
+  primarily on leverage and cap rate compression rather than operational
+  value creation, label it a "financing story" not an "asset story" and
+  flag it RED in Section 5.
+
+- Treat unrealized track record as no track record. A GP's "track
+  record" citing only unrealized or marked-to-market deals must be
+  flagged as unverified in Section 7 (GP Alignment Assessment).
+
+- Absent information is output, not silence. Every section must
+  explicitly note what was not disclosed that normally would be for this
+  deal type. Do not skip over absences.
 
 > **Open design choice #2 — Output format:** The React artifact (already built) outputs JSON consumed by a UI. The Claude Code skill should output structured Markdown for CLI use. These are different consumers. Decide whether the SKILL.md encodes the Markdown output format, the JSON format (for programmatic use), or both via a routing flag. Recommendation: default to Markdown, document JSON as an opt-in via "output as JSON" instruction.
 
@@ -223,6 +279,32 @@ LP-perspective baseline for the 12 asset classes from `deal-evaluator.jsx`. Each
 
 **DoD.** ≥25 flags across categories; every flag has severity + mechanism + a one-line response question; HML / private-credit category present (otherwise the skill misclassifies risk on debt deals).
 
+**Additional flags from design review (2026-06-01).**
+
+GP behavior:
+- GP IRR vs LP IRR divergence — track record cites project-level or
+  GP-level IRR rather than net-to-LP IRR. Severity: RED.
+
+Structural:
+- Affiliate fee stacking — property management, construction
+  management, and loan placement all flowing to GP-affiliated entities
+  without disclosure or fee reduction. Severity: YELLOW–RED.
+- "Financing story" disguised as asset story — LP returns driven
+  primarily by leverage and cap rate compression rather than operational
+  value creation. Severity: RED.
+
+Financial:
+- Cash-flow timing / J-curve not disclosed — IRR presented without
+  distribution schedule; no indication of when LP capital starts
+  returning. Severity: YELLOW.
+- Rate cap expiry risk — floating-rate debt where the rate cap expires
+  before the projected hold end or refi event. The specific 2022–2024
+  failure pattern: rate cap expires, rates stay elevated, refi market
+  freezes. Severity: RED.
+- Exit-dependent IRR — >60% of projected LP return comes from terminal
+  value / exit cap assumption rather than in-place cash flow.
+  Severity: RED.
+
 ### 04-question-bank.md
 
 **Content scope.** Questions an LP should ask the GP, grouped by category — deal-specific, GP / sponsor-specific, market-specific, fee / structure-specific, risk-specific, exit-specific. Each entry has the differentiator treatment: what a GOOD answer sounds like + what a BAD answer sounds like (the explicit evasion signals — the "what evasion looks like" that distinguishes this skill from existing question generators).
@@ -233,6 +315,22 @@ LP-perspective baseline for the 12 asset classes from `deal-evaluator.jsx`. Each
 
 **DoD.** ≥20 questions across categories; every question has bad-answer signals (the differentiator); ≥5 cross-references from `03-red-flag-library.md`.
 
+**Additional question categories from design review (2026-06-01).**
+
+Distribution timing:
+- "What is the projected distribution schedule, and at what milestones
+  does LP capital start returning?"
+  Good answer: specific schedule tied to operational triggers.
+  Bad answer: "We'll distribute when the deal supports it" with no
+  milestones, or silence.
+
+LP liquidity / secondary market:
+- "What are my options if I need to exit before the hold period ends?"
+  Good answer: named secondary platforms, stated process, realistic
+  liquidity timeline.
+  Bad answer: vague reference to "a secondary market may develop,"
+  "we'll try to accommodate," or silence.
+
 ### 05-benchmark-returns.md
 
 **Content scope.** Public market comparators by deal type: REITs (VNQ, IYR) for equity-style RE; investment-grade corporates (LQD) for stabilized core; high-yield (HYG) and private-credit ETFs (PRIV) for HML / private credit; preferreds (PFF) for preferred equity; broad equity (SPY) as universal anchor. Per comparator: trailing 10yr / 5yr returns with `LAST_UPDATED` date, volatility (std dev), and the best private-deal-type it serves as a comparator for. Plus an **illiquidity-premium framework**: minimum spread an LP should demand over the liquid equivalent (rule of thumb: ≥200bps over the closest public comparator, scaled by lock-up length).
@@ -242,6 +340,13 @@ LP-perspective baseline for the 12 asset classes from `deal-evaluator.jsx`. Each
 **LP lens reminder.** Returns are net to a public-market investor (post-expense-ratio) — apples-to-apples with net-to-LP private returns. Don't compare gross to net.
 
 **DoD.** ≥6 comparators covering every major private-deal type; illiquidity-premium framework lets the skill output "this deal's claimed net IRR exceeds [comparator] by Xbps — is that enough premium for the lockup?"; LAST_UPDATED visible so the file ages predictably and triggers a refresh task in v1.1.
+
+**Additional DoD item (from design review 2026-06-01):**
+- Include an unlevered return comparator alongside each headline ETF
+  return, so the skill can distinguish "this deal clears the
+  illiquidity hurdle" from "this deal's IRR is driven by leverage, not
+  alpha." Without an unlevered baseline, the financing-story flag
+  cannot be grounded in a benchmark comparison.
 
 ---
 
@@ -322,7 +427,7 @@ Build order (matches numbering after the 2026-05-29 reconciliation; numerical = 
 
 Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren't available. Use the adapted process:
 
-1. Write `evals/evals.json` with the 8 test cases below. Each is chosen to exercise a *distinct* part of the skill so a regression in one is hard to mask. Each reference file should be built against the cases it has to support; SKILL.md should pass all eight before the upstream PR opens.
+1. Write `evals/evals.json` with the 9 test cases below. Each is chosen to exercise a *distinct* part of the skill so a regression in one is hard to mask. Each reference file should be built against the cases it has to support; SKILL.md should pass all nine before the upstream PR opens.
 
    | # | Case | What it exercises |
    |---|---|---|
@@ -334,6 +439,7 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
    | 6 | Office deal in 2026 | Tests the `01-asset-class-norms` *variable* baseline. Output should refuse to give a generic baseline and instead drive the analysis off the deal's own underwriting (occupancy, class, debt maturity). |
    | 7 | Deal with obvious GP red flags | Multi-flag detection: prior FTC action mentioned, zero co-invest, European waterfall + 50% promote, projections without sensitivity. The skill must list them all with severity. |
    | 8 | Deal missing nearly all disclosures | Worst-case missing-disclosure case. Output should be 80% "here's what wasn't said" rather than vacuous "looks fine." Tests that absence is first-class. |
+   | 9 | Two deals with identical projected IRR: one distributes cash flow quarterly from Year 1, one back-loads all return to exit | Tests whether the skill flags J-curve difference and distribution timing as material LP risk rather than treating the deals as equivalent on IRR alone |
 
    Hold each test input in `evals/inputs/N-<slug>.md`; reference materials (real anonymized deals, where shareable, or constructed synthetic equivalents) cited in `evals/sources.md`.
 
@@ -364,7 +470,7 @@ Before opening the PR, verify:
 - [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
 - [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
 - [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
-- [ ] `evals/evals.json` carries the 8 cases from Phase 3; SKILL.md passes all 8 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
+- [ ] `evals/evals.json` carries the 9 cases from Phase 3; SKILL.md passes all 9 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
 - [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
 - [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
 
@@ -541,8 +647,41 @@ Lands the second reference and the heaviest one in v1.0 — fee inventories acro
 
 File lands at exactly 300 lines (the convention's TOC threshold is *strictly* >300, so no TOC required). If `03–05` exhibit similar density, the convention may need a revisit — but for now `02` is well-organized enough that scanning the H2 hierarchy serves as a de facto TOC.
 
+### 2026-06-01 — Design review: output schema, analyst rules, and flag gaps
+
+Following a structured design review against LP practitioner feedback and
+comparative analysis (Perplexity), several categories of gaps were identified
+and addressed in this pass:
+
+1. Output schema specified. The SKILL.md body outline's `## Output schema`
+   placeholder is now a 10-section required output structure. The most
+   critical addition is Section 3 (Where LP Returns Come From), which forces
+   the skill to decompose cash flow vs exit vs leverage — the "financing story"
+   detection that no existing LP skill performs.
+
+2. Analyst rules specified. The skepticism contract is now explicit: adversarial
+   posture by default, no gross-to-gross comparisons, automatic flagging when
+   IRR is exit-dependent or leverage-dependent, unrealized track record treated
+   as unverified.
+
+3. Red flag library expanded. Six new flags added to the planned 03 scope:
+   GP IRR vs LP IRR divergence, affiliate fee stacking, financing story,
+   cash-flow timing / J-curve absence, rate cap expiry risk, and
+   exit-dependent IRR. All were absent from the original 03 content scope.
+
+4. Question bank expanded. Two new question categories added to 04 scope:
+   distribution timing (with bad-answer signals) and LP liquidity / secondary
+   market access (with bad-answer signals).
+
+5. Benchmark returns file refined. 05 DoD now requires an unlevered return
+   comparator alongside each ETF figure, enabling the skill to ground the
+   financing-story flag in a benchmark comparison rather than assertion alone.
+
+6. Eval case #9 added. Tests J-curve / distribution timing analysis — the one
+   gap in the original 8-case suite.
+
 ---
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-05-30 (02-fee-stack-library shipped)*
+*Last updated: 2026-06-01 (design review: schema, analyst rules, flag gaps)*
