@@ -252,7 +252,7 @@ Each reference is a focused factual baseline that SKILL.md indexes against. Addi
 | `01-asset-class-norms.md` | Always (compact baseline) | ✅ Shipped 2026-05-25 |
 | `02-fee-stack-library.md` | Always | ✅ Shipped 2026-05-30 |
 | `03-red-flag-library.md` | Always | ✅ Shipped 2026-06-01 |
-| `04-question-bank.md` | Always when a GP is identified | Planned |
+| `04-question-bank.md` | Always when a GP is identified | ✅ Shipped 2026-06-03 |
 | `05-benchmark-returns.md` | Always for return stress-test | Planned |
 
 ### 01-asset-class-norms.md — ✅ Shipped 2026-05-25
@@ -313,7 +313,7 @@ Financial:
 
 **LP lens reminder.** Questions about the LP's own decision (capital call timing, K-1 timing, exit-distribution mechanics, secondary-market liquidity) belong here; questions about acquisition strategy or asset management belong to the operator's diligence, not the LP's.
 
-**DoD.** ≥20 questions across categories; every question has bad-answer signals (the differentiator); ≥5 cross-references from `03-red-flag-library.md`.
+**DoD.** ≥20 questions across categories; every question has bad-answer signals (the differentiator); ≥5 cross-references from `03-red-flag-library.md`. *Shipped 2026-06-03: 25 questions, 28 distinct flag IDs cited.*
 
 **Additional question categories from design review (2026-06-01).**
 
@@ -717,8 +717,41 @@ File lands at 233 lines with a Contents section up top — under the 300-line TO
 threshold, but the six-category structure benefits from the index, which also
 doubles as the flag-ID lookup for `04`.
 
+### 2026-06-03 — Built `references/04-question-bank.md` (fourth reference file)
+
+Lands the question bank — 25 LP questions across the eight planned categories
+(deal, GP/sponsor, market, fee/structure, risk, exit, plus the two
+design-review additions: distribution timing and LP liquidity/secondary).
+Comfortably clears the ≥20-question and ≥5-cross-reference DoD: 28 distinct
+flag IDs from `03-red-flag-library.md` are cited, every one resolving to a real
+entry. File lands at 227 lines with a Contents index up top — under the
+300-line TOC threshold, but the eight-category structure benefits from the
+index. Three non-obvious calls worth recording:
+
+- **The bad-answer signal is treated as the deliverable, not the question.**
+  ROADMAP §6.4 names this the skill's sharpest differentiator. The discipline
+  applied: every bad-answer cell names the *specific* dodge for that question —
+  the substituted metric, the redirect, the silence — never a generic "they
+  were evasive." A bad signal that could be pasted under any question was
+  rewritten until it could only belong to its own.
+- **`Q-<CAT>-NN` ID scheme, parallel to `03` but category-keyed.** `03` encodes
+  scope-of-applicability in its prefix (GEN/EQUITY/HML/…); `04` encodes
+  *category* (DS/GP/MKT/FEE/RISK/EXIT/DIST/LIQ) because that's the axis a reader
+  navigates a question bank on. Cross-reference flows one way — `04` cites `03`
+  flag IDs, never the reverse — so the two ID schemes don't need to align.
+- **Two categories carry no `03` cross-reference by design.** Distribution-call
+  mechanics (Q-DIST-02), secondary-market liquidity (Q-LIQ-01), and K-1 timing
+  (Q-LIQ-02) concern the LP's *own* cash-management and tax decision, not a deal
+  defect — so they have no matching flag. This is the LP-lens boundary made
+  concrete: `03` is scoped to the deal's risks, while the LP's liquidity and tax
+  timing are equally part of commit-or-pass. An "—" in the ref column is
+  intentional, not a missing citation.
+
+Build order now has only `05-benchmark-returns.md` remaining before SKILL.md;
+`05` stays gated on the NCREIF/FRED/Preqin data pull (2026-05-30 decision).
+
 ---
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-01 (03-red-flag-library shipped)*
+*Last updated: 2026-06-03 (04-question-bank shipped)*
