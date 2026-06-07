@@ -253,7 +253,7 @@ Each reference is a focused factual baseline that SKILL.md indexes against. Addi
 | `02-fee-stack-library.md` | Always | ✅ Shipped 2026-05-30 |
 | `03-red-flag-library.md` | Always | ✅ Shipped 2026-06-01 |
 | `04-question-bank.md` | Always when a GP is identified | ✅ Shipped 2026-06-03 |
-| `05-benchmark-returns.md` | Always for return stress-test | Planned |
+| `05-benchmark-returns.md` | Always for return stress-test | Data pull ✅ 2026-06-06 (`references/data/`); file itself unblocked, next to build |
 
 ### 01-asset-class-norms.md — ✅ Shipped 2026-05-25
 
@@ -750,8 +750,44 @@ index. Three non-obvious calls worth recording:
 Build order now has only `05-benchmark-returns.md` remaining before SKILL.md;
 `05` stays gated on the NCREIF/FRED/Preqin data pull (2026-05-30 decision).
 
+### 2026-06-06 — Built the `references/data/` snapshot layer (the `05` data pull)
+
+`05-benchmark-returns.md` was gated on a data pull (2026-05-30 decision: "requires
+data pull before writing — NCREIF NPI, FRED 10yr, Preqin vintage note; all figures
+timestamped at build time"). That layer now exists as a versioned, source-cited
+snapshot folder so every number in `05` traces to a dated snapshot and a v1.1
+refresh is "re-pull into the snapshots," not "rewrite the prose" — the
+"no hallucinated ranges" rule enforced at the data boundary. Five files:
+`data/README.md` (convention + refresh procedure), `fred-10yr-snapshot.md`,
+`etf-comparators-snapshot.md`, `ncreif-npi-snapshot.md`, `preqin-vintage-note.md`.
+Three non-obvious calls:
+
+- **Added a 4th snapshot (`etf-comparators-snapshot.md`) beyond the three named in
+  §2 — defensible divergence.** §2's folder sketch lists only NCREIF / FRED /
+  Preqin, but `05`'s headline comparator table is ETF-driven (VNQ, IYR, LQD, HYG,
+  PFF, SPY, PRIV). Snapshotting only the institutional inputs would leave the
+  *bulk* of `05`'s numbers with no provenance — guarding the side door, not the
+  front. §2's list predates the design-review work that made `05`'s table
+  ETF-driven; it's stale, not authoritative. Approved 2026-06-06.
+- **Figures come from cross-checked aggregators, not issuer pages.** iShares,
+  Vanguard, SSGA fact sheets and FRED's own pages all return HTTP 403 to
+  automated fetch. WebSearch reliably surfaces those figures with sources, so each
+  ETF return was confirmed across ≥2 aggregators; material divergences (IYR 5/10yr,
+  LQD 5yr) are *shown as ranges with a flag*, not silently resolved to one number.
+- **Gated sources marked honestly, not fabricated.** NCREIF property-level detail
+  and Preqin's live per-vintage quartile tables are paywalled. The snapshots
+  capture the latest *publicly reported* headline (NCREIF Q4 2025 NPI; CAIS-cited
+  Preqin dispersion, 2001–2017 window) and flag the rest categorical — a
+  documented gap is a correct output; an invented number is a defect. PRIV
+  likewise flagged as too new (Feb-2025 inception) for a trailing return.
+
+Known gap logged for the next refresh / the `05` build: per-ticker volatility
+(std-dev) was not captured this pull; populate from fact sheets when `05`'s `Vol`
+column is written. Build order now: `05-benchmark-returns.md` is unblocked and is
+the next file, then SKILL.md.
+
 ---
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-03 (04-question-bank shipped)*
+*Last updated: 2026-06-06 (references/data/ snapshot layer built; 05 unblocked)*
