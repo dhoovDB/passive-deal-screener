@@ -253,7 +253,7 @@ Each reference is a focused factual baseline that SKILL.md indexes against. Addi
 | `02-fee-stack-library.md` | Always | ✅ Shipped 2026-05-30 |
 | `03-red-flag-library.md` | Always | ✅ Shipped 2026-06-01 |
 | `04-question-bank.md` | Always when a GP is identified | ✅ Shipped 2026-06-03 |
-| `05-benchmark-returns.md` | Always for return stress-test | Data pull ✅ 2026-06-06 (`references/data/`); file itself unblocked, next to build |
+| `05-benchmark-returns.md` | Always for return stress-test | ✅ Shipped 2026-06-12 |
 
 ### 01-asset-class-norms.md — ✅ Shipped 2026-05-25
 
@@ -753,6 +753,57 @@ index. Three non-obvious calls worth recording:
 Build order now has only `05-benchmark-returns.md` remaining before SKILL.md;
 `05` stays gated on the NCREIF/FRED/Preqin data pull (2026-05-30 decision).
 
+### 2026-06-12 — Built `references/05-benchmark-returns.md` (final reference; reference set complete)
+
+Lands the fifth and last reference — the public-market benchmark layer that turns
+every analysis into a forcing function: a private deal must clear a liquid,
+net-of-fee comparator plus an illiquidity premium, or the lock-up isn't
+compensated. Pure **synthesis**: every figure traces to `references/data/`
+(built 2026-06-06) or `01`'s net-IRR ranges; `05` sources nothing itself. Carries
+8 comparators, the spread table mapping each `01` asset class to its
+risk-matched comparator with an approximate premium band, the illiquidity-premium
+framework (≥200bps floor scaled by lock-up), and the NCREIF-NPI unlevered overlay
+that grounds the financing-story flag (`03` → `GEN-07`) in a benchmark. The two
+decisions flagged when the data layer shipped both resolved toward honesty over
+precision:
+
+- **Volatility column → relative-to-baseline, not a fabricated number.** The
+  planned vol pull found no clean uniform annualized std-dev publicly available
+  (fact sheets 403; aggregators mix daily / 1yr / 3yr / since-inception bases).
+  Forcing a numeric column would be false precision the skill forbids. First pass
+  used a coarse High/Med/Low tier; on review that flattened the key signal (SPY
+  and the REITs all read "High"), so the final resolution expresses each
+  comparator **relative to the SPY equity baseline** plus a **drawdown contrast** —
+  surfacing that REITs carry ≈ equity volatility with a *deeper* tail (−73% vs
+  −55%) for *lower* return. This makes the baseline load-bearing. The snapshot vol
+  gap is closed with this resolution (snapshot is source of truth; `05`
+  synthesizes from it). Both files travel in one commit.
+- **IYR/LQD ranges carried as ranges.** No false-precision single number; VNQ is
+  the primary REIT comparator, IYR the cross-check, per the snapshot's designation.
+- **VTI added as a second broad-equity anchor (8th comparator).** Total-market
+  alternative to SPY — near-substitute (14.88% vs 15.54% 10yr, ≈ same vol and
+  −55% drawdown) but cheaper (0.03%) and arguably the truer "all equity dollars"
+  opportunity cost. Treated as an *anchor*, not a private-type comparator: it gets
+  no spread-table row (maps to no distinct exposure), only the at-a-glance,
+  per-comparator notes, and the vol-vs-baseline framing. Logged so a reviewer sees
+  it's a deliberate anchor, not redundant clutter.
+- **Treasury short points added for duration-matched debt floors.** The 10yr was
+  already the risk-free anchor; added 3mo (≈3.71%) and 2yr (≈4.15%) points to
+  `fred-10yr-snapshot.md` so debt deals get a *duration-matched* floor (a 6–18mo
+  hard-money fund's honest risk-free comparison is the bill, not the 10yr). `05`
+  now reads a debt deal's net yield over the matched Treasury as the credit +
+  illiquidity spread — the credit-analyst lens, complementing HYG (which embeds
+  the HY credit spread) by isolating the absolute risk premium. Treasury remains
+  the *anchor/floor*, not a comparator row — comparator count stays 8.
+
+*Variable* `01` classes (office, experiential retail, STR, mixed-use) deliberately
+get **no** spread-table row — a forced comparator would be false grounding; they
+benchmark against the deal's own underwriting. File carries a TOC up top.
+
+**Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
+(the body that indexes against these five), then the two stdlib-only Python
+scripts, the eval suite, and the skill-level README.
+
 ### 2026-06-06 — Built the `references/data/` snapshot layer (the `05` data pull)
 
 `05-benchmark-returns.md` was gated on a data pull (2026-05-30 decision: "requires
@@ -793,4 +844,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-06 (references/data/ snapshot layer built; 05 unblocked)*
+*Last updated: 2026-06-12 (05-benchmark-returns shipped; reference set 01–05 complete, SKILL.md next)*

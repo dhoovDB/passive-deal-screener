@@ -12,7 +12,7 @@ illiquidity-premium comparison the skill makes.
 
 | File | Source | As of | What it holds |
 |---|---|---|---|
-| `fred-10yr-snapshot.md` | FRED `DGS10` (St. Louis Fed) | early June 2026 daily | 10yr Treasury — the risk-free anchor for illiquidity-premium math |
+| `fred-10yr-snapshot.md` | FRED `DGS10` / `DGS2` / `DGS3MO` (St. Louis Fed) | 10yr early June 2026; short points 2026-06-11 | Treasury curve — 10yr risk-free anchor + 3mo/2yr short points for duration-matching debt deals |
 | `etf-comparators-snapshot.md` | Fund fact sheets, cross-checked vs public aggregators | Q1 2026 quarter-end (2026-03-31) / latest daily | Trailing 5yr/10yr total returns + expense ratios for the 7 public comparators |
 | `ncreif-npi-snapshot.md` | NCREIF (via public secondary reporting) | Q4 2025 | NPI total / income / appreciation returns — the institutional private-RE baseline |
 | `preqin-vintage-note.md` | Preqin (via public secondary citation) | 2001–2017 study window (latest public) | Categorical note on private-fund vintage-year net-IRR dispersion |
