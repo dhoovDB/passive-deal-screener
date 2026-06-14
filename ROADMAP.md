@@ -418,7 +418,7 @@ Build order (matches numbering after the 2026-05-29 reconciliation; numerical = 
 3. `references/03-red-flag-library.md` — flag ID format `{ASSET_CLASS}-{NN}`, extended with a `GEN-` prefix for cross-asset flags (see 2026-06-01 decision log). Establishes the cross-reference convention `04` depends on. ✅ Shipped 2026-06-01 (34 flags).
 4. `references/04-question-bank.md` — depends on 03 for cross-references.
 5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
-6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3.
+6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3. ✅ Shipped 2026-06-13 (185 lines / 12.8KB; routing branches by deal type per Open Design Choice #8).
 7. `scripts/fee_drag_calculator.py`
 8. `scripts/benchmark_comparator.py`
 9. `README.md` *(skill-level, at `finance/passive-deal-screener/README.md` in the upstream PR — distinct from this repo's own root `README.md`)*.
@@ -455,8 +455,8 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
 
 Before opening the PR, verify:
 
-- [ ] SKILL.md is under 500 lines
-- [ ] Frontmatter has `name`, `description`, `author`, `license`
+- [ ] SKILL.md is **≤10KB** (the binding cap from `SKILL-AUTHORING-STANDARD.md` — ≈160 lines at the 58–64 bytes/line of shipped `finance/` skills; the largest, `business-investment-advisor`, sits at exactly 10.0KB/159 lines). The old "<500 lines" figure was ~3× too loose and is retired. **Current draft is 12.8KB / 185 lines — ~2.8KB over; resolve via a compression pass or a documented divergence rationale before the PR.**
+- [ ] Frontmatter has `name`, `description`, `author`, `license` (this skill follows the standard's `metadata:` block: `version`/`author`/`category`/`updated`; `tags` carried per the 2026-05-30 decision — confirm against merged `finance/` PRs, since shipped finance skills omit them)
 - [ ] Description is written in third person
 - [ ] Description includes both what the skill does AND trigger contexts
 - [ ] All Python scripts run with `python3 script.py --help` (zero pip installs)
@@ -804,6 +804,53 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-13 — Built `SKILL.md` (the keystone; reference set now drives a workflow)
+
+Lands the skill body — the Level-2 workflow that indexes against the five
+references rather than restating them. Built accuracy-first per an explicit
+instruction to optimize quality before length. Resolves Open Design Choice #8 and
+reconciles the ROADMAP's analytical framework with the upstream
+`SKILL-AUTHORING-STANDARD.md`. Six non-obvious calls:
+
+- **Open Design Choice #8 (asset-class routing) resolved → branch by deal type.**
+  A two-axis classify: *asset class* drives the `01` baseline and `05` comparator;
+  *deal type* drives the `02` fee section and `03` flag prefixes. The deal type is
+  the spine (per `02`'s "spine is deal type" model), so a single routing table maps
+  deal type → fee section → flag prefix → comparator, then every type reconverges on
+  the same 10-section output. `#8` moves from "Still open" to resolved.
+- **Workflow and output schema unified, not duplicated.** ROADMAP §3 specs both an
+  8-step workflow and a 10-section output schema; transcribing both verbatim would
+  duplicate ~half the content and blow the byte budget. The body carries a tight
+  3-step workflow (classify → route → assemble) feeding the 10-section schema as the
+  deliverable spine. The detailed §3 prose stays here as the spec.
+- **Frontmatter follows the standard's `metadata:` block**, not ROADMAP §2's flat
+  `author/license/tags/agents` draft — three different shapes existed (§2 draft, the
+  standard's template, and the *actual* shipped `financial-analyst` which uses only
+  `name`+`description`). Chose the standard (authoritative DNA doc): `name`,
+  `description`, `license`, `metadata{version,author,category,updated}`. Kept `tags`
+  (locked 2026-05-30, additive); dropped `agents` (in neither the standard nor any
+  shipped finance skill). Empirical tags-vs-shipped-skills check deferred to Phase 4.5.
+- **Size cap corrected: ≤10KB binds, not "<500 lines."** Measuring shipped `finance/`
+  skills (58–64 bytes/line; largest = `business-investment-advisor` at exactly
+  10.0KB/159 lines) showed the standard's ≤10KB ≈ 160 lines — the old "<500 lines"
+  gate was ~3× too loose. Phase 4 checklist updated. The draft lands at **12.8KB /
+  185 lines, ~2.8KB over** — accepted now (accuracy-first), flagged for a compression
+  pass or documented divergence before the PR.
+- **Zero market numbers in the body.** Every fee range, IRR, flag, and benchmark
+  routes to a reference — enforcing the "no hallucinated ranges" rule structurally
+  (the body *can't* drift from the references because it cites, never restates). The
+  only number-shaped text is one illustrative example distinguishing specific from
+  generic risk phrasing.
+- **Forward references to `scripts/*.py` (build steps 7–8, not yet built).** Consistent
+  with `02`/`05`, which already cite `fee_drag_calculator.py`. Creates a temporary
+  dangling pointer in the repo until the scripts land; resolves when they do, and the
+  upstream PR bundles all of it so the skill never ships with broken links.
+
+Cross-reference integrity verified at build time: every flag ID (`GEN-*`, `EQUITY-*`,
+`PREF-*`, `HML-*`, `CREDIT-*`) and question ID (`Q-FEE-03`, `Q-MKT-02`) cited in the
+body resolves to a real entry; the "34 flags / 25 questions" counts match `03`/`04`.
+Build order advances to the two scripts, then evals, then the skill-level README.
+
 ### 2026-06-06 — Built the `references/data/` snapshot layer (the `05` data pull)
 
 `05-benchmark-returns.md` was gated on a data pull (2026-05-30 decision: "requires
@@ -844,4 +891,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-12 (05-benchmark-returns shipped; reference set 01–05 complete, SKILL.md next)*
+*Last updated: 2026-06-13 (SKILL.md shipped — keystone built, routing #8 resolved; next: scripts/fee_drag_calculator.py + benchmark_comparator.py, then evals)*
