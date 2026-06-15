@@ -419,7 +419,7 @@ Build order (matches numbering after the 2026-05-29 reconciliation; numerical = 
 4. `references/04-question-bank.md` — depends on 03 for cross-references.
 5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
 6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3. ✅ Shipped 2026-06-13 (185 lines / 12.8KB; routing branches by deal type per Open Design Choice #8).
-7. `scripts/fee_drag_calculator.py`
+7. `scripts/fee_drag_calculator.py` — ✅ Shipped 2026-06-14 (stdlib-only; pure core + I/O boundary; `--self-check` validates against `02`'s worked examples; net 10.6% on the default run).
 8. `scripts/benchmark_comparator.py`
 9. `README.md` *(skill-level, at `finance/passive-deal-screener/README.md` in the upstream PR — distinct from this repo's own root `README.md`)*.
 
@@ -804,6 +804,40 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-14 — Built `scripts/fee_drag_calculator.py` (build step 7; first executable artifact)
+
+Turns `02-fee-stack-library.md`'s "Total-drag framework" from prose into a
+deterministic tool. stdlib-only (`argparse`/`json`/`sys`); structured as a pure
+calculation core (`recurring_drag_bps`, `one_time_drag_bps`, `promote_drag`,
+`compute_fee_drag`) behind a thin I/O boundary (`parse_args`/`format_human`/`main`),
+per the portfolio's engine-pure / IO-at-the-boundary rule. Four non-obvious calls:
+
+- **Additive drag model, matching `02`.** Net IRR ≈ gross − recurring(annual %) −
+  one-time(% ÷ hold) − promote, each in bps. This mirrors `02`'s worked example
+  line-for-line (and slightly overstates total drag vs a full sequential waterfall —
+  the conservative direction for a screening tool). The bare run reproduces `02`'s
+  headline example: 15% gross multifamily, 7-yr, full stack → **net 10.6%** (`02`
+  says ~10.5–11%).
+- **Promote via a real bullet-exit waterfall**, not a hand-wave: return-of-capital +
+  simple pref → GP catch-up scaled by `--catch-up` → residual carry split, computed
+  on profit then annualized. Verified anchors: ~184bps @12% gross, ~217bps @15%
+  (`02` hand-estimates ~150/~200; the script computes the actual compounding
+  waterfall, so it reads a touch higher — documented, not a bug). Surfaces the LP
+  lesson that a **100% catch-up makes the pref timing-only**, not a final-split
+  change (drop catch-up to 0 and LP net rises 10.6%→11.4%, GP share 20%→13%).
+- **`--self-check` is the test layer.** Stdlib-only means no pytest; the mode asserts
+  the worked example lands in 10.4–11.0% and the promote anchors fall in band, exiting
+  non-zero on regression. Satisfies the "validate against `02`" DoD without a test
+  framework, consistent with the upstream "sample data embedded" Pattern 10.
+- **Defaults reproduce `02`'s example**, so a zero-arg run is a live demo (Pattern 10).
+
+Verified by execution (Python 3.12.10, installed this session — the machine had only
+Windows Store stubs): `--help`, `--self-check` (PASS), bare run, `--json`, and the
+below-hurdle edge case all behave correctly; output is ASCII-clean for non-UTF-8
+consoles. Full-waterfall promote modeling (American vs European tiers) deferred to
+v1.1 per the "screening heuristic, not underwriting" stance. Build order advances to
+step 8, `benchmark_comparator.py`.
+
 ### 2026-06-13 — Built `SKILL.md` (the keystone; reference set now drives a workflow)
 
 Lands the skill body — the Level-2 workflow that indexes against the five
@@ -891,4 +925,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-13 (SKILL.md shipped — keystone built, routing #8 resolved; next: scripts/fee_drag_calculator.py + benchmark_comparator.py, then evals)*
+*Last updated: 2026-06-14 (fee_drag_calculator.py shipped — build step 7, verified against 02's worked examples; next: scripts/benchmark_comparator.py, then evals. SKILL.md compression to ≤10KB still owed.)*
