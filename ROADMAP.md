@@ -420,7 +420,7 @@ Build order (matches numbering after the 2026-05-29 reconciliation; numerical = 
 5. `references/05-benchmark-returns.md` — depends on 01's asset-class IRR ranges for spread math.
 6. `SKILL.md` — write last; the reference files clarify what belongs in the body vs Level 3. ✅ Shipped 2026-06-13 (185 lines / 12.8KB; routing branches by deal type per Open Design Choice #8).
 7. `scripts/fee_drag_calculator.py` — ✅ Shipped 2026-06-14 (stdlib-only; pure core + I/O boundary; `--self-check` validates against `02`'s worked examples; net 10.6% on the default run).
-8. `scripts/benchmark_comparator.py`
+8. `scripts/benchmark_comparator.py` — ✅ Shipped 2026-06-18 (stdlib-only; hardcoded comparators from `references/data/` + `--benchmark-return` override per design choice #3; `--self-check` validates against `05`'s spread table). **Both scripts now built.**
 9. `README.md` *(skill-level, at `finance/passive-deal-screener/README.md` in the upstream PR — distinct from this repo's own root `README.md`)*.
 
 ### Phase 3: Test the skill (Claude.ai workflow, per `skill-creator` SKILL.md)
@@ -804,6 +804,46 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-18 — Built `scripts/benchmark_comparator.py` (build step 8; both scripts now built)
+
+Implements the `05-benchmark-returns.md` forcing function as a tool: deal type +
+net-to-LP IRR + hold -> the risk-matched public comparator, the premium the deal
+implies over it, and whether that premium clears the lock-up's illiquidity hurdle.
+Same shape as `fee_drag_calculator.py` (pure data + pure core + thin I/O boundary,
+`--self-check`, zero-arg demo). Implements the *already-resolved* design choice #3
+(hardcode + override); the build-time calls worth recording:
+
+- **Comparator figures hardcoded from `references/data/` with a `LAST_UPDATED`
+  constant**, plus `--benchmark-return` to override with a current number — exactly
+  the 2026-05-30 design-choice-#3 resolution. The data lives in module-level dicts
+  (config-is-data, no logic), so a v1.1 refresh is "edit the constants + bump the
+  stamp," and the figures trace to `etf-comparators-snapshot.md` /
+  `fred-10yr-snapshot.md`.
+- **Deal types map to comparators per `05`'s spread table** (RE equity -> VNQ,
+  debt -> HYG, preferred -> PFF). `--list-types` enumerates them; an unknown type
+  errors to stderr with exit 2 rather than guessing.
+- **"Variable" classes (office, experiential-retail, STR, mixed-use) return guidance,
+  not a forced comparator** — preserving the `01`/`05`/SKILL.md stance that their
+  honest baseline is the deal's own underwriting. Forcing a comparator would be the
+  false grounding the skill forbids.
+- **Debt deals also report the duration-matched Treasury floor** (hard-money over
+  the 3mo, private-credit over the 2yr) — the absolute credit + illiquidity spread,
+  complementing the HYG credit-spread comparator, per `05`'s credit-analyst lens.
+- **Illiquidity hurdle uses `05`'s tier band** (~200 / ~300-400 / ~400-600 bps by
+  lock-up) reported as a range; `--illiquidity-premium-assumed` overrides it with a
+  single user figure. Verdict is a three-state read (fails / thin / clears
+  comfortably) against the band.
+
+Verified by execution (Python 3.12.10): `--self-check` PASS against `05`'s spread-table
+anchors (mf value-add 653bps clears; preferred 228bps thin; hard-money 400bps + 529bps
+3mo-Treasury floor; office -> variable), plus `--help`, `--json`, `--list-types`, the
+ROADMAP example, and the unknown-type error path. Output is ASCII-clean for non-UTF-8
+consoles (the em-dash-portability lesson from the 2026-06-14 script, reapplied).
+
+**Both scripts (steps 7-8) are now built and verified.** Build order advances to the
+eval suite (ROADMAP §8 Phase 3, 9 cases), with the SKILL.md compression to <=10KB still
+owed before the PR.
+
 ### 2026-06-14 — Built `scripts/fee_drag_calculator.py` (build step 7; first executable artifact)
 
 Turns `02-fee-stack-library.md`'s "Total-drag framework" from prose into a
@@ -925,4 +965,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-14 (fee_drag_calculator.py shipped — build step 7, verified against 02's worked examples; next: scripts/benchmark_comparator.py, then evals. SKILL.md compression to ≤10KB still owed.)*
+*Last updated: 2026-06-18 (benchmark_comparator.py shipped — build step 8; both scripts now built and verified. Next: eval suite (§8 Phase 3); SKILL.md compression to ≤10KB still owed. PR note: user wants a detailed PR summary when feat/skill-md is opened.)*
