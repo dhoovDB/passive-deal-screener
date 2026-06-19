@@ -440,8 +440,12 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
    | 7 | Deal with obvious GP red flags | Multi-flag detection: prior FTC action mentioned, zero co-invest, European waterfall + 50% promote, projections without sensitivity. The skill must list them all with severity. |
    | 8 | Deal missing nearly all disclosures | Worst-case missing-disclosure case. Output should be 80% "here's what wasn't said" rather than vacuous "looks fine." Tests that absence is first-class. |
    | 9 | Two deals with identical projected IRR: one distributes cash flow quarterly from Year 1, one back-loads all return to exit | Tests whether the skill flags J-curve difference and distribution timing as material LP risk rather than treating the deals as equivalent on IRR alone |
+   | 10 | Clean, sound equity syndication | False-positive / discrimination test — a well-structured deal where the correct output is "looks solid, minor clarifying questions." Without it we can't separate discrimination from reflexive pessimism. |
+   | 11 | Clean, sound private-credit fund | Second clean case, in the *debt* branch — proves the skill can say "solid" in both equity and credit, not just one clean archetype. |
 
-   Hold each test input in `evals/inputs/N-<slug>.md`; reference materials (real anonymized deals, where shareable, or constructed synthetic equivalents) cited in `evals/sources.md`.
+   **Expanded to 11 cases (2026-06-19):** added cases 10–11 (clean deals → false-positive testing) and split case 3 into a sound/problematic hard-money contrast pair (3a→Pursue, 3b→Pass, demonstrating the skill discriminates *within* a deal type). The authoritative case matrix, four-part pass criteria, source tiers, and circularity rationale now live in **`evals/TESTING-PLAN.md`**; this table is the summary.
+
+   Hold each test input in `evals/inputs/NN-<slug>.md`; reference materials (real anonymized deals, where shareable, or constructed synthetic equivalents) cited in `evals/sources.md`.
 
 2. For each test case, load SKILL.md yourself and follow the workflow against the test input. Record outputs in `evals/iteration-1/`.
 
@@ -470,7 +474,7 @@ Before opening the PR, verify:
 - [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
 - [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
 - [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
-- [ ] `evals/evals.json` carries the 9 cases from Phase 3; SKILL.md passes all 9 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
+- [ ] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
 - [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
 - [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
 
@@ -804,6 +808,40 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-19 — Wrote `evals/TESTING-PLAN.md` + `evals/sources.md` (eval scaffolding before the suite)
+
+Before building the 9 eval inputs, wrote the testing plan that governs them — so the
+fixtures are built against an explicit method, not improvised. Two structural changes
+to the eval design, both at the user's direction, plus a research pull:
+
+- **Expanded to 11 cases.** Added two *clean/sound* deals (case 10 equity, case 11
+  private credit) — the original 9 only tested *misses* (false negatives); nothing
+  tested *false positives*. A screener that flags every deal is useless even if it
+  never misses. The two clean cases span equity and credit so the discrimination test
+  covers both branches.
+- **Case 3 (hard money) is now a sound/problematic contrast pair** (3a real → Pursue,
+  3b synthetic → Pass) — proving a "varies" verdict is real discrimination on the
+  facts, not a dodge. Parallels case 9's existing pair structure. 11 cases, 13 input
+  fixtures.
+- **Pass criteria made explicit, four universal checks**: correct classification,
+  caught the target flag IDs, generated the right `04` questions, and
+  *missing-data-fires-as-output* (when a deal lacks what a flag needs, the skill must
+  say so and route it to a must-ask, never stay silent) — plus two conditional checks
+  (Tier-4 "flagged what actually broke the deal"; clean-case "no manufactured RED").
+- **Circularity named as a first-class risk.** If one author writes both the flag
+  definitions (`03`) and the synthetics that trip them, the test is tautological.
+  Resolution stated in the plan: synthetics validate *mechanics*; the Tier-4 real
+  failures and the real clean deals — which we did not author — validate *real-world
+  accuracy*.
+- **Live research populated `sources.md`** (facts/URLs only, names scrubbed from
+  fixtures per the public-repo rule): Groundfloor Reg A LRO circular (case 3a),
+  Fundrise eREIT circulars (case 1/10), Blue Owl OBDC 424B2 (case 11 clean credit),
+  the Nightingale/CrowdStreet misappropriation and Applesway/Tides 2022–24 multifamily
+  distress (Tier-4 overlays for cases 7/1/5), and 2025–26 office repricing (case 6).
+
+`TESTING-PLAN.md` is the authoritative case matrix; ROADMAP §8's table is now the
+summary. Next: build the 13 input fixtures + `evals.json`, then run the suite.
+
 ### 2026-06-18 — Built `scripts/benchmark_comparator.py` (build step 8; both scripts now built)
 
 Implements the `05-benchmark-returns.md` forcing function as a tool: deal type +
@@ -965,4 +1003,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-18 (benchmark_comparator.py shipped — build step 8; both scripts now built and verified. Next: eval suite (§8 Phase 3); SKILL.md compression to ≤10KB still owed. PR note: user wants a detailed PR summary when feat/skill-md is opened.)*
+*Last updated: 2026-06-19 (eval scaffolding written — evals/TESTING-PLAN.md + evals/sources.md; suite expanded to 11 cases / 13 fixtures. Next: build the input fixtures + evals.json, then run the suite; SKILL.md compression to ≤10KB still owed. PR note: user wants a detailed PR summary when feat/skill-md is opened.)*
