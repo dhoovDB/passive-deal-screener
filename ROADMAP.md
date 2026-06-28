@@ -427,7 +427,7 @@ Build order (matches numbering after the 2026-05-29 reconciliation; numerical = 
 
 Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren't available. Use the adapted process:
 
-1. Write `evals/evals.json` with the 9 test cases below. Each is chosen to exercise a *distinct* part of the skill so a regression in one is hard to mask. Each reference file should be built against the cases it has to support; SKILL.md should pass all nine before the upstream PR opens.
+1. Write `evals/evals.json` with the 11 test cases below (the authoritative matrix is `evals/TESTING-PLAN.md`; cases 3 and 9 are contrast pairs, so `evals.json` carries **13 runnable fixtures**, ids 1–13). Each is chosen to exercise a *distinct* part of the skill so a regression in one is hard to mask. Each reference file should be built against the cases it has to support; SKILL.md should pass all 11 before the upstream PR opens.
 
    | # | Case | What it exercises |
    |---|---|---|
@@ -808,6 +808,36 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-28 — Built `evals/evals.json` (Phase 3 step 1; eval harness, schema reconciled to upstream)
+
+Turned the TESTING-PLAN matrix into the runnable harness. Read the upstream
+`evals.json` examples first (`engineering/{code-tour,demo-video,behuman}`) and found
+a divergence from the ROADMAP's implied design — reconciled toward the upstream
+convention:
+
+- **Matched the upstream schema exactly**: a flat array of
+  `{id, prompt, expected_output, scenario_type}`. Our richer pass criteria (target
+  `03` flag IDs, expected verdict, the §4 missing-data and discrimination checks) live
+  *inside* the `expected_output` prose, not as new top-level fields — so the file is
+  PR-compatible while still encoding what each case must prove. `scenario_type` maps to
+  the upstream two values only (no invented third): 4 happy_path, 9 edge_case.
+- **Prompts inlined; separate `inputs/` retired.** Upstream inlines the prompt; we
+  follow suit (one canonical place per fixture, `sources.md` the provenance). Real-deal
+  prompts are condensed authentic pastes with names scrubbed. `TESTING-PLAN.md` §1/§7/§9
+  updated to match; the earlier separate-`inputs/` plan is superseded.
+- **13 runnable fixtures for 11 cases**, ids 1–13: the contrast pairs expand to two
+  entries each — 3a/3b (sound/problematic hard money → different verdicts) at ids 3/4,
+  and 9-early/9-back-loaded (identical IRR, different J-curve) at ids 10/11. The pairs'
+  `expected_output` explicitly requires *different* outcomes, which is the
+  within-deal-type discrimination test.
+- **Validated**: parses (`python -m json.tool`), uniform 4-key schema, ids 1–13 unique.
+- **Straggler fix**: ROADMAP §8 step-1 intro still said "9 test cases / all nine" —
+  bumped to 11 (the table beneath it already had rows 10–11); annotated the 2026-06-18
+  log entry's "9 cases" forward-reference.
+
+Next: build is unblocked to *run* the suite — but the SKILL.md compression to ≤10KB
+should land first, so the run validates the final body, not a draft about to shrink.
+
 ### 2026-06-19 — Wrote `evals/TESTING-PLAN.md` + `evals/sources.md` (eval scaffolding before the suite)
 
 Before building the 9 eval inputs, wrote the testing plan that governs them — so the
@@ -879,8 +909,9 @@ ROADMAP example, and the unknown-type error path. Output is ASCII-clean for non-
 consoles (the em-dash-portability lesson from the 2026-06-14 script, reapplied).
 
 **Both scripts (steps 7-8) are now built and verified.** Build order advances to the
-eval suite (ROADMAP §8 Phase 3, 9 cases), with the SKILL.md compression to <=10KB still
-owed before the PR.
+eval suite (ROADMAP §8 Phase 3, 9 cases — expanded to 11 / 13 fixtures on 2026-06-19;
+see that decision-log entry), with the SKILL.md compression to <=10KB still owed before
+the PR.
 
 ### 2026-06-14 — Built `scripts/fee_drag_calculator.py` (build step 7; first executable artifact)
 
@@ -1003,4 +1034,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-19 (eval scaffolding written — evals/TESTING-PLAN.md + evals/sources.md; suite expanded to 11 cases / 13 fixtures. Next: build the input fixtures + evals.json, then run the suite; SKILL.md compression to ≤10KB still owed. PR note: user wants a detailed PR summary when feat/skill-md is opened.)*
+*Last updated: 2026-06-28 (evals.json built — Phase 3 step 1, 13 fixtures, upstream schema, validated. Next: SKILL.md compression to ≤10KB, then RUN the suite (≥2 cycles), then examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*

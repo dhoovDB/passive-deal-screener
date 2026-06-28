@@ -16,15 +16,23 @@ and the `Q-` question IDs in `references/04-question-bank.md`.
 ```
 evals/
   TESTING-PLAN.md      ← this file
-  evals.json           ← the 11 cases as structured records
-  inputs/NN-slug.md    ← one deal fixture per input (13 files: cases 3 and 9 are pairs)
-  sources.md           ← provenance: every real source's URL, as-of date, and what was extracted
-  iteration-N/         ← captured SKILL.md output per case, per iteration cycle
+  evals.json           ← 13 runnable fixtures (the 11 cases; 3 and 9 are pairs), ids 1-13,
+                         in the upstream schema {id, prompt, expected_output, scenario_type}
+  sources.md           ← provenance for the real-sourced prompts (URL, as-of, facts extracted)
+  iteration-N/         ← captured SKILL.md output per fixture, per iteration cycle
 ```
 
+**Prompts are inlined in `evals.json`** (per the upstream convention, confirmed
+against `code-tour` / `demo-video` / `behuman`) — not held as separate
+`inputs/NN-slug.md` files. This supersedes the earlier separate-`inputs/` plan:
+one canonical place per fixture (the `prompt` field), with `sources.md` the
+provenance for real-sourced prompts. Real-deal prompts are condensed, authentic
+pastes with names/addresses/sponsors scrubbed (`§3`).
+
 The eval is a manual run, per ROADMAP §8 Phase 3: load `SKILL.md`, screen each
-input, capture the output to `iteration-N/`, score against §4, fix SKILL.md or a
-reference, re-run. The bar is **all 11 cases passing after ≥2 cycles** (§8).
+`evals.json` prompt, capture the output to `iteration-N/`, score against §4, fix
+SKILL.md or a reference, re-run. The bar is **all 11 cases (13 fixtures) passing
+after ≥2 cycles** (§8).
 
 ---
 
@@ -234,8 +242,8 @@ in *both* branches.
 
 Per ROADMAP §8 Phase 3:
 
-1. Load `SKILL.md`; screen each `inputs/NN-slug.md` fixture.
-2. Capture each output verbatim to `evals/iteration-N/NN-slug.md`.
+1. Load `SKILL.md`; screen each `evals.json` prompt (ids 1-13).
+2. Capture each output verbatim to `evals/iteration-N/NN.md` (NN = the fixture id).
 3. Score each against §4. Record pass/fail + the specific criterion that failed.
 4. On a failure, fix `SKILL.md` or the implicated reference (not the test), then
    re-run the affected case. Aim for 2–3 cycles.
@@ -258,9 +266,9 @@ clears.
 
 Before any fixture or output is committed (public repo):
 
-- [ ] No real names, addresses, or sponsors in `inputs/`, `iteration-N/`, or `examples/`
+- [ ] No real names, addresses, or sponsors in `evals.json` prompts, `iteration-N/`, or `examples/`
 - [ ] No copied offering-memo or reviewer prose — facts re-expressed in neutral terms
-- [ ] Every real fixture cites its source URL + as-of date in `sources.md`
+- [ ] Every real-sourced prompt cites its source URL + as-of date in `sources.md`
 - [ ] Synthetic fixtures labeled synthetic in `sources.md` (so a reviewer knows which validate mechanics vs accuracy)
 - [ ] No API keys, credentials, or PII anywhere in `evals/`
 
