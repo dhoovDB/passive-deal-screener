@@ -459,7 +459,7 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
 
 Before opening the PR, verify:
 
-- [ ] SKILL.md is **≤10KB** (the binding cap from `SKILL-AUTHORING-STANDARD.md` — ≈160 lines at the 58–64 bytes/line of shipped `finance/` skills; the largest, `business-investment-advisor`, sits at exactly 10.0KB/159 lines). The old "<500 lines" figure was ~3× too loose and is retired. **Current draft is 12.8KB / 185 lines — ~2.8KB over; resolve via a compression pass or a documented divergence rationale before the PR.**
+- [x] SKILL.md is **≤10KB** (the binding cap from `SKILL-AUTHORING-STANDARD.md` — ≈160 lines at the 58–64 bytes/line of shipped `finance/` skills; the largest, `business-investment-advisor`, sits at exactly 10.0KB/159 lines). The old "<500 lines" figure was ~3× too loose and is retired. **Met 2026-06-29: compressed 12.8KB → 9.07KB (0.93KB headroom), full fidelity, no behavioral regression (see decision log).**
 - [ ] Frontmatter has `name`, `description`, `author`, `license` (this skill follows the standard's `metadata:` block: `version`/`author`/`category`/`updated`; `tags` carried per the 2026-05-30 decision — confirm against merged `finance/` PRs, since shipped finance skills omit them)
 - [ ] Description is written in third person
 - [ ] Description includes both what the skill does AND trigger contexts
@@ -808,6 +808,36 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-06-29 — Compressed `SKILL.md` to ≤10KB via a conditional 2-variant comparison
+
+SKILL.md was 12.8KB / 185 lines, ~2.8KB over the binding ≤10KB cap. Rather than one
+compression attempt, used a **conditional variant comparison** so the choice was
+principled, not eyeballed:
+
+- **Two variants on the trim↔offload axis.** A = in-place prose trim (structure and
+  the 5 references untouched). B = reference offload (move the per-section output-schema
+  detail to a new `references/06-output-schema.md`, body keeps the 10 names + pointer).
+- **A three-tier check** decided it: (1) size gate ≤10KB; (2) a fidelity rubric — a
+  fixed checklist of load-bearing elements that must survive (all 5 reference links +
+  load triggers, all 5 deal-type branches, the variable-class carve-out, the 8 contract
+  rules, the 10 output sections, the missing-data-as-output rule, confidence tags, JSON
+  mode, scripts, third-person trigger description); (3) a behavioral spot-check running
+  the 4 discrimination-sensitive eval cases (packed-flags id 8, missing-disclosures id 9,
+  J-curve pair ids 10/11, clean-equity id 12) against the compressed body.
+- **Result: A wins.** A = 9.07KB / 0.93KB headroom, **full fidelity**, **zero structural
+  change**; behavioral spot-check passed all four (notably the clean-deal false-positive
+  test — A's contract rules are each tied to a *specific* condition, so none misfire on a
+  sound deal). B also cleared (8.42KB) but only by adding a 6th reference (an extra load
+  step every screen + ripple to the routing table and the "01–05" Phase-4 line) — buying
+  headroom that wasn't needed. **C (hybrid) was correctly skipped**: the conditional rule
+  fires only when A is cramped or fails, and A cleared with comfortable headroom, so the
+  hybrid middle would have been filler. Variant drafts were scratch-only (not committed);
+  this entry is the rationale of record.
+
+Phase-4 size gate now met. Build order: the eval suite can now **run** against the final
+body (the reason compression was sequenced before the run). Remaining: run the suite
+(≥2 cycles), then `examples/` + READMEs + upstream PR.
+
 ### 2026-06-28 — Built `evals/evals.json` (Phase 3 step 1; eval harness, schema reconciled to upstream)
 
 Turned the TESTING-PLAN matrix into the runnable harness. Read the upstream
@@ -1034,4 +1064,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-28 (evals.json built — Phase 3 step 1, 13 fixtures, upstream schema, validated. Next: SKILL.md compression to ≤10KB, then RUN the suite (≥2 cycles), then examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-06-29 (SKILL.md compressed 12.8KB → 9.07KB ≤10KB gate met, via conditional 2-variant comparison; full fidelity + behavioral spot-check passed. Next: RUN the eval suite against the final body (≥2 cycles), then examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
