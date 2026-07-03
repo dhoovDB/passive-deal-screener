@@ -109,7 +109,7 @@ agents:
 ---
 ```
 
-> **Open design choice #1 — Frontmatter `tags` field:** The upstream repo uses `tags` in some skills but not all. Confirm whether the current `SKILL-AUTHORING-STANDARD.md` requires them before finalizing.
+> **Open design choice #1 — Frontmatter `tags` field — RESOLVED 2026-07-03 (superseded; see decision log):** The frontmatter sketch above is retired. `CONVENTIONS.md` allows `name` + `description` only, so the shipped SKILL.md carries two fields — no `tags`/`author`/`license`/`metadata`/`agents`. The block above is kept for historical context.
 
 ---
 
@@ -372,7 +372,7 @@ Do not let scope creep dilute these during development:
 - **Slash command** — **Add `/cs:screen-deal`.** Consistent with other finance skills; low effort, high discoverability.
 - **React artifact vs SKILL.md** — **Ship both.** Different surfaces (claude.ai chat with embedded UI vs Claude Code CLI). The artifact stays in this repo (gitignored); the SKILL.md is the upstream contribution. Documented in the README.
 - **Contribution target** — **PR from `dhoovDB` fork to `alirezarezvani:dev`.** Feature branches targeting `dev`, never `main`.
-- **Frontmatter tags field** *(2026-05-30)* — **Include tags.** Use the list already drafted in the §2 frontmatter sketch. Confirm the format matches other `finance/` skills in the upstream fork before the PR opens — that check belongs in the Phase 4 quality checklist, not here.
+- **Frontmatter tags field** *(2026-05-30; **SUPERSEDED 2026-07-03**)* — Originally "include tags." Reversed after the pre-PR conformance review: `CONVENTIONS.md` permits `name` + `description` only, so `tags` (and `license`/`metadata`/`author`/`agents`) are dropped. Shipped SKILL.md is two-field. See the 2026-07-03 decision-log entry.
 - **Benchmark data freshness** *(2026-05-30)* — **Hardcode + manual override.** Trailing figures hardcoded with a `LAST_UPDATED` constant and an annual-refresh comment. Also accept `--benchmark-return` as a manual override so users can supply current figures. No network dependency; stdlib-only constraint holds.
 - **Third script (`deal_scorer.py`)** *(2026-05-30)* — **Skip v1.0; defer to v1.1+.** A composite 0–100 score adds false precision at this stage and the eval suite doesn't require it. Tracked in the v1.1+ Backlog; revisit post-evals.
 
@@ -460,14 +460,16 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
 Before opening the PR, verify:
 
 - [x] SKILL.md is **≤10KB** (the binding cap from `SKILL-AUTHORING-STANDARD.md` — ≈160 lines at the 58–64 bytes/line of shipped `finance/` skills; the largest, `business-investment-advisor`, sits at exactly 10.0KB/159 lines). The old "<500 lines" figure was ~3× too loose and is retired. **Met 2026-06-29: compressed 12.8KB → 9.07KB (0.93KB headroom), full fidelity, no behavioral regression (see decision log).**
-- [ ] Frontmatter has `name`, `description`, `author`, `license` (this skill follows the standard's `metadata:` block: `version`/`author`/`category`/`updated`; `tags` carried per the 2026-05-30 decision — confirm against merged `finance/` PRs, since shipped finance skills omit them)
+- [x] Frontmatter is **`name` + `description` only** — reduced 2026-07-03 to satisfy `CONVENTIONS.md`'s two-field-only rule (supersedes the earlier `metadata:`-block + `tags` plan; see decision log). No `license`/`metadata`/`tags`/`author`.
 - [ ] Description is written in third person
 - [ ] Description includes both what the skill does AND trigger contexts
+- [ ] SKILL.md has a labeled **Anti-Patterns** section — `CONVENTIONS.md` Required Section (added 2026-07-03; do after the eval run)
 - [ ] All Python scripts run with `python3 script.py --help` (zero pip installs)
+- [ ] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4 (added 2026-07-03; do after the eval run)
 - [ ] Reference files are linked from SKILL.md with explicit load guidance
 - [ ] README.md includes install instructions and usage examples
 - [ ] No hardcoded API keys, credentials, or personally identifying information
-- [ ] Skill passes the security auditor: `python3 engineering/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener/`
+- [ ] Skill passes the security auditor: `python3 engineering/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener/` — **requires a synced fork**: the `skill-tester/` + `skill-security-auditor/` validators are absent from the local clone as of 2026-07-03; sync `dev` first, then run there (see decision log)
 
 **v1.0 ship gate (in addition to the standard checklist above).** The upstream `SKILL-AUTHORING-STANDARD` covers file conventions; the items below are the *content* gates specific to this skill — the standard doesn't know about reference files or evals at this depth.
 
@@ -808,6 +810,47 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-07-03 — Pre-PR conformance review vs upstream governance; frontmatter reduced to two fields
+
+Before running the eval suite, reviewed the shipped skill against the upstream
+`claude-skills` governance docs (`CONVENTIONS.md`, `SKILL-AUTHORING-STANDARD.md`) and
+the actually-merged `finance/` skills. The review surfaced a governance conflict the
+earlier frontmatter decisions couldn't have known about, and reversed one locked choice.
+All fixes below are sequenced **after the eval run** — none block it.
+
+- **Frontmatter conflict found; resolved toward the strict rule.** `CONVENTIONS.md`
+  (labeled mandatory — "PRs that violate them will be closed") allows **`name` +
+  `description` only** and explicitly names `license`, `metadata`, `version`, `author`,
+  `category`, `updated`, and `tags` as reject-on-sight. `SKILL-AUTHORING-STANDARD.md`
+  shows the fuller `metadata:` block. The merged skills themselves disagree —
+  `financial-analyst` is bare two-field, `saas-metrics-coach` carries the full
+  `metadata:` block, `finance-skills` uses a third flat shape. Read as: CONVENTIONS is
+  the newer, stricter direction the maintainer enforces. **Decision: reduce to `name` +
+  `description` only** (matches `financial-analyst`; safest for merge). **Applied this
+  session** — stripped `license`, the `metadata:` block, and `tags` from SKILL.md. This
+  **supersedes** the 2026-05-30 "Include tags" lock and the 2026-06-13 "follow the
+  standard's `metadata:` block" call; the Phase-4.5 empirical tags check is now moot.
+- **Domain placement: two patterns exist in the fork; decide at PR time.** The fork has
+  both `finance/<skill>/` (business-investment-advisor) and `finance/skills/<skill>/`
+  (financial-analyst, saas-metrics-coach). CONVENTIONS says `<domain>/<skill-name>/`.
+  Left open — resolve against the synced `dev` HEAD when the PR branch is cut.
+- **New pre-PR fixes (after the eval run):**
+  - Add a labeled **Anti-Patterns** section to SKILL.md — CONVENTIONS lists it as a
+    Required Section; ours currently folds "what not to do" into the skepticism contract
+    without labeling it.
+  - Give both scripts **graded exit codes** (`sys.exit(2)` bad input, `1` warnings);
+    both already have `--json` + argparse + `--help`.
+  - **Sync the fork's `dev` before the PR.** The fork is behind upstream — the validators
+    CONVENTIONS tells contributors to run (`engineering/skill-tester/skill_validator.py`,
+    `quality_scorer.py`, the security auditor) **don't exist in the local clone**. Run
+    them against the skill on the synced branch, not locally.
+- **pm-skills confirmed not the contribution target** — separate plugin marketplace
+  (phuryn/pm-skills), different conventions; only `claude-skills/finance` governs this PR.
+  Checked so it isn't re-litigated.
+
+Sequencing unchanged: run the eval suite (≥2 cycles) against the ≤10KB body next; these
+conformance fixes land in the same pre-PR pass as `examples/` + READMEs.
+
 ### 2026-06-29 — Compressed `SKILL.md` to ≤10KB via a conditional 2-variant comparison
 
 SKILL.md was 12.8KB / 185 lines, ~2.8KB over the binding ≤10KB cap. Rather than one
@@ -1064,4 +1107,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-06-29 (SKILL.md compressed 12.8KB → 9.07KB ≤10KB gate met, via conditional 2-variant comparison; full fidelity + behavioral spot-check passed. Next: RUN the eval suite against the final body (≥2 cycles), then examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-03 (pre-PR conformance review vs upstream governance: frontmatter reduced to `name` + `description` only — applied, superseding the 2026-05-30 tags lock — to satisfy `CONVENTIONS.md`'s two-field rule; placement `finance/<skill>` vs `finance/skills/<skill>` deferred to PR time; new after-the-eval-run gates logged: labeled Anti-Patterns section, graded script exit codes, fork sync before running the upstream validators. Next unchanged: RUN the eval suite against the ≤10KB body (≥2 cycles), then the conformance fixes + examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*

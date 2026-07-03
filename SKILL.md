@@ -1,13 +1,6 @@
 ---
 name: passive-deal-screener
 description: "Screens private investment opportunities from the passive LP (limited-partner) perspective — equity syndications, preferred equity, hard money / bridge funds, and private credit — pasted from any source (EquityMultiple, CrowdStreet, direct GP emails, raw terms). Produces a deal snapshot, stress-tests returns against public benchmarks, deconstructs the fee stack to a gross-to-net drag, surfaces severity-ranked red flags and missing disclosures, assesses GP alignment, and generates prioritized GP questions with bad-answer signals. Use whenever asked to analyze, evaluate, screen, or review a real-estate or private-market deal, syndication, offering, or investment opportunity — e.g. 'is this deal worth pursuing', 'what should I ask the GP', 'analyze this offering memo'. LP lens only; not operator-side underwriting (acquisition/development/asset-management). For corporate-finance DCF/ratio work use financial-analyst."
-license: MIT
-metadata:
-  version: 1.0.0
-  author: dhoovDB
-  category: finance
-  updated: 2026-06-28
-tags: [finance, real-estate, private-markets, syndication, lp-investor, deal-screening, hard-money, private-credit]
 ---
 
 # Passive Deal Screener
