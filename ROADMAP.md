@@ -810,6 +810,55 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
 
+### 2026-07-03 — Ran the eval suite, iteration 1: 12/13 strict (1 FAIL); 4 discrimination tests pass; 5 fixes triaged
+
+First full run of the 13-fixture suite against the final 9.07KB body (Phase 3 step 2;
+outputs in `evals/iteration-1/`, per-check grades in `scorecard.md`). Method held to a
+contamination control: for each fixture, only the `prompt` was read before generating
+the report; `expected_output` was read only after the report was on disk, and grading
+was per-check binary, not holistic — the self-grading mitigation named when this task
+was scoped. An adversarial review (adversarial-reviewer skill, run post-hoc at the
+user's direction) then audited the grading itself and forced two corrections recorded
+here honestly: an initial "13/13 no hard fails" headline was self-graded inflation, and
+the grade labels lacked a rubric. Both fixed in `scorecard.md` before commit.
+
+- **Headline: 12/13 strict — 6 PASS, 6 PASS-with-notes, 1 FAIL** (fixture 8: its
+  "catches some but not all" criterion triggered at 7/9 flags — one legitimate miss,
+  GEN-09 unprobed; one harness defect, EQUITY-03 mis-mapped). Every other
+  fixture-level FAIL condition was avoided — no fabricated terms on sparse input, no
+  category baseline forced onto office, no manufactured REDs on the clean deals, no
+  softened verdict on the packed-flags deal.
+- **All four discrimination tests passed** — the results that matter most, because they
+  can't be fudged by verbosity: hard-money pair 3/4 → Pursue vs Pass; J-curve pair
+  10/11 → same 14% IRR, materially different risk verdicts; clean pair 12/13 → Pursue
+  with zero manufactured flags in both branches; leverage contrast 5/13 → CREDIT-01
+  fired at 2.5x-undisclosed and correctly *not* fired at 1.1x-disclosed.
+- **The recurring weakness is citation, not reasoning.** In 4 fixtures the report
+  described the right concept but skipped the specific flag/question ID the eval
+  enumerates (Q-EXIT-01, Q-FEE-04, Q-DS-01, GEN-17, HML-05, GEN-14 across fixtures
+  1/2/4/6). One legitimate detection miss: fixture 8's GEN-09 probe (maturity stated,
+  hold unstated → should still probe).
+- **The verdict vocabulary has a hole.** Three disclosure-starved fixtures (2, 7, 9)
+  each forced an improvisation ("Pass as presented," "cannot screen") because SKILL.md
+  defines only Pursue / Pass / Pursue-with-conditions and the evals expect
+  "Cannot-assess." Top iteration-2 fix (S1): one rule defining the insufficient-input
+  verdict formula.
+- **The harness itself surfaced a defect** — the run works as an eval *of the evals*:
+  fixture 8's expected_output cites "EQUITY-03 (50% promote is aggressive)" but `03`
+  defines EQUITY-03 as GP-catch-up-at-100%, unmentioned in that prompt (H1); and the
+  "Cannot-assess" wording in ids 2/9 references a verdict state the skill never defined
+  (H2, resolves via S1).
+
+Triage: 3 SKILL.md fixes (S1 verdict rule, S2 ID-citation completeness, S3
+unstated-hold→GEN-09 trigger — all sized to keep the ≤10KB gate) + 2 evals.json fixes
+(H1, H2). Iteration 2 = apply S/H fixes, re-run all 13 blind, same method **plus the
+adversarial-review upgrade: a fresh-context subagent grades the reports** (grader ≠
+generator ≠ evals author), closing the same-author-grading limitation the review
+surfaced. The ≥2-cycle Phase-3 requirement stays on track; `examples/` can draw on the
+iteration-1 outputs once cycle 2 confirms them. PR-packaging note: iteration
+transcripts are repo-local; the upstream subtree carries `evals.json` only (decide
+final payload at Phase 4.5).
+
 ### 2026-07-03 — Pre-PR conformance review vs upstream governance; frontmatter reduced to two fields
 
 Before running the eval suite, reviewed the shipped skill against the upstream
@@ -1107,4 +1156,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-03 (pre-PR conformance review vs upstream governance: frontmatter reduced to `name` + `description` only — applied, superseding the 2026-05-30 tags lock — to satisfy `CONVENTIONS.md`'s two-field rule; placement `finance/<skill>` vs `finance/skills/<skill>` deferred to PR time; new after-the-eval-run gates logged: labeled Anti-Patterns section, graded script exit codes, fork sync before running the upstream validators. Next unchanged: RUN the eval suite against the ≤10KB body (≥2 cycles), then the conformance fixes + examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-03 (eval suite iteration 1 RUN: 12/13 strict — 1 FAIL (fixture 8) recorded honestly after an adversarial review caught the initial 13/13 headline as self-graded inflation; all 4 discrimination tests pass; outputs + scorecard in `evals/iteration-1/`; 5 fixes triaged — S1 insufficient-input verdict rule, S2 ID-citation completeness, S3 unstated-hold GEN-09 trigger in SKILL.md, H1/H2 in evals.json; iteration 2 adds subagent grading. Same day, earlier: pre-PR conformance review — frontmatter reduced to two fields per CONVENTIONS.md; placement deferred to PR time; post-eval gates logged (Anti-Patterns section, script exit codes, fork sync for validators). Next: iteration 2 — apply S/H fixes, re-run all 13 blind; then conformance fixes + examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
