@@ -158,9 +158,9 @@ Two **conditional** criteria:
 | 6 | Office in 2026 (variable class) | Real/Synth | 2 | GEN-19, GEN-17, GEN-09 | Q-MKT-02 | drive off own underwriting |
 | 7 | Obvious GP red flags | Synth (Tier-4 patterned) | 4 | GEN-01, GEN-02, EQUITY-01, EQUITY-02, EQUITY-03, GEN-13, GEN-14 | Q-GP-01/02/03, Q-FEE-03 | Pass (reject) |
 | 8 | Missing nearly all disclosures | Synth | 3 (form) | GEN-14, GEN-15, GEN-16, GEN-17 | most must-asks | Pass / cannot-assess |
-| 9 | Identical IRR, different J-curve (pair) | Synth (pair) | — | GEN-11 | Q-DIST-01 | back-loaded = materially riskier |
-| 10 | **Clean equity syndication** | Real preferred / Synth | 1–2 | none RED (≤1–2 YELLOW if genuinely present) | minor clarifiers only | **Pursue / solid** |
-| 11 | **Clean private-credit fund** | Real preferred / Synth | 1 | none RED (≤1–2 YELLOW if genuinely present) | minor clarifiers only | **Pursue / solid** |
+| 9 | Identical IRR, different J-curve (pair) | Synth (pair) | — | GEN-08 (GEN-11 as frame — timing *is* disclosed) | Q-DIST-01 (conditional) | back-loaded = materially riskier |
+| 10 | **Clean equity syndication** | Real preferred / Synth | 1–2 | none RED (YELLOW probes on genuine absences OK; none manufactured against disclosed facts) | minor clarifiers only | **Pursue / solid** |
+| 11 | **Clean private-credit fund** | Real preferred / Synth | 1 | none RED (YELLOW probes on genuine absences OK; none manufactured against disclosed facts) | minor clarifiers only | **Pursue / solid** |
 
 ---
 
@@ -220,7 +220,7 @@ confident verdict. *FAIL:* returns "looks fine" or a Pursue/Pass verdict instead
 
 **Case 9 — Identical IRR, different J-curve (synthetic pair).** Two deals, same
 headline IRR; one distributes from year 1, one back-loads everything to exit. Must
-flag GEN-11 / Q-DIST-01 and call the back-loaded deal materially riskier. *FAIL:*
+flag GEN-08 (100% exit-dependent; GEN-11 citable as the frame — per `03`, GEN-11 fires on *undisclosed* timing, and this pair discloses it) and call the back-loaded deal materially riskier; Q-DIST-01 conditional. *FAIL:*
 treats equal IRR as equal risk.
 
 **Case 10 — Clean equity syndication (real preferred).** A well-structured deal:

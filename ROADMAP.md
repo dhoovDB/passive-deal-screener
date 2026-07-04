@@ -458,19 +458,21 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
    | Cycle | Date | Result | FAILs | Fixes triaged → applied |
    |---|---|---|---|---|
    | 1 | 2026-07-03 | 12/13 strict; 5/5 discrimination | #8 (GEN-09 unprobed + harness defect) | S1–S3, H1–H2 → applied 2026-07-04 |
-   | 2 | 2026-07-04 | 11/13; 5/5 discrimination (independent grader) | #1 (S1 over-fire), #8 (GEN-09 ID drop) | S1b, S2b, H3–H7 → **open, next task** |
-   | 3 | — | **GATES THE PR** | — | exit: 13/13 strict, or divergences accepted in the decision log |
+   | 2 | 2026-07-04 | 11/13; 5/5 discrimination (independent grader) | #1 (S1 over-fire), #8 (GEN-09 ID drop) | S1b, S2b, H3–H7 → applied 2026-07-04 |
+   | 3 | 2026-07-04 | **12 PASS / 1 w-notes / 0 FAIL; 5/5 discrimination — GATE CLEARED** | none | single divergence (#4 HML-05 subsumed by GEN-16 on a zero-fee fixture) accepted in the decision log |
 
-   **Cycle-3 work list (open):**
-   - [ ] **S1b** — SKILL.md §10 verdict rule: add materiality threshold ("*substantially* absent → insufficient-disclosure formula; enough disclosed to underwrite the core return story → merits verdict, residual absences as conditions"). Resolves iteration-2 FAIL #1 and defect D5/H7. Wording test: fixture 1 must get merits PwC, fixture 9 must still get the formula.
-   - [ ] **S2b** — SKILL.md closing self-check line: every flag family touched in §§2–3 appears by ID in §5; every enumerated pref/waterfall term gets its Q-FEE probe. Resolves the question-fires-flag-ID-drops pattern (iteration-2 FAIL #2: GEN-09 on fixture 8; also Q-FEE-04 on 1).
-   - [ ] **H3 (D1)** — evals.json id 11: expected wants GEN-11 for *disclosed* back-loading; `03` defines GEN-11 as timing *not disclosed*. Enumerate **GEN-08** (+GEN-11 as mechanism); drop the Q-DIST-01 requirement or mark it conditional.
-   - [ ] **H4 (D2)** — evals.json id 6: "GEN-04 / track-record" mis-map (GEN-04 = AUM growth, not first-timer risk). Reword to "GEN-14-mechanism / track-record gap."
-   - [ ] **H5 (D3)** — evals.json id 9: GEN-14 presupposes a *cited* unrealized record; teaser cites none. Loosen to "fired or explicitly held unassessable, absence routed to Q-GP-02."
-   - [ ] **H6 (D4)** — evals.json id 12: "at most 1–2 YELLOW" conflicts with the paste's ≥5 genuine omissions. Raise cap or restrict to non-probe YELLOWs.
-   - [ ] **H8 (F3, optional)** — ids 3/12/13: accept Pursue-with-conditions where real residuals exist, or state that verification items don't demote a Pursue.
-   - [ ] **Re-run** all 13 blind, generator ≠ grader ≠ evals author (iteration-2 method), outputs to `evals/iteration-3/`.
-   - Both scripts held constant across cycles; SKILL.md must stay ≤10KB (9,485B after S1–S3; S1b/S2b budget ≈ +200B).
+   **Cycle-3 work list (CLOSED 2026-07-04 — all items done, run passed):**
+   - [x] **S1b** — materiality threshold added to the §10 verdict rule. Boundary pair verified in the run: fixture 1 → merits PwC, fixture 9 → formula.
+   - [x] **S2b** — closing self-check line added to Communication. Verified: fixture 8 cites GEN-09, fixture 1 probes Q-FEE-04.
+   - [x] **H3 (D1)** — id 11 re-enumerated to GEN-08 (+GEN-11 as frame); Q-DIST-01 conditional. Mirrored in TESTING-PLAN (case-9 row + prose).
+   - [x] **H4 (D2)** — id 6 reworded to "GEN-14-mechanism / track-record gap."
+   - [x] **H5 (D3)** — id 9 loosened to "fired or explicitly held unassessable, routed to Q-GP-02."
+   - [x] **H6 (D4)** — id 12 YELLOW cap replaced with "probes on genuine absences OK; none manufactured." Mirrored in TESTING-PLAN (cases 10–11 rows).
+   - [x] **H8 (F3)** — ids 3/12/13 accept PwC on verification-grade residuals.
+   - [x] **Re-run** — `evals/iteration-3/`: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination, independent grading.
+   - SKILL.md at 9,801B after S1b/S2b — gate held.
+
+   **Accepted divergence (gate disposition):** fixture 4's expected HML-05 goes uncited when the fixture discloses *zero* fees — the step-down-absence flag collapses into `GEN-16` (no fee disclosure at all). Accepted rather than running a fourth cycle; if id 4's expected is ever revised, loosen HML-05 to "cited or subsumed under GEN-16." Grader watch-items for v1.1: expected 01's EQUITY-01 "high promote" phrasing vs `03`'s definition (20% is mid-band); fixture 6's report reached for the insufficiency formula while also holding a complete adverse-merits case (verdict-form preference, not an error).
 
 5. Optimize the description frontmatter for triggering accuracy — confirm it fires on phrases like "analyze this deal", "is this worth pursuing", "what should I ask the GP".
 
@@ -495,7 +497,7 @@ Before opening the PR, verify:
 - [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
 - [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
 - [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
-- [ ] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **status: cycles 1–2 run (12/13, 11/13; 5/5 discrimination both); box stays open until cycle 3 clears — see the Phase 3 iteration tracker for the itemized S1b/S2b/H3–H6 work list**
+- [x] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **met 2026-07-04: three cycles (12/13 → 11/13 → 12 PASS/1 w-notes/0 FAIL), 5/5 discrimination on every run, final two cycles under generator ≠ grader ≠ author subagent separation; single cycle-3 divergence accepted in the decision log**
 - [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
 - [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
 
@@ -828,6 +830,37 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-04 — Eval cycle 3: 0 FAILs — the PR gate clears; Phase-3 eval requirement closed after three cycles
+
+Applied the approved cycle-3 triage (S1b materiality threshold + S2b emit-time
+self-check to SKILL.md, landing at 9,801B; H3–H6 + H8 to evals.json; D1/D4 mirrored
+into TESTING-PLAN so the authoritative matrix and the harness don't diverge), then
+re-ran all 13 fixtures under the iteration-2 method — blind fresh-context generator,
+independent fresh-context grader forbidden from reading prior cycles, orchestrator
+spot-verification only.
+
+- **Result: 12 PASS / 1 PASS-with-notes / 0 FAIL; 5/5 discrimination tests — third
+  consecutive run.** The trajectory across cycles (12/13 → 11/13 → 0 FAILs) is the
+  suite working as designed: cycle 2's regression (S1 over-fire) was caught by
+  independent grading, calibrated with one phrase, and verified against the boundary
+  pair (fixture 1 → merits PwC; fixture 9 → insufficiency formula). Both cycle-2 FAIL
+  mechanisms are confirmed fixed in the run itself: fixture 8 cites GEN-09, fixture 1
+  probes Q-FEE-04 — the S2b self-check closing the question-fires-flag-ID-drops
+  pattern.
+- **The one note, accepted as the gate's permitted divergence:** fixture 4's expected
+  HML-05 is uncited because the fixture discloses zero fees — on such a deal the
+  step-down-absence flag genuinely collapses into `GEN-16`. Recorded in the Phase-3
+  tracker with the eventual expected-side loosening noted; not worth a fourth cycle.
+- **Watch-items logged for v1.1, not v1.0:** expected 01's EQUITY-01 phrasing vs
+  `03`'s promote bands; fixture 6's preference for the insufficiency form when an
+  adverse-merits case is also complete.
+
+**Phase-3 step 4 is closed** (3 cycles, ≥2 required) and the Phase-4 eval checkbox is
+checked. Build order advances to the post-eval conformance fixes (Anti-Patterns
+section, script exit codes, fork sync + upstream validators), then `examples/`
+(candidates: the iteration-3 clean-run reports for fixtures 1, 3, and 12 — one per
+deal type, already validated), the two READMEs, and the upstream PR.
 
 ### 2026-07-04 — Eval iteration 2: 11/13 with independent grading; S1 fix over-fires; cycle 3 required before PR
 
@@ -1218,4 +1251,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-04 (eval iteration 2: S1–S3/H1–H2 applied (SKILL.md 9,485B, gate held), all 13 re-run with generator ≠ grader ≠ evals-author subagent separation — 11/13 (5 PASS / 6 w-notes / 2 FAIL), all 5 discrimination tests pass under an independent grader; S1 verdict rule over-fires (9/13 verdicts, displaced fixture 1's merits PwC) → S1b materiality wording; fixture 8's residual pattern is question-fires-flag-ID-drops → S2b self-check line; 4 new expected_output defects (D1–D4) + D5 (S1↔fixture-1 mutual unsatisfiability). Cycle 3 (S1b/S2b/H3–H6, blind re-run, independent grading) is the gate before examples/ + READMEs + PR. Prior: iteration 1 on 07-03 (12/13 strict after adversarial review corrected self-graded inflation), conformance review same day (two-field frontmatter; post-eval gates: Anti-Patterns, exit codes, fork sync). PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-04 (eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*

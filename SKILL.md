@@ -73,7 +73,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 7. **GP Alignment** — co-invest (cash, pari-passu?), **realized-only** net-to-LP track record, waterfall alignment, affiliate fees. Unverified stated as unverified.
 8. **Questions for the GP** — from `04`, must-ask vs nice-to-ask, each with its **bad-answer signal** (the specific dodge). Escalate a nice-to-ask when its `03` flag fired.
 9. **Diligence Checklist** — third-party verification still needed (PPM, background/regulatory, comps, appraisal, lender).
-10. **Verdict** — **Pursue / Pass / Pursue with conditions**, reasoning visible, biggest swing factor named; who it suits and what would have to be true. Essential disclosures absent (`01`)? Then it's **"Pass as presented — insufficient disclosure"** + the re-screen list — never a merits verdict on missing information.
+10. **Verdict** — **Pursue / Pass / Pursue with conditions**, reasoning visible, biggest swing factor named; who it suits and what would have to be true. Essential disclosures *substantially* absent (`01`) — too little to underwrite the core return story? Then **"Pass as presented — insufficient disclosure"** + the re-screen list. Enough disclosed to underwrite the core story? **Merits verdict** — residual absences become conditions, not the verdict.
 
 ## Proactive triggers (surface unprompted)
 - Exit cap < going-in cap → `EQUITY-06`, likely financing story.
@@ -97,6 +97,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 - **Bottom line first** — the verdict opens; reasoning follows.
 - **Confidence-tag** material findings: 🟢 stated / from a reference, 🟡 inferred, 🔴 assumed or unverifiable. "Can't tell from this" beats false confidence.
 - No process narration; results only. Questions and conditions are concrete and ownable.
+- **Self-check before emitting:** every flag family touched in §§2–3 appears by ID in §5, and every stated pref / waterfall / debt term has its `04` probe cited by ID in §8.
 
 **JSON mode (opt-in):** on "output as JSON", emit the artifact object instead of Markdown — `deal_snapshot`, `return_metrics`, `fee_stack`, `structure_analysis`, `red_flags[]`, `missing_disclosures[]`, `gp_operator_signals`, `questions_to_ask[]`, `overall_verdict`.
 
