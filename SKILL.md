@@ -63,7 +63,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 7. **Absent info is output, not silence** — name what this deal type normally discloses (`01`) that this one didn't, and route it to a must-ask.
 8. **Specific failure modes, not generic risk** — "the rate cap expires 14 months before maturity into a frozen refi market," not "interest-rate risk."
 
-## Output schema (in order; lead with the one-line Verdict; cite IDs like `GEN-07`, `Q-FEE-03`)
+## Output schema (in order; lead with the one-line Verdict; cite **every** applicable ID — a flag subsumed by a broader finding is still cited parenthetically, and each fired flag routes to its `04` question by ID)
 1. **Deal Snapshot** — asset class, deal type, sponsor, geography, min, hold, raise, claimed return. Mark unstated fields "Not stated" (feeds §6).
 2. **Return Stress-Test** — base / bull / bear with the 2–3 swing assumptions named (exit cap, rent growth, refi). Net-to-LP vs the `05` comparator + illiquidity premium: clears the lock-up?
 3. **Where LP Returns Come From** — cash flow vs exit vs leverage; flag if >60% is exit- or leverage-driven (rules 3–4).
@@ -73,7 +73,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 7. **GP Alignment** — co-invest (cash, pari-passu?), **realized-only** net-to-LP track record, waterfall alignment, affiliate fees. Unverified stated as unverified.
 8. **Questions for the GP** — from `04`, must-ask vs nice-to-ask, each with its **bad-answer signal** (the specific dodge). Escalate a nice-to-ask when its `03` flag fired.
 9. **Diligence Checklist** — third-party verification still needed (PPM, background/regulatory, comps, appraisal, lender).
-10. **Verdict** — **Pursue / Pass / Pursue with conditions**, reasoning visible, biggest swing factor named; who it suits and what would have to be true.
+10. **Verdict** — **Pursue / Pass / Pursue with conditions**, reasoning visible, biggest swing factor named; who it suits and what would have to be true. Essential disclosures absent (`01`)? Then it's **"Pass as presented — insufficient disclosure"** + the re-screen list — never a merits verdict on missing information.
 
 ## Proactive triggers (surface unprompted)
 - Exit cap < going-in cap → `EQUITY-06`, likely financing story.
@@ -81,6 +81,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 - Track record as project-/GP-level IRR, or unrealized marks → `GEN-05` / `GEN-14`.
 - Debt fund quoting LTV on ARV with no as-is → `HML-01`.
 - IRR with no distribution schedule → `GEN-11` (J-curve).
+- Debt maturity stated but hold unstated → probe `GEN-09` via `Q-RISK-01`; don't wait for the hold to be disclosed.
 - Beats its own pro forma but trails the `05` comparator + premium → lock-up uncompensated.
 
 ## Output artifacts

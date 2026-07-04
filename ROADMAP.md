@@ -453,6 +453,25 @@ Since you're in Claude.ai (not Claude Code), subagent-based parallel evals aren'
 
 4. Iterate on SKILL.md and reference files. Aim for 2-3 iteration cycles before PR.
 
+   **Iteration tracker** *(status of record; details in the dated decision-log entries)*
+
+   | Cycle | Date | Result | FAILs | Fixes triaged → applied |
+   |---|---|---|---|---|
+   | 1 | 2026-07-03 | 12/13 strict; 5/5 discrimination | #8 (GEN-09 unprobed + harness defect) | S1–S3, H1–H2 → applied 2026-07-04 |
+   | 2 | 2026-07-04 | 11/13; 5/5 discrimination (independent grader) | #1 (S1 over-fire), #8 (GEN-09 ID drop) | S1b, S2b, H3–H7 → **open, next task** |
+   | 3 | — | **GATES THE PR** | — | exit: 13/13 strict, or divergences accepted in the decision log |
+
+   **Cycle-3 work list (open):**
+   - [ ] **S1b** — SKILL.md §10 verdict rule: add materiality threshold ("*substantially* absent → insufficient-disclosure formula; enough disclosed to underwrite the core return story → merits verdict, residual absences as conditions"). Resolves iteration-2 FAIL #1 and defect D5/H7. Wording test: fixture 1 must get merits PwC, fixture 9 must still get the formula.
+   - [ ] **S2b** — SKILL.md closing self-check line: every flag family touched in §§2–3 appears by ID in §5; every enumerated pref/waterfall term gets its Q-FEE probe. Resolves the question-fires-flag-ID-drops pattern (iteration-2 FAIL #2: GEN-09 on fixture 8; also Q-FEE-04 on 1).
+   - [ ] **H3 (D1)** — evals.json id 11: expected wants GEN-11 for *disclosed* back-loading; `03` defines GEN-11 as timing *not disclosed*. Enumerate **GEN-08** (+GEN-11 as mechanism); drop the Q-DIST-01 requirement or mark it conditional.
+   - [ ] **H4 (D2)** — evals.json id 6: "GEN-04 / track-record" mis-map (GEN-04 = AUM growth, not first-timer risk). Reword to "GEN-14-mechanism / track-record gap."
+   - [ ] **H5 (D3)** — evals.json id 9: GEN-14 presupposes a *cited* unrealized record; teaser cites none. Loosen to "fired or explicitly held unassessable, absence routed to Q-GP-02."
+   - [ ] **H6 (D4)** — evals.json id 12: "at most 1–2 YELLOW" conflicts with the paste's ≥5 genuine omissions. Raise cap or restrict to non-probe YELLOWs.
+   - [ ] **H8 (F3, optional)** — ids 3/12/13: accept Pursue-with-conditions where real residuals exist, or state that verification items don't demote a Pursue.
+   - [ ] **Re-run** all 13 blind, generator ≠ grader ≠ evals author (iteration-2 method), outputs to `evals/iteration-3/`.
+   - Both scripts held constant across cycles; SKILL.md must stay ≤10KB (9,485B after S1–S3; S1b/S2b budget ≈ +200B).
+
 5. Optimize the description frontmatter for triggering accuracy — confirm it fires on phrases like "analyze this deal", "is this worth pursuing", "what should I ask the GP".
 
 ### Phase 4: Quality checklist (from `SKILL-AUTHORING-STANDARD.md`)
@@ -476,7 +495,7 @@ Before opening the PR, verify:
 - [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
 - [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
 - [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
-- [ ] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/`
+- [ ] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **status: cycles 1–2 run (12/13, 11/13; 5/5 discrimination both); box stays open until cycle 3 clears — see the Phase 3 iteration tracker for the itemized S1b/S2b/H3–H6 work list**
 - [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
 - [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
 
@@ -809,6 +828,49 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-04 — Eval iteration 2: 11/13 with independent grading; S1 fix over-fires; cycle 3 required before PR
+
+Applied the iteration-1 triage (S1 insufficient-input verdict rule, S2 ID-citation
+completeness, S3 unstated-hold→GEN-09 trigger to SKILL.md, holding the gate at 9,485
+bytes; H1 EQUITY-03 mis-map + H2 Cannot-assess vocabulary in evals.json, extended to
+id 7 — same root cause), then re-ran all 13 fixtures with the adversarial-review
+upgrade: **generator and grader were separate fresh-context subagents** (generator
+read only SKILL.md + references + prompts, blind discipline confirmed; grader verified
+IDs against `03`/`04` definitions and was told not to anchor on iteration 1). The
+evals author only orchestrated and spot-verified the FAILs. Scorecard:
+`evals/iteration-2/scorecard.md`.
+
+- **Headline: 11/13 — 5 PASS, 6 PASS w/ notes, 2 FAIL; all five discrimination tests
+  passed again** under a stricter, independent grader — the discrimination core is
+  now validated by two graders across two runs.
+- **The S1 fix over-fires — a regression this cycle introduced.** As worded, any
+  single missing essential triggers "Pass as presented — insufficient disclosure";
+  the formula appeared in 9 of 13 verdicts and displaced the merits
+  Pursue-with-conditions on the happy-path fixture 1 (→ FAIL). Grader's calibration:
+  add a materiality threshold — *substantially* absent → S1 formula; enough to
+  underwrite the core return story → merits verdict with residuals as conditions.
+  Fixture 1 vs fixture 9 is the boundary pair to test the wording against.
+- **Fixture 8 FAILed again, narrower:** Q-RISK-01 now asked and maturity
+  stress-tested (S3 moved behavior — the same run fired GEN-09 by ID on fixture 7),
+  but the flag ID itself still never cited on 8. The residual pattern: *the question
+  fires, the flag ID drops* (also Q-FEE-04 on fixture 1). Grader's suggested fix: a
+  closing self-check line in SKILL.md.
+- **Verdict softening pattern (ids 3/12/13):** all three clean deals came back
+  Pursue-with-conditions vs expected "Pursue" — arguably correct LP behavior on
+  genuinely absent items; resolve on the evals side (accept PwC on clean deals with
+  real residuals).
+- **Four new expected_output defects documented (D1–D4)** — sharpest is id 11
+  enumerating GEN-11 for *disclosed* back-loading (per `03`, GEN-11 = timing *not
+  disclosed*; the correct ID, GEN-08, is absent from the expected). Plus D5: id 1's
+  expected verdict and the current S1 wording are mutually unsatisfiable — the
+  formal statement of the over-fire.
+
+Triage for cycle 3: **S1b** (materiality wording, one phrase), **S2b** (closing
+self-check line), **H3–H6** (D1–D4 expected fixes), **H7** (D5 resolves via S1b).
+Phase-3's ≥2-cycle minimum is met, but shipping on a cycle that introduced a
+regression would gut the eval suite's purpose — **cycle 3 (apply S1b/S2b/H3–H6,
+re-run blind with independent grading) is the gate before examples/ + READMEs + PR.**
 
 ### 2026-07-03 — Ran the eval suite, iteration 1: 12/13 strict (1 FAIL); 4 discrimination tests pass; 5 fixes triaged
 
@@ -1156,4 +1218,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-03 (eval suite iteration 1 RUN: 12/13 strict — 1 FAIL (fixture 8) recorded honestly after an adversarial review caught the initial 13/13 headline as self-graded inflation; all 4 discrimination tests pass; outputs + scorecard in `evals/iteration-1/`; 5 fixes triaged — S1 insufficient-input verdict rule, S2 ID-citation completeness, S3 unstated-hold GEN-09 trigger in SKILL.md, H1/H2 in evals.json; iteration 2 adds subagent grading. Same day, earlier: pre-PR conformance review — frontmatter reduced to two fields per CONVENTIONS.md; placement deferred to PR time; post-eval gates logged (Anti-Patterns section, script exit codes, fork sync for validators). Next: iteration 2 — apply S/H fixes, re-run all 13 blind; then conformance fixes + examples/ + READMEs + upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-04 (eval iteration 2: S1–S3/H1–H2 applied (SKILL.md 9,485B, gate held), all 13 re-run with generator ≠ grader ≠ evals-author subagent separation — 11/13 (5 PASS / 6 w-notes / 2 FAIL), all 5 discrimination tests pass under an independent grader; S1 verdict rule over-fires (9/13 verdicts, displaced fixture 1's merits PwC) → S1b materiality wording; fixture 8's residual pattern is question-fires-flag-ID-drops → S2b self-check line; 4 new expected_output defects (D1–D4) + D5 (S1↔fixture-1 mutual unsatisfiability). Cycle 3 (S1b/S2b/H3–H6, blind re-run, independent grading) is the gate before examples/ + READMEs + PR. Prior: iteration 1 on 07-03 (12/13 strict after adversarial review corrected self-graded inflation), conformance review same day (two-field frontmatter; post-eval gates: Anti-Patterns, exit codes, fork sync). PR note: user wants a detailed PR summary when the upstream PR is opened.)*
