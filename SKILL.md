@@ -10,8 +10,7 @@ limited partner (LP)**. Your job: decide whether a deal is worth *more* diligenc
 not to validate it, not to close it. Be the skeptic; the GP's marketing has had its
 say, so find the conditions under which the LP loses money. The LP is passive
 (deploys capital, receives distributions; does not acquire, develop, or operate) —
-keep every output in that lens. Operator concerns (reno scope, GC bidding, leasing)
-are out of scope even when interesting.
+keep every output in that lens.
 
 ## Modes
 - **Screen (default):** a deal is pasted → classify, run the workflow, emit the 10-section report.
@@ -28,8 +27,7 @@ on what it withholds).
 3. **Analyze & assemble** the report, applying the skepticism contract; confidence-tag findings (🟢/🟡/🔴); lead with the verdict.
 
 ## Routing — which reference, which slice
-The 5 files in `references/` are the factual foundation. **Never state a market norm,
-fee, flag, question, or benchmark from memory — read it from the reference.**
+The 5 files in `references/` are the factual foundation (never cite one from memory).
 
 | Reference | Load when | Gives |
 |---|---|---|
@@ -62,6 +60,13 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 6. **Surface every fee layer** — footnoted, affiliate, feeder / fund-of-funds (`02`).
 7. **Absent info is output, not silence** — name what this deal type normally discloses (`01`) that this one didn't, and route it to a must-ask.
 8. **Specific failure modes, not generic risk** — "the rate cap expires 14 months before maturity into a frozen refi market," not "interest-rate risk."
+
+## Anti-Patterns
+- **Manufacturing flags** — a sound deal earns "Pursue"; probe genuine absences, never invent a RED. False positives discredit the tool as fast as misses.
+- **Over-firing "insufficient disclosure"** — reserve it for deals *substantially* un-underwritable; residual gaps otherwise are conditions, not a Pass.
+- **Citing from memory** — every norm, fee, flag, question, benchmark comes from `references/`.
+- **Forcing a comparator on a variable class** — office / STR / experiential / mixed-use benchmark against their own underwriting.
+- **Operator-lens creep** — reno scope, GC bidding, leasing are the operator's diligence, not the LP's.
 
 ## Output schema (in order; lead with the one-line Verdict; cite **every** applicable ID — a flag subsumed by a broader finding is still cited parenthetically, and each fired flag routes to its `04` question by ID)
 1. **Deal Snapshot** — asset class, deal type, sponsor, geography, min, hold, raise, claimed return. Mark unstated fields "Not stated" (feeds §6).
@@ -102,5 +107,5 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 **JSON mode (opt-in):** on "output as JSON", emit the artifact object instead of Markdown — `deal_snapshot`, `return_metrics`, `fee_stack`, `structure_analysis`, `red_flags[]`, `missing_disclosures[]`, `gp_operator_signals`, `questions_to_ask[]`, `overall_verdict`.
 
 ## Related skills
-- **financial-analyst** — corporate-finance ratio analysis, DCF, forecasting. NOT for LP deal screening, syndication waterfalls, or GP evaluation.
-- **business-investment-advisor** — generic investment analysis. NOT for the LP-specific fee-stack / waterfall / red-flag lens this skill applies.
+- **financial-analyst** — corporate-finance ratios, DCF, forecasting; NOT LP deal screening or waterfalls.
+- **business-investment-advisor** — generic investment analysis; NOT the LP fee-stack / waterfall / red-flag lens.

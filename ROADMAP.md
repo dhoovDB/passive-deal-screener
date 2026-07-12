@@ -482,9 +482,9 @@ Before opening the PR, verify:
 
 - [x] SKILL.md is **≤10KB** (the binding cap from `SKILL-AUTHORING-STANDARD.md` — ≈160 lines at the 58–64 bytes/line of shipped `finance/` skills; the largest, `business-investment-advisor`, sits at exactly 10.0KB/159 lines). The old "<500 lines" figure was ~3× too loose and is retired. **Met 2026-06-29: compressed 12.8KB → 9.07KB (0.93KB headroom), full fidelity, no behavioral regression (see decision log).**
 - [x] Frontmatter is **`name` + `description` only** — reduced 2026-07-03 to satisfy `CONVENTIONS.md`'s two-field-only rule (supersedes the earlier `metadata:`-block + `tags` plan; see decision log). No `license`/`metadata`/`tags`/`author`.
-- [ ] Description is written in third person
-- [ ] Description includes both what the skill does AND trigger contexts
-- [ ] SKILL.md has a labeled **Anti-Patterns** section — `CONVENTIONS.md` Required Section (added 2026-07-03; do after the eval run)
+- [x] Description is written in third person — confirmed 2026-07-11 (opens "Screens…", "Produces…", "Use whenever…"; no first/second person)
+- [x] Description includes both what the skill does AND trigger contexts — confirmed 2026-07-11 (carries the trigger phrases "is this deal worth pursuing", "what should I ask the GP", "analyze this offering memo")
+- [x] SKILL.md has a labeled **Anti-Patterns** section — `CONVENTIONS.md` Required Section. **Met 2026-07-11:** 5-bullet `## Anti-Patterns` section added via consolidate-and-relabel; SKILL.md 10,224B (under the 10,240 cap), no eval-behavior regression (see decision log)
 - [ ] All Python scripts run with `python3 script.py --help` (zero pip installs)
 - [ ] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4 (added 2026-07-03; do after the eval run)
 - [ ] Reference files are linked from SKILL.md with explicit load guidance
@@ -830,6 +830,41 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-11 — Added the labeled `Anti-Patterns` section to SKILL.md (post-eval conformance fix 1 of 3)
+
+First of the three post-eval conformance fixes. `CONVENTIONS.md` lists **Anti-Patterns**
+as a Required Section (a reject-on-sight omission); the skill's "what not to do" was
+present but folded unlabeled into the Skepticism contract and the intro. The binding
+constraint was the ≤10KB (10,240B) size cap — SKILL.md sat at 9,801B, ~439B of headroom,
+not enough for a full new section. Approach and calls:
+
+- **Consolidate-and-relabel, not append.** Rather than add net-new prose (which would
+  blow the cap or duplicate the 8 skepticism rules), the section is 5 concise don'ts, and
+  the two spots that already carried this guidance were trimmed to relocate it, not restate
+  it: the intro's "Operator concerns … out of scope" sentence and the routing block's
+  "Never state a … from memory" sentence both collapse into the labeled bullets
+  (Operator-lens creep; Citing from memory).
+- **The section adds what the rules didn't state.** The two highest-value bullets are
+  *net-new* anti-patterns the eval work validated but the contract never encoded:
+  **Manufacturing flags** (false-positive discipline — a sound deal earns "Pursue"; the
+  discrimination tests turn on this) and **Over-firing "insufficient disclosure"** (the S1b
+  materiality threshold from eval cycle 2→3, stated as a don't). The "don't summarize"
+  bullet was dropped as a pure restatement of skepticism rule 1.
+- **First draft overshot to 10,518B (+278 over).** Reclaimed by tightening the bullets and
+  the `Related skills` block (which duplicated the frontmatter disambiguation). Final:
+  **10,224B — 16B under the cap.** Headroom is deliberately thin; any future SKILL.md
+  content addition now needs a compensating trim (noted so it isn't a surprise).
+- **No behavioral regression.** Edits were localized to the intro tail, the routing
+  memory-sentence, the new section, and `Related skills`; the fidelity-rubric elements
+  (5 reference links + load triggers, 8 skepticism rules, 10 output sections, deal-type
+  branches, variable-class carve-out, JSON mode, confidence tags) all verified intact.
+
+Also closed the two adjacent Phase-4 description checks (third-person; what-it-does +
+trigger contexts) — both already true of the shipped frontmatter, confirmed this pass.
+Remaining post-eval conformance fixes: **script exit codes** (`fee_drag_calculator.py`
+lacks an exit-2 bad-input path; `benchmark_comparator.py` already grades 0/1/2), then
+**fork sync + upstream validators**. Then `examples/`, the two READMEs, and the PR.
 
 ### 2026-07-04 — Eval cycle 3: 0 FAILs — the PR gate clears; Phase-3 eval requirement closed after three cycles
 
@@ -1251,4 +1286,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-04 (eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-11 (post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
