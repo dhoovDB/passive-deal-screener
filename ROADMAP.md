@@ -485,12 +485,12 @@ Before opening the PR, verify:
 - [x] Description is written in third person — confirmed 2026-07-11 (opens "Screens…", "Produces…", "Use whenever…"; no first/second person)
 - [x] Description includes both what the skill does AND trigger contexts — confirmed 2026-07-11 (carries the trigger phrases "is this deal worth pursuing", "what should I ask the GP", "analyze this offering memo")
 - [x] SKILL.md has a labeled **Anti-Patterns** section — `CONVENTIONS.md` Required Section. **Met 2026-07-11:** 5-bullet `## Anti-Patterns` section added via consolidate-and-relabel; SKILL.md 10,224B (under the 10,240 cap), no eval-behavior regression (see decision log)
-- [ ] All Python scripts run with `python3 script.py --help` (zero pip installs)
+- [x] All Python scripts run with `python3 script.py --help` (zero pip installs) — confirmed 2026-07-19: both `--help` exit 0; `skill_validator.py` reports both scripts "uses only standard library"
 - [x] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4. **Met 2026-07-19:** added a boundary `validate_params()` to both scripts (errors → stderr + exit 2, no output; warnings → stderr + result on stdout + exit 1; clean → exit 0); each `--self-check` now asserts one reject + one warn case; verified by execution across clean/warn/bad inputs (see decision log)
-- [ ] Reference files are linked from SKILL.md with explicit load guidance
+- [x] Reference files are linked from SKILL.md with explicit load guidance — confirmed 2026-07-19: SKILL.md Routing table links `01`–`05` each with a "Load when" trigger
 - [ ] README.md includes install instructions and usage examples
-- [ ] No hardcoded API keys, credentials, or personally identifying information
-- [ ] Skill passes the security auditor: `python3 engineering/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener/` — **requires a synced fork**: the `skill-tester/` + `skill-security-auditor/` validators are absent from the local clone as of 2026-07-03; sync `dev` first, then run there (see decision log)
+- [x] No hardcoded API keys, credentials, or personally identifying information — confirmed 2026-07-19 by the security auditor's `sensitive_data_exposure` check (0 findings)
+- [x] Skill passes the security auditor. **PASS 2026-07-19** (0 CRITICAL / 0 HIGH / 0 INFO, exit 0) via `python engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py <shippable subset>`. **Premise corrected:** the validators are **present** locally at `engineering/skills/skill-tester/` and `engineering/skills/skill-security-auditor/` (not the pre-`skills/` path the 2026-07-03 note assumed) and need `PYTHONIOENCODING=utf-8` on Windows. Run against the shippable subset (SKILL.md + references/ + scripts/), not the repo root — the root scan's lone HIGH was `[FS-HIDDEN] .claude`, a dev artifact that never ships. Final confirm against a fork-staged copy on synced `dev` at PR time (see decision log)
 
 **v1.0 ship gate (in addition to the standard checklist above).** The upstream `SKILL-AUTHORING-STANDARD` covers file conventions; the items below are the *content* gates specific to this skill — the standard doesn't know about reference files or evals at this depth.
 
@@ -830,6 +830,54 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-19 — Ran the upstream validators (post-eval conformance fix 3 of 3); security auditor PASSES; validator FAILs triaged as CONVENTIONS conflicts
+
+Ran the three `claude-skills` validators against the skill. The task's stated premise
+was **stale**: the validators are *not* absent — they live locally at
+`engineering/skills/skill-tester/scripts/{skill_validator,quality_scorer}.py` and
+`engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py` (the
+2026-07-03 note recorded a pre-`skills/` path). So they could run **directly against the
+skill without syncing or modifying the fork**. Two environment/method calls mattered:
+
+- **`PYTHONIOENCODING=utf-8` is required on Windows** — all three crash on cp1252 when
+  printing their `✓`/`🔴`/box-drawing output; not a skill defect.
+- **Run against the shippable subset, not the repo root.** The repo root pulls in
+  `evals/` (58 iteration markdowns), `.claude/`, ROADMAP/CLAUDE — 72 files. Staged just
+  SKILL.md + references/ + scripts/ (16 files) to mirror what ships in
+  `finance/passive-deal-screener/`.
+
+Results (shippable subset):
+
+- **security_auditor → ✅ PASS, 0 findings, exit 0.** The Phase-4 security gate is met.
+  The repo-root run's single HIGH (`[FS-HIDDEN] .claude`) was a dev/session artifact that
+  never ships — it vanishes on the subset.
+- **skill_validator → 76.5/100 GOOD.** All script checks pass (both stdlib-only, argparse,
+  main guard, valid syntax — the fix-2 validation layer is clean).
+- **quality_scorer → 45.7/100 (F).** Opinionated/old-schema scorer; its security dimension
+  is broken (flat 0.0 across all four sub-scores, incl. `input_validation` — 0.0 right
+  after fix-2 *added* input validation), which alone drags a ~60 to an F. Not a CONVENTIONS
+  gate.
+
+**The judgment call — most validator FAILs must NOT be "fixed".** The validator's `ERRORS`
+demand frontmatter `Name/Tier/Category/Dependencies/Author/Version` and
+`Features/Usage/Examples` sections — the **older `SKILL-AUTHORING-STANDARD` schema**. These
+**directly conflict with `CONVENTIONS.md`** (mandatory; "PRs that violate them will be
+closed"), which permits **`name` + `description` only** and names `version/author/category`
+as reject-on-sight. Adding them to satisfy the validator would *violate* CONVENTIONS and get
+the PR closed — so the correct response is to **not act on that output** and resolve toward
+CONVENTIONS, consistent with the 2026-07-03 decision. Same shape for "SKILL.md 93 lines <
+100": the validator counts *lines*, CONVENTIONS binds on ≤10KB *bytes* (skill at
+10,224/10,240) — not padded. Real-but-sequenced FAILs (README.md missing, 0 example files)
+are the **next two tasks** (`examples/`, the skill-level README), not defects.
+
+**Fork sync deferred to pre-PR (approved).** The local validators are stale (fork 33 behind
+its own origin; `dev` not checked out), so whether the frontmatter conflict is even live for
+the PR depends on the maintainer's *current* validator. Syncing `dev` (and the Phase-1
+`git push origin main`) is an outward-facing write on a "do-not-modify" repo — deferred to
+the Phase-5 pre-PR step, after `examples/` + READMEs, when one clean validation pass against
+synced `dev` + a fork-staged skill copy is the natural final check. No changes were made to
+the `claude-skills` fork this session.
 
 ### 2026-07-19 — Added a graded input-validation layer to both scripts (post-eval conformance fix 2 of 3)
 
@@ -1321,4 +1369,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-19 (post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-19 (post-eval conformance fix 3 of 3: ran the upstream validators — security auditor PASSES (0 findings) on the shippable subset, Phase-4 security gate met; skill_validator 76.5 GOOD / quality_scorer F, but their frontmatter/section/line-count FAILs are validator-vs-CONVENTIONS conflicts NOT to be "fixed" (adding the retired fields would get the PR closed); premise corrected — validators present at engineering/skills/, need PYTHONIOENCODING=utf-8; fork dev sync deferred to pre-PR. All three post-eval conformance fixes now DONE. Remaining before PR: examples/, the two READMEs, then Phase-5 (sync dev + clean validator pass + PR). Prior — post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
