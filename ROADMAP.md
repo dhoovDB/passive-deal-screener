@@ -486,7 +486,7 @@ Before opening the PR, verify:
 - [x] Description includes both what the skill does AND trigger contexts — confirmed 2026-07-11 (carries the trigger phrases "is this deal worth pursuing", "what should I ask the GP", "analyze this offering memo")
 - [x] SKILL.md has a labeled **Anti-Patterns** section — `CONVENTIONS.md` Required Section. **Met 2026-07-11:** 5-bullet `## Anti-Patterns` section added via consolidate-and-relabel; SKILL.md 10,224B (under the 10,240 cap), no eval-behavior regression (see decision log)
 - [ ] All Python scripts run with `python3 script.py --help` (zero pip installs)
-- [ ] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4 (added 2026-07-03; do after the eval run)
+- [x] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4. **Met 2026-07-19:** added a boundary `validate_params()` to both scripts (errors → stderr + exit 2, no output; warnings → stderr + result on stdout + exit 1; clean → exit 0); each `--self-check` now asserts one reject + one warn case; verified by execution across clean/warn/bad inputs (see decision log)
 - [ ] Reference files are linked from SKILL.md with explicit load guidance
 - [ ] README.md includes install instructions and usage examples
 - [ ] No hardcoded API keys, credentials, or personally identifying information
@@ -830,6 +830,41 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-19 — Added a graded input-validation layer to both scripts (post-eval conformance fix 2 of 3)
+
+`CONVENTIONS.md` §4 requires graded exit codes (0 ok / 1 warnings / 2 bad input). The
+checklist framed this as "return the right exit code," but reading both scripts showed
+the real gap was **no semantic input validation at all** — `argparse` caught non-numeric
+input (and `benchmark` already exited 2 on an unknown deal type), but numeric nonsense
+passed silently: `fee_drag --mgmt-fee -5` reported the LP *earning* the fee (negative
+drag), `--hold-years 0` reported zero drag (net = gross), `--carry 150` ran an
+out-of-domain waterfall. For a tool feeding an LP's capital decision, a silent wrong
+answer is the exact failure a screener exists to prevent — so this shipped as a
+**data-validation layer**, not a one-line exit code. Calls:
+
+- **Validation lives at the I/O boundary, not the engine.** A `validate_params(params)
+  -> (errors, warnings)` function sits with `args_to_params` / `main`; the pure
+  calculation core (`compute_fee_drag`, `promote_drag`, `compute_comparison`) is
+  untouched. Engine-pure / IO-at-the-boundary held.
+- **Three grades, drawn at "the math is undefined" vs "the deal is bad."** Exit 2 (reject,
+  no output) for structurally impossible inputs — hold ≤ 0, negative fees, carry/catch-up
+  outside [0,100], IRR < −100%, negative illiquidity premium. Exit 1 (emit result to
+  stdout, warning to stderr) for runnable-but-suspect unit slips — IRR > 100%, a headline
+  fee that looks like a fraction (0.015 where 1.5 was meant), total fee load > 50%. Exit 0
+  clean. A *legitimately bad* deal (negative IRR, below-hurdle gross) is never
+  hard-rejected — only inputs the model can't represent are.
+- **The validator is self-tested (stdlib-only, no pytest).** Each `--self-check` now
+  asserts one reject case (hold 0 → error) and one warn case (IRR 150 → warning) alongside
+  the existing `02`/`05` anchor checks — so the validation layer can't silently rot.
+- **Verified by execution** (Python 3.12): both `--self-check` PASS; clean/`--json`/bare
+  runs exit 0; the warn cases exit 1 with the report still on stdout and the warning on
+  stderr; every bad-input case (incl. argparse non-numeric and the unknown-deal-type
+  ValueError path) exits 2 with no result printed; `--help` exits 0 for both (zero pip).
+
+Post-eval conformance fix 3 of 3 remains: **fork sync + upstream validators** (cross-repo;
+needs the `claude-skills` fork's `dev` synced before the `skill-tester` / security-auditor
+validators can run). Then `examples/`, the two READMEs, and the PR.
 
 ### 2026-07-11 — Added the labeled `Anti-Patterns` section to SKILL.md (post-eval conformance fix 1 of 3)
 
@@ -1286,4 +1321,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-11 (post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-19 (post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*

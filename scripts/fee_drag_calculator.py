@@ -198,6 +198,48 @@ def args_to_params(args):
     }
 
 
+def validate_params(params):
+    """Boundary check on a params dict. Returns (errors, warnings): errors are
+    structurally invalid inputs the drag math can't represent (reject, exit 2);
+    warnings are runnable but suspect, usually a unit slip (emit result, exit 1).
+    Kept out of the pure core so the calculation stays side-effect-free.
+    A screening tool that silently accepts a negative fee (LP 'earns' the fee) or
+    a zero hold (no drag reported) is worse than one that refuses and says why."""
+    errors, warnings = [], []
+
+    fee_fields = ("mgmt_fee", "admin_fee", "servicing_fee", "fund_mgmt_fee",
+                  "acquisition_fee", "disposition_fee", "loan_placement_fee",
+                  "refinance_fee")
+
+    if params["hold_years"] <= 0:
+        errors.append("hold-years must be greater than 0")
+    for f in fee_fields:
+        if params[f] < 0:
+            errors.append(f"{f.replace('_', '-')} cannot be negative (fees are a % >= 0)")
+    if not 0 <= params["carry"] <= 100:
+        errors.append("carry must be between 0 and 100 (%)")
+    if params["hurdle"] < 0:
+        errors.append("hurdle cannot be negative")
+    if not 0 <= params["catch_up"] <= 100:
+        errors.append("catch-up must be between 0 and 100 (%)")
+    if params["gross_irr"] < -100:
+        errors.append("gross-irr below -100% is impossible (terminal value can't go below 0)")
+
+    # Warnings: runnable, but the numbers look like a unit slip.
+    if params["gross_irr"] > 100:
+        warnings.append(f"gross-irr {params['gross_irr']:g}% is implausibly high - "
+                        "check units (15 means 15%, not 0.15)")
+    for f in ("mgmt_fee", "carry"):
+        if 0 < params[f] < 0.1:
+            warnings.append(f"{f.replace('_', '-')} {params[f]:g} looks like a fraction - "
+                            "fees are in percent (1.5 means 1.5%)")
+    total_fee = sum(params[f] for f in fee_fields)
+    if total_fee > 50:
+        warnings.append(f"total fee load {total_fee:g}% is very high - verify the fee inputs")
+
+    return errors, warnings
+
+
 def format_human(r):
     b = r["drag_breakdown_bps"]
     c = r["carry_analysis"]
@@ -243,6 +285,20 @@ def _self_check():
         else:
             print(f"ok   promote @ {gross:g}% gross = {bps:.0f} bps")
 
+    # Input validation: a known-bad input must be rejected; a suspect one warned.
+    bad = args_to_params(parse_args(["--hold-years", "0"]))
+    if not validate_params(bad)[0]:
+        ok = False
+        print("FAIL validator: hold-years 0 should error")
+    else:
+        print("ok   validator rejects hold-years 0")
+    suspect = args_to_params(parse_args(["--gross-irr", "150"]))
+    if not validate_params(suspect)[1]:
+        ok = False
+        print("FAIL validator: gross-irr 150 should warn")
+    else:
+        print("ok   validator warns on gross-irr 150")
+
     print("PASS" if ok else "FAILED")
     return 0 if ok else 1
 
@@ -252,12 +308,20 @@ def main(argv=None):
     args = parse_args(argv)
     if args.self_check:
         return _self_check()
-    result = compute_fee_drag(args_to_params(args))
+    params = args_to_params(args)
+    errors, warnings = validate_params(params)
+    for w in warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    if errors:
+        for e in errors:
+            print(f"error: {e}", file=sys.stderr)
+        return 2
+    result = compute_fee_drag(params)
     if args.json:
         print(json.dumps(result, indent=2))
     else:
         print(format_human(result))
-    return 0
+    return 1 if warnings else 0
 
 
 if __name__ == "__main__":

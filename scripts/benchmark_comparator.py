@@ -211,6 +211,32 @@ def args_to_params(args):
     }
 
 
+def validate_params(params):
+    """Boundary check on a params dict. Returns (errors, warnings): errors are
+    structurally invalid inputs (reject, exit 2); warnings are runnable but
+    suspect, usually a unit slip (emit result, exit 1). The unknown-deal-type
+    case stays handled by compute_comparison (ValueError -> exit 2); this covers
+    the numeric domain. Kept out of the pure core."""
+    errors, warnings = [], []
+
+    if params["hold_years"] <= 0:
+        errors.append("hold-years must be greater than 0")
+    if params["net_irr"] < -100:
+        errors.append("net-irr below -100% is impossible")
+    prem = params["illiquidity_premium_assumed"]
+    if prem is not None and prem < 0:
+        errors.append("illiquidity-premium-assumed cannot be negative")
+    bench = params["benchmark_return"]
+    if bench is not None and bench < -100:
+        errors.append("benchmark-return below -100% is impossible")
+
+    if params["net_irr"] > 100:
+        warnings.append(f"net-irr {params['net_irr']:g}% is implausibly high - "
+                        "check units (11.2 means 11.2%, not 0.112)")
+
+    return errors, warnings
+
+
 def format_human(r):
     if r.get("variable"):
         return ("Benchmark comparison (screening, not underwriting)\n"
@@ -278,6 +304,20 @@ def _self_check():
     else:
         print("ok   office -> variable class (no forced comparator)")
 
+    # Input validation: a known-bad input must be rejected; a suspect one warned.
+    base = {"deal_type": "multifamily-equity", "net_irr": 11.2, "hold_years": 5.0,
+            "illiquidity_premium_assumed": None, "benchmark_return": None}
+    if not validate_params({**base, "hold_years": 0.0})[0]:
+        ok = False
+        print("FAIL validator: hold-years 0 should error")
+    else:
+        print("ok   validator rejects hold-years 0")
+    if not validate_params({**base, "net_irr": 150.0})[1]:
+        ok = False
+        print("FAIL validator: net-irr 150 should warn")
+    else:
+        print("ok   validator warns on net-irr 150")
+
     print("PASS" if ok else "FAILED")
     return 0 if ok else 1
 
@@ -293,8 +333,16 @@ def main(argv=None):
             print(f"  {dt:<22} -> {DEAL_TYPES[dt]['comparator']}")
         print("Variable (no category comparator): " + ", ".join(sorted(VARIABLE_TYPES)))
         return 0
+    params = args_to_params(args)
+    errors, warnings = validate_params(params)
+    for w in warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    if errors:
+        for e in errors:
+            print(f"error: {e}", file=sys.stderr)
+        return 2
     try:
-        result = compute_comparison(args_to_params(args))
+        result = compute_comparison(params)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
@@ -302,7 +350,7 @@ def main(argv=None):
         print(json.dumps(result, indent=2))
     else:
         print(format_human(result))
-    return 0
+    return 1 if warnings else 0
 
 
 if __name__ == "__main__":
