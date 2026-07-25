@@ -496,7 +496,7 @@ Before opening the PR, verify:
 
 - [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
 - [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
-- [ ] `examples/` has ≥3 input/output pairs covering different deal types (e.g. multifamily equity, hard money / bridge fund, preferred equity)
+- [x] `examples/` has ≥3 input/output pairs covering different deal types. **Met 2026-07-25:** 3 pairs — `equity-syndication/` (fixture 1), `hard-money-fund/` (fixture 3), `private-credit-fund/` (fixture 13) — plus an `examples/README.md` index. Each `output.md` is byte-identical to its iteration-3 validated report minus the eval-harness header (see decision log)
 - [x] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **met 2026-07-04: three cycles (12/13 → 11/13 → 12 PASS/1 w-notes/0 FAIL), 5/5 discrimination on every run, final two cycles under generator ≠ grader ≠ author subagent separation; single cycle-3 divergence accepted in the decision log**
 - [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
 - [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
@@ -830,6 +830,36 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-07-25 — Built `examples/` (3 input/output pairs; content ship-gate item)
+
+Assembled the `examples/` directory the v1.0 content gate requires — one input/output
+pair per deal type, following CLAUDE.md's `examples/<deal-type>/{input,output}.md`
+structure. Three calls:
+
+- **Deal-type set chosen for spread: equity / hard-money / private-credit** (fixtures 1,
+  3, 13), user-selected over two alternatives. The DoD and CLAUDE.md's illustrative
+  structure named *preferred-equity* as the third type, but the only preferred-equity
+  fixture (id 2) is a sparse-email *Pass-as-presented* case; the roadmap footer's earlier
+  1/3/12 suggestion was two equity deals + HML (only two distinct types). The chosen set
+  gives three genuinely distinct deal types, all clean full analyses, and the widest
+  asset-class spread (equity / debt-fund / credit). CLAUDE.md's structure block updated
+  to `private-credit-fund/` accordingly (the DoD's type list is "e.g.", non-binding).
+- **Outputs are the validated eval reports, not fresh prose.** Each `output.md` is the
+  iteration-3 report (the run that cleared the PR gate) with only the eval-harness header
+  (title + provenance line) swapped for an example note — verified **byte-identical** to
+  the source from line 3 on. This keeps the examples honest: what ships is exactly what
+  the eval suite graded, not a hand-polished ideal.
+- **All three land on Pursue-with-conditions by design** — these are the *sound* deals in
+  the suite; the Pass / Pass-as-presented paths stay demonstrated in `evals/`, not the
+  shipping examples, which are meant to show a full clean analysis end-to-end. The
+  `examples/README.md` index states this so a reviewer doesn't read three "Pursue"
+  verdicts as the skill being agreeable — the discrimination lives in the *conditions* and
+  the named swing factor.
+
+Remaining before the PR: the two READMEs (this repo's root already exists — the
+skill-level `finance/passive-deal-screener/README.md` is the pending one), then Phase 5
+(sync `dev`, clean validator pass, open the PR).
 
 ### 2026-07-19 — Ran the upstream validators (post-eval conformance fix 3 of 3); security auditor PASSES; validator FAILs triaged as CONVENTIONS conflicts
 
@@ -1369,4 +1399,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-19 (post-eval conformance fix 3 of 3: ran the upstream validators — security auditor PASSES (0 findings) on the shippable subset, Phase-4 security gate met; skill_validator 76.5 GOOD / quality_scorer F, but their frontmatter/section/line-count FAILs are validator-vs-CONVENTIONS conflicts NOT to be "fixed" (adding the retired fields would get the PR closed); premise corrected — validators present at engineering/skills/, need PYTHONIOENCODING=utf-8; fork dev sync deferred to pre-PR. All three post-eval conformance fixes now DONE. Remaining before PR: examples/, the two READMEs, then Phase-5 (sync dev + clean validator pass + PR). Prior — post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-07-25 (built `examples/` — 3 input/output pairs (equity-syndication / hard-money-fund / private-credit-fund, fixtures 1/3/13) + README index; each output byte-identical to its iteration-3 validated report minus the eval header; CLAUDE.md structure block updated to match. v1.0 examples ship-gate item met. Remaining: skill-level README (finance/passive-deal-screener/README.md), then Phase 5 (sync dev + clean validator pass + PR). Prior — 2026-07-19: ran the upstream validators — security auditor PASSES (0 findings) on the shippable subset, Phase-4 security gate met; skill_validator 76.5 GOOD / quality_scorer F, but their frontmatter/section/line-count FAILs are validator-vs-CONVENTIONS conflicts NOT to be "fixed" (adding the retired fields would get the PR closed); premise corrected — validators present at engineering/skills/, need PYTHONIOENCODING=utf-8; fork dev sync deferred to pre-PR. All three post-eval conformance fixes now DONE. Remaining before PR: examples/, the two READMEs, then Phase-5 (sync dev + clean validator pass + PR). Prior — post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*

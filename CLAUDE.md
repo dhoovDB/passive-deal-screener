@@ -53,13 +53,14 @@ references/
 04-question-bank.md             ← LP questions + bad answer signals
 05-benchmark-returns.md         ← public market comparators
 examples/
-equity-syndication/
+README.md                       ← index of the three pairs
+equity-syndication/             ← fixture 1 (value-add multifamily)
 input.md
 output.md
-preferred-equity/
+hard-money-fund/                ← fixture 3 (senior-secured bridge fund)
 input.md
 output.md
-hard-money-fund/
+private-credit-fund/            ← fixture 13 (diversified BDC-style)
 input.md
 output.md
 
