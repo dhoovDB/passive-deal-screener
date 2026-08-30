@@ -369,18 +369,21 @@ Do not let scope creep dilute these during development:
 - **Output format** — **Markdown default; JSON opt-in.** SKILL.md emits structured Markdown by default; pass "output as JSON" in the prompt (or the `--json` flag to the scripts) for the JSON shape consumed by the React artifact. Markdown reads naturally in the CLI; JSON keeps the artifact and skill compatible.
 - **Reference file granularity** — **5 files per CLAUDE.md naming** (outputs-focused: asset-class-norms / fee-stack-library / red-flag-library / question-bank / benchmark-returns). The older mechanics-focused list (`02-syndication-mechanics`, `03-hard-money-framework`) is retired; that content is woven into the output-focused files (waterfalls in fee-stack-library, HML mechanics in red-flag-library). Loading efficiency preserved via the load-trigger column in Section 5.
 - **Domain placement** — **`finance/` for v1.0.** Propose a `private-investing/` domain expansion in the PR discussion only if the maintainer raises it; don't lead with a new-domain ask.
-- **Slash command** — **Add `/cs:screen-deal`.** Consistent with other finance skills; low effort, high discoverability.
+- **Directory placement inside `finance/`** *(resolved 2026-08-16)* — **`finance/passive-deal-screener/`** (flat `<domain>/<skill-name>/`), not `finance/skills/<name>/`. Three independent confirmations: `CONTRIBUTING.md`'s skill-creation guide, the PR template's "follows existing directory structure (`domain/skill-name/SKILL.md`)" checkbox, and the one external-contributor finance PR (#298, merged at `finance/saas-metrics-coach/`). The `finance/skills/<name>/` shape visible in the tree is a **maintainer post-merge restructure** (PRs #591/#593, 2026-05-02), not the contribution shape. Closes the "left open" item from the 2026-07-03 conformance review.
+- **Skill-level `README.md`** *(resolved 2026-08-16)* — **Do not ship one.** No merged `finance/` skill carries a README, and neither `CONTRIBUTING.md`'s skill-creation guide nor its PR checklist mentions one; the requirement traces only to `SKILL-AUTHORING-STANDARD.md`. Install/usage guidance lives in this repo's root `README.md` instead. Phase-4 checklist item recorded as a documented divergence.
+- **Upstream PR payload** *(resolved 2026-08-16)* — **Ship `SKILL.md` + `references/` + `scripts/` + `evals/evals.json` + `examples/`**; keep `evals/iteration-1..3/`, `scorecard.md`, `TESTING-PLAN.md`, and `sources.md` repo-local. Repo-wide precedent exists for both shipped items (`engineering/{behuman,code-tour,demo-video}/evals.json`, `marketing-skill/webinar-marketing/evals/evals.json`, `marketing-skill/content-creator/examples/`). The 39 iteration transcripts are process, not product, and would push the diff toward the "bloated diff" rejection criterion.
+- **Slash command** *(2026-05-30; **SUPERSEDED 2026-08-16**)* — Originally "add `/cs:screen-deal`." Reversed by the Phase-4.5 divergence map: `commands/` entries are added by the maintainer in the post-merge integration release (that is what PR #309 did for `saas-metrics-coach`), and the external-contributor PR (#298) shipped no command. The command is **proposed in the PR description, not committed in the PR**. See the 2026-08-16 decision-log entry.
 - **React artifact vs SKILL.md** — **Ship both.** Different surfaces (claude.ai chat with embedded UI vs Claude Code CLI). The artifact stays in this repo (gitignored); the SKILL.md is the upstream contribution. Documented in the README.
 - **Contribution target** — **PR from `dhoovDB` fork to `alirezarezvani:dev`.** Feature branches targeting `dev`, never `main`.
 - **Frontmatter tags field** *(2026-05-30; **SUPERSEDED 2026-07-03**)* — Originally "include tags." Reversed after the pre-PR conformance review: `CONVENTIONS.md` permits `name` + `description` only, so `tags` (and `license`/`metadata`/`author`/`agents`) are dropped. Shipped SKILL.md is two-field. See the 2026-07-03 decision-log entry.
 - **Benchmark data freshness** *(2026-05-30)* — **Hardcode + manual override.** Trailing figures hardcoded with a `LAST_UPDATED` constant and an annual-refresh comment. Also accept `--benchmark-return` as a manual override so users can supply current figures. No network dependency; stdlib-only constraint holds.
 - **Third script (`deal_scorer.py`)** *(2026-05-30)* — **Skip v1.0; defer to v1.1+.** A composite 0–100 score adds false precision at this stage and the eval suite doesn't require it. Tracked in the v1.1+ Backlog; revisit post-evals.
 
+- **Asset class routing (#8)** *(resolved 2026-06-13 during the SKILL.md build)* — **Branch by deal type.** A two-axis classify: asset class drives the `01` baseline and `05` comparator; deal type drives the `02` fee section and `03` flag prefixes. One routing table maps deal type → fee section → flag prefix → comparator, then every type reconverges on the same 10-section output. See the 2026-06-13 decision-log entry.
+
 ### Still open
 
-| # | Decision | Options | Lean | When to decide |
-|---|---|---|---|---|
-| 8 | **Asset class routing** | Single workflow / branching by deal type | Branch at Step 2 (classify); load the relevant reference file; reconverge at output | During SKILL.md build |
+None. Every design choice is resolved as of 2026-08-16; the remaining work is execution (Phase 5).
 
 ---
 
@@ -488,22 +491,24 @@ Before opening the PR, verify:
 - [x] All Python scripts run with `python3 script.py --help` (zero pip installs) — confirmed 2026-07-19: both `--help` exit 0; `skill_validator.py` reports both scripts "uses only standard library"
 - [x] Both scripts return graded exit codes (`0` ok / `1` warnings / `2` bad input) per `CONVENTIONS.md` §4. **Met 2026-07-19:** added a boundary `validate_params()` to both scripts (errors → stderr + exit 2, no output; warnings → stderr + result on stdout + exit 1; clean → exit 0); each `--self-check` now asserts one reject + one warn case; verified by execution across clean/warn/bad inputs (see decision log)
 - [x] Reference files are linked from SKILL.md with explicit load guidance — confirmed 2026-07-19: SKILL.md Routing table links `01`–`05` each with a "Load when" trigger
-- [ ] README.md includes install instructions and usage examples
+- [~] README.md includes install instructions and usage examples — **documented divergence, resolved 2026-08-16: no skill-level README ships.** The requirement traces only to `SKILL-AUTHORING-STANDARD.md`; `CONTRIBUTING.md`'s skill-creation guide and PR checklist never mention one, and none of the four merged `finance/` skills carries one. Install/usage guidance lives in this repo's root `README.md` instead (see the 2026-08-16 decision-log entry)
 - [x] No hardcoded API keys, credentials, or personally identifying information — confirmed 2026-07-19 by the security auditor's `sensitive_data_exposure` check (0 findings)
 - [x] Skill passes the security auditor. **PASS 2026-07-19** (0 CRITICAL / 0 HIGH / 0 INFO, exit 0) via `python engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py <shippable subset>`. **Premise corrected:** the validators are **present** locally at `engineering/skills/skill-tester/` and `engineering/skills/skill-security-auditor/` (not the pre-`skills/` path the 2026-07-03 note assumed) and need `PYTHONIOENCODING=utf-8` on Windows. Run against the shippable subset (SKILL.md + references/ + scripts/), not the repo root — the root scan's lone HIGH was `[FS-HIDDEN] .claude`, a dev artifact that never ships. Final confirm against a fork-staged copy on synced `dev` at PR time (see decision log)
 
 **v1.0 ship gate (in addition to the standard checklist above).** The upstream `SKILL-AUTHORING-STANDARD` covers file conventions; the items below are the *content* gates specific to this skill — the standard doesn't know about reference files or evals at this depth.
 
-- [ ] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable
-- [ ] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03`
+- [x] References `01–05` all built; each ≤300 lines (or with internal TOC); LP-lens only; *variable* used honestly where ranges are unstable — **verified 2026-08-16:** 258 / 300 / 232 / 227 / 257 lines, all at or under the threshold
+- [x] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03` — **verified by extraction 2026-08-16:** 34 flag IDs defined in `03`, 25 question IDs in `04`, **28 distinct `03` flag IDs cited by `04`** (threshold ≥5), and **zero dangling IDs** — every flag/question ID appearing in `04` *or* in `SKILL.md` resolves to a real entry
 - [x] `examples/` has ≥3 input/output pairs covering different deal types. **Met 2026-07-25:** 3 pairs — `equity-syndication/` (fixture 1), `hard-money-fund/` (fixture 3), `private-credit-fund/` (fixture 13) — plus an `examples/README.md` index. Each `output.md` is byte-identical to its iteration-3 validated report minus the eval-harness header (see decision log)
 - [x] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **met 2026-07-04: three cycles (12/13 → 11/13 → 12 PASS/1 w-notes/0 FAIL), 5/5 discrimination on every run, final two cycles under generator ≠ grader ≠ author subagent separation; single cycle-3 divergence accepted in the decision log**
-- [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location
-- [ ] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*)
+- [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location — **now also absorbs the install/usage content** that would have gone in the dropped skill-level README (2026-08-16)
+- [x] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*) — **met 2026-08-16:** §7 "Still open" is empty; the Phase-4.5 divergence map records an align/defend call plus a PR-thread response line for every divergence
 
-### Phase 4.5: PR Readiness
+### Phase 4.5: PR Readiness — ✅ COMPLETE 2026-08-16
 
-Before opening the PR, complete these steps in order.
+Steps 1–4 were run on 2026-08-16; the divergence map, the align/defend call on each
+row, and the PR-thread responses live in that date's decision-log entry. The steps
+below are kept as the method of record.
 
 **Step 1 — Read merged PRs in `finance/`, not just the skills.**
 
@@ -523,13 +528,35 @@ Every intentional divergence should have a rationale entry dated before the PR o
 
 ### Phase 5: Commit and PR
 
+**Branch off `upstream/dev` directly — not off the fork's `main`.** As of 2026-08-16
+`dhoovDB/claude-skills@main` is **76 commits ahead of** `alirezarezvani:dev`; branching
+from it would carry all 76 into the diff and trip CONTRIBUTING's "bloated diffs with
+fork merge history" rejection criterion. Use the command CONTRIBUTING itself prints:
+
 ```bash
-# Commit convention used by the upstream repo
-git add finance/passive-deal-screener/
+git fetch upstream dev
+git checkout -b feat/finance-passive-deal-screener upstream/dev
+
+# Stage the shippable subset only (see §7 "Upstream PR payload")
+#   finance/passive-deal-screener/{SKILL.md,references/,scripts/,evals/evals.json,examples/}
+#   + finance/CLAUDE.md   (the only file outside the skill folder — see §9)
+
+# Run all three validators against the staged skill path before committing
+python3 engineering/skills/skill-tester/scripts/skill_validator.py finance/passive-deal-screener
+python3 engineering/skills/skill-tester/scripts/script_tester.py finance/passive-deal-screener --verbose
+python3 engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener --strict
+
+git add finance/passive-deal-screener/ finance/CLAUDE.md
 git commit -m "feat(finance): add passive-deal-screener — LP-perspective deal screening for syndications, preferred equity, and hard money"
 
 git push origin feat/finance-passive-deal-screener
 ```
+
+> **Validator path note.** `CONTRIBUTING.md` prints `engineering/skill-tester/scripts/…`;
+> the actual path on `dev` is **`engineering/skills/skill-tester/scripts/…`** (confirmed
+> 2026-08-16). Stale doc, not a missing tool. On Windows the auditor needs
+> `PYTHONIOENCODING=utf-8`. `--strict` is CONTRIBUTING's stated invocation and was **not**
+> used in the 2026-07-19 local run — re-run with it before the PR.
 
 Open a PR from `dhoovDB:feat/finance-passive-deal-screener` → `alirezarezvani:dev`.
 
@@ -538,20 +565,37 @@ Open a PR from `dhoovDB:feat/finance-passive-deal-screener` → `alirezarezvani:
 - Competitive positioning (what existing skills don't cover)
 - Open design choices you resolved and why
 - Test cases run and iteration summary
-- Any proposed changes to `finance/CLAUDE.md` or top-level `README.md` to add the skill to the domain table
-- Screenshot or sample output for one test case
+- The defensible-divergence lines from the 2026-08-16 decision-log entry (5 numbered
+  references; no skill-level README; `evals/` + `examples/` included; unlabeled Overview)
+- **Proposed** (not committed) follow-ups for the maintainer's integration release:
+  the `finance/CLAUDE.md` domain-list row, a `commands/screen-deal.md` slash command,
+  and a draft `CHANGELOG.md` line
+- Sample output for one test case (link `examples/equity-syndication/output.md`)
+
+**CI expectations on the PR.** Two bots comment automatically: a GitHub Actions
+**Skill Security Audit** (posts per-domain CRITICAL/HIGH counts) and a `claude` PR
+reviewer. On PR #298 the maintainer merged with a friendly review and hand-fixed one
+py3.14 `argparse` issue post-merge — a `%` in a help string. **Ours is already clean:**
+every `%` in both scripts' help text is escaped as `%%` (verified 2026-08-16).
 
 ---
 
 ## 9. Files to Update in the Repo (Beyond the Skill Folder)
 
-| File | Change needed |
-|---|---|
-| `finance/CLAUDE.md` | Add `passive-deal-screener` to the finance domain skill list |
-| Top-level `README.md` | Add row to the Finance domain table: `passive-deal-screener \| Screens private market deals from LP perspective: syndications, preferred equity, hard money, private credit` |
-| `CHANGELOG.md` | Add entry under next version: `feat(finance): passive-deal-screener — LP-perspective deal screener for private markets` |
+**Corrected 2026-08-16** — the original three-row table would have violated
+`CONTRIBUTING.md` on two of its three rows. Only one file outside the skill folder
+belongs in this PR.
 
-The upstream maintainer (alirezarezvani) typically handles `CHANGELOG.md` on merge, but including a draft entry signals professionalism and reduces maintainer friction.
+| File | Change needed | In the PR? |
+|---|---|---|
+| `finance/CLAUDE.md` | Add `passive-deal-screener` to the finance domain skill list | **Yes** — the one external-contributor finance PR (#298) touched exactly this file and nothing else outside its skill folder |
+| Top-level `README.md` | *(was: add a row to the Finance domain table)* | **No** — CONTRIBUTING rejects "PRs that change the skill count (205 — curated number)" and "no 3rd party links added to README". Propose it in the PR description instead |
+| `CHANGELOG.md` | *(was: add a draft entry)* | **No** — CONTRIBUTING's "After Your PR is Merged" section states maintainers run the sync scripts, generate docs pages, update mkdocs nav, plugin.json counts, and marketplace.json. A draft entry here reads as scope creep, not professionalism |
+| `.codex/`, `.gemini/`, `marketplace.json`, `docs/` | — | **Never** — explicitly listed under "What We Do NOT Accept" as auto-generated |
+
+The earlier claim that "including a draft `CHANGELOG.md` entry signals professionalism
+and reduces maintainer friction" is retired: CONTRIBUTING asks contributors *not* to do
+this, so it would add friction, not reduce it.
 
 ---
 
@@ -830,6 +874,77 @@ benchmark against the deal's own underwriting. File carries a TOC up top.
 **Reference set (`01`–`05`) is now complete.** Build order advances to SKILL.md
 (the body that indexes against these five), then the two stdlib-only Python
 scripts, the eval suite, and the skill-level README.
+
+### 2026-08-16 — Phase 4.5: divergence map vs upstream's *actual* merged practice (align/defend on 12 rows)
+
+Ran Phase 4.5 steps 1–4 before writing either README, because Phase 4.5 decides what
+those READMEs are. Method note: all upstream reading went through `gh api` / `gh pr view`
+against `alirezarezvani/claude-skills@dev` — the local `claude-skills` clone is a
+read-only fork per the portfolio CLAUDE.md and was not touched. Drift check first:
+`dhoovDB/claude-skills@main` is **ahead 76 / behind 0** vs `alirezarezvani:dev`, so no
+sync was needed to read current upstream state accurately.
+
+**The find that reframed the pass: `CONTRIBUTING.md` exists and this ROADMAP had never
+cited it.** Every prior conformance review here reasoned from `CONVENTIONS.md` and
+`SKILL-AUTHORING-STANDARD.md`. `CONTRIBUTING.md` is more specific than both, and it
+settles four rows outright — including two where this ROADMAP was actively planning the
+wrong thing.
+
+**Evidence base (Step 1).** Read PR **#298** (`saas-metrics-coach` — the *only* external
+contributor finance skill, merged to `dev`), PR **#309** (the maintainer's follow-on
+integration release), PR **#455** (a 4-skill community batch), and the layout-restructure
+PRs **#591/#593**; plus `CONTRIBUTING.md`, `CONVENTIONS.md`, and
+`.github/PULL_REQUEST_TEMPLATE.md` at `dev` HEAD.
+
+The single most useful observation is the **split between the two PRs**: #298 (contributor)
+touched *only* `finance/saas-metrics-coach/**` + `finance/CLAUDE.md`. #309 (maintainer)
+then did `marketplace.json`, `docs/skills/finance/*`, `.codex/`, `.gemini/`,
+`commands/*.md`, and `agents/*` as a separate release. That boundary — contributor ships
+the skill folder, maintainer does integration — decides rows 3, 6, and 7 below.
+
+**The divergence map.** Every row carries what differs, why, and the call. "Defend" rows
+carry the line to paste into the PR thread if a maintainer asks.
+
+| # | Divergence | Written rule vs observed practice | Call |
+|---|---|---|---|
+| 1 | **Directory layout** | CONVENTIONS + CONTRIBUTING + PR template all say `<domain>/<skill-name>/`; the tree shows `finance/skills/<name>/` for 3 of 4 skills | **ALIGN → `finance/passive-deal-screener/`.** The `skills/` nesting is a maintainer *post-merge* restructure (#591/#593, 2026-05-02); #298 was contributed flat. Three docs and the one contributor PR agree |
+| 2 | **Skill-level README** | `SKILL-AUTHORING-STANDARD.md` requires one; CONTRIBUTING's skill-creation guide and PR checklist never mention one; 0 of 4 merged finance skills have one | **ALIGN → don't ship it.** Deletes a planned task. Install/usage moves to this repo's root README |
+| 3 | **Top-level `README.md` + `CHANGELOG.md` edits** (ROADMAP §9) | CONTRIBUTING: "PRs that change the skill count (205)" and "PRs modifying `.codex/`, `.gemini/`, `marketplace.json`" are **not accepted**; maintainers handle docs/changelog/counts after merge | **ALIGN → drop both rows.** §9 corrected in place. This ROADMAP's claim that a draft CHANGELOG entry "signals professionalism" was backwards — CONTRIBUTING asks contributors not to |
+| 4 | **`finance/CLAUDE.md` edit** | Not in any checklist, but #298 did exactly this | **KEEP.** The one file outside the skill folder that belongs in the PR |
+| 5 | **`Cross-References` section** | CONVENTIONS Required Section #5; named in the CONTRIBUTING PR checklist. Ours is labeled `## Related skills` (SKILL.md:109) — right content, wrong label | **ALIGN → rename.** Same class of miss as the Anti-Patterns relabel (2026-07-11). +2 bytes against 16 bytes of headroom under the 10,240 cap. Executed as its own task |
+| 6 | **Slash command `/cs:screen-deal`** | Locked "add it" on 2026-05-30. But #298 shipped no command; the maintainer added `commands/financial-health.md` in the #309 integration release | **ALIGN → propose in the PR description, don't commit.** Supersedes the 2026-05-30 lock |
+| 7 | **PR payload: `evals/` + `examples/`** | No merged *finance* skill carries either; repo-wide precedent exists (`engineering/{behuman,code-tour,demo-video}/evals.json`, `marketing-skill/webinar-marketing/evals/evals.json`, `marketing-skill/content-creator/examples/`) | **DEFEND → ship `evals/evals.json` + `examples/`; keep the 39 iteration transcripts, `scorecard.md`, `TESTING-PLAN.md`, `sources.md` repo-local.** *PR line:* "13 fixtures and 3 worked outputs are how you verify the screener discriminates instead of flagging everything; the iteration transcripts are process, not product, so they stay out of the diff." |
+| 8 | **5 numbered reference files** vs 2–4 unnumbered in merged finance skills | No rule either way; CONTRIBUTING calls `references/` optional | **DEFEND.** *PR line:* "The numbers encode load order and build order — `04` cites flag IDs defined in `03`, `05` does spread math off `01`'s ranges. SKILL.md's routing table loads a named slice per deal type rather than the whole set." |
+| 9 | **Unlabeled Overview** (H1 + intro paragraph, no `## Overview`) | CONVENTIONS Required Section #2, phrased "should include"; absent from the CONTRIBUTING PR checklist | **DEFEND.** *PR line:* "The paragraph under the H1 is the overview; a labeled heading would cost bytes against the 10KB cap without adding information." Weaker rule than #5's — "should", not the frontmatter's "will be closed" |
+| 10 | **Two-field frontmatter** | PR template still lists `license` as expected; CONVENTIONS forbids it with "PRs that violate them will be closed"; CONTRIBUTING repeats "Do NOT add `license`, `metadata`, `triggers`, `version`, `author`" | **HOLD the 2026-07-03 call.** Now supported by a second doc. The PR template is the stale one |
+| 11 | **Line/size cap** | CONTRIBUTING says "under 500 lines"; SKILL-AUTHORING-STANDARD says ≤10KB. Ours: 111 lines / 10,224 B | **No action** — satisfies both. The 2026-06-13 note that "<500 lines" was retired should read "superseded by the *binding* constraint," not "wrong" |
+| 12 | **Validator paths** | CONTRIBUTING prints `engineering/skill-tester/scripts/…`; actual path on `dev` is `engineering/skills/skill-tester/scripts/…` | **No action** — confirms the 2026-07-19 correction. Stale doc, not a missing tool |
+
+**Two things this pass caught that a checklist wouldn't have.**
+
+- **A pre-empted post-merge bug.** After merging #298 the maintainer noted he would fix a
+  Python 3.14 incompatibility himself: a bare `%` in an `argparse` help string. Checked
+  ours — **every `%` in both scripts' help text is already escaped `%%`** (15 occurrences
+  across `fee_drag_calculator.py` and `benchmark_comparator.py`). Nothing to fix; worth
+  knowing it was checked rather than lucky.
+- **`--strict` was never run.** CONTRIBUTING invokes the security auditor with `--strict`;
+  the 2026-07-19 local run did not record that flag. Added to the Phase-5 command block.
+  Also noted: CI posts *two* automated reviews on every PR (a GitHub Actions Skill Security
+  Audit and a `claude` reviewer), so the first response to the PR will be machine-generated.
+
+**Ship-gate items closed in the same pass** (verified by extraction, not assertion):
+references `01–05` at 258 / 300 / 232 / 227 / 257 lines, all within the 300-line
+convention; cross-reference integrity clean — 34 flag IDs in `03`, 25 question IDs in
+`04`, **28 distinct `03` IDs cited by `04`** against a ≥5 threshold, and **zero dangling
+IDs** across `04` *and* `SKILL.md`.
+
+**§7 now has no open design choices.** Directory placement, skill-level README, and PR
+payload resolved here; asset-class routing (#8) was resolved on 2026-06-13 and had been
+left sitting in the "Still open" table by oversight.
+
+**Remaining before the PR:** (1) the `## Cross-References` rename in SKILL.md with a
+byte-cap re-check, (2) the root `README.md` refresh — now also carrying the install/usage
+content the dropped skill-level README would have held, (3) Phase 5.
 
 ### 2026-07-25 — Built `examples/` (3 input/output pairs; content ship-gate item)
 
@@ -1399,4 +1514,4 @@ the next file, then SKILL.md.
 
 *Generated from conversation context: passive real estate investing learning path, LP/GP structure, hard money lending, EquityMultiple analysis, fee drag mechanics. The analytical framework is grounded in the investor's background (commercial credit analyst, STR operator) and goals (passive LP, not operator).*
 
-*Last updated: 2026-07-25 (built `examples/` — 3 input/output pairs (equity-syndication / hard-money-fund / private-credit-fund, fixtures 1/3/13) + README index; each output byte-identical to its iteration-3 validated report minus the eval header; CLAUDE.md structure block updated to match. v1.0 examples ship-gate item met. Remaining: skill-level README (finance/passive-deal-screener/README.md), then Phase 5 (sync dev + clean validator pass + PR). Prior — 2026-07-19: ran the upstream validators — security auditor PASSES (0 findings) on the shippable subset, Phase-4 security gate met; skill_validator 76.5 GOOD / quality_scorer F, but their frontmatter/section/line-count FAILs are validator-vs-CONVENTIONS conflicts NOT to be "fixed" (adding the retired fields would get the PR closed); premise corrected — validators present at engineering/skills/, need PYTHONIOENCODING=utf-8; fork dev sync deferred to pre-PR. All three post-eval conformance fixes now DONE. Remaining before PR: examples/, the two READMEs, then Phase-5 (sync dev + clean validator pass + PR). Prior — post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
+*Last updated: 2026-08-16 (Phase 4.5 COMPLETE — divergence map vs upstream's actual merged practice, 12 rows, align/defend called on each. Key find: CONTRIBUTING.md exists and this ROADMAP had never cited it; it is more specific than CONVENTIONS.md / SKILL-AUTHORING-STANDARD.md and settles four rows. Decisions: directory is finance/passive-deal-screener/ (flat — the finance/skills/ nesting is a maintainer post-merge restructure, #591/#593); NO skill-level README ships (0 of 4 merged finance skills have one; not in CONTRIBUTING's guide or PR checklist) — that planned task is deleted, install/usage moves to the root README; §9 corrected — top-level README + CHANGELOG rows DROPPED (CONTRIBUTING rejects skill-count changes and index-file edits; maintainers handle docs/changelog post-merge), leaving finance/CLAUDE.md as the only file outside the skill folder; /cs:screen-deal proposed in the PR description, NOT committed (supersedes the 2026-05-30 lock — the maintainer adds commands in the integration release, cf. #309); PR payload = SKILL.md + references/ + scripts/ + evals/evals.json + examples/, iteration transcripts stay repo-local. One real gap found: CONVENTIONS Required Section #5 is Cross-References and ours is labeled "Related skills" — rename is the next task (+2B against 16B headroom under the 10,240 cap). Pre-empted the py3.14 argparse bug the maintainer hand-fixed after #298 — our % are already escaped %%. --strict was never run on the security auditor; added to the Phase-5 block, which now also branches from upstream/dev directly (fork main is 76 ahead → bloated-diff rejection risk). Ship-gate items closed by extraction: references 258/300/232/227/257 lines, and cross-ref integrity clean — 34 flags, 25 questions, 28 distinct 03 IDs cited by 04, zero dangling IDs across 04 and SKILL.md. §7 has NO open design choices. Remaining: (1) Cross-References rename, (2) root README refresh, (3) Phase 5 (fork sync + validators with --strict + PR). PR note: user wants a detailed PR summary when the upstream PR is opened. Prior — 2026-07-25 (built `examples/` — 3 input/output pairs (equity-syndication / hard-money-fund / private-credit-fund, fixtures 1/3/13) + README index; each output byte-identical to its iteration-3 validated report minus the eval header; CLAUDE.md structure block updated to match. v1.0 examples ship-gate item met. Remaining: skill-level README (finance/passive-deal-screener/README.md), then Phase 5 (sync dev + clean validator pass + PR). Prior — 2026-07-19: ran the upstream validators — security auditor PASSES (0 findings) on the shippable subset, Phase-4 security gate met; skill_validator 76.5 GOOD / quality_scorer F, but their frontmatter/section/line-count FAILs are validator-vs-CONVENTIONS conflicts NOT to be "fixed" (adding the retired fields would get the PR closed); premise corrected — validators present at engineering/skills/, need PYTHONIOENCODING=utf-8; fork dev sync deferred to pre-PR. All three post-eval conformance fixes now DONE. Remaining before PR: examples/, the two READMEs, then Phase-5 (sync dev + clean validator pass + PR). Prior — post-eval conformance fix 2 of 3: graded input-validation layer added to both scripts — boundary `validate_params()`, 0 ok / 1 warnings / 2 bad input, self-tested in `--self-check`, verified by execution; pure cores untouched. Remaining: fix 3 of 3 (fork sync + upstream validators), then examples/, the two READMEs, and the PR. Prior — 2026-07-11: post-eval conformance fix 1 of 3: labeled `## Anti-Patterns` section added to SKILL.md via consolidate-and-relabel — 5 don'ts, SKILL.md 10,224B under the 10,240 cap with 16B headroom, no eval-behavior regression; two adjacent Phase-4 description checks confirmed. Remaining conformance fixes: script exit codes, then fork sync + upstream validators; then examples/, the two READMEs, and the PR. Prior — 2026-07-04: eval cycle 3 CLEARS THE GATE: 12 PASS / 1 w-notes / 0 FAIL, 5/5 discrimination — third consecutive run; S1b boundary pair verified (fixture 1 merits PwC, fixture 9 formula), S2b self-check confirmed in-run (f8 GEN-09, f1 Q-FEE-04); single divergence (f4 HML-05 subsumed by GEN-16) accepted in the decision log; SKILL.md 9,801B, gate held; D1/D4 mirrored into TESTING-PLAN. Phase-3 evals closed after 3 cycles (12/13 → 11/13 → 0 FAILs); Phase-4 eval checkbox checked. Next: post-eval conformance fixes (Anti-Patterns section, script exit codes, fork sync + upstream validators), then examples/ (candidates: iteration-3 reports for fixtures 1/3/12), the two READMEs, and the upstream PR. PR note: user wants a detailed PR summary when the upstream PR is opened.)*
