@@ -501,7 +501,7 @@ Before opening the PR, verify:
 - [x] Cross-reference integrity: each `03-red-flag-library` entry carries a flag ID in format `{ASSET_CLASS}-{NN}`; `04-question-bank` entries each cite ≥1 flag ID; `04` as a whole cites ≥5 distinct entries from `03` — **verified by extraction 2026-08-16:** 34 flag IDs defined in `03`, 25 question IDs in `04`, **28 distinct `03` flag IDs cited by `04`** (threshold ≥5), and **zero dangling IDs** — every flag/question ID appearing in `04` *or* in `SKILL.md` resolves to a real entry
 - [x] `examples/` has ≥3 input/output pairs covering different deal types. **Met 2026-07-25:** 3 pairs — `equity-syndication/` (fixture 1), `hard-money-fund/` (fixture 3), `private-credit-fund/` (fixture 13) — plus an `examples/README.md` index. Each `output.md` is byte-identical to its iteration-3 validated report minus the eval-harness header (see decision log)
 - [x] `evals/evals.json` carries the 11 cases from Phase 3 / `evals/TESTING-PLAN.md` (9 original + 2 clean deals; case 3 is a sound/problematic pair → 13 input fixtures); SKILL.md passes all 11 after ≥2 iteration cycles, with iteration logs in `evals/iteration-N/` — **met 2026-07-04: three cycles (12/13 → 11/13 → 12 PASS/1 w-notes/0 FAIL), 5/5 discrimination on every run, final two cycles under generator ≠ grader ≠ author subagent separation; single cycle-3 divergence accepted in the decision log**
-- [ ] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location — **now also absorbs the install/usage content** that would have gone in the dropped skill-level README (2026-08-16)
+- [x] This repo's own `README.md` (root) reflects the shipped state and points users to the upstream skill location — **now also absorbs the install/usage content** that would have gone in the dropped skill-level README (2026-08-16). **Rewritten 2026-09-01** as a product README: status, layout, install, usage, worked examples, positioning, build story. Every command in it was executed before commit; every count re-derived from disk. See the 2026-09-01 decision-log entry
 - [x] Decision log captures every resolved design choice with rationale (reviewers see the *why*, not just the *what*) — **met 2026-08-16:** §7 "Still open" is empty; the Phase-4.5 divergence map records an align/defend call plus a PR-thread response line for every divergence
 
 ### Phase 4.5: PR Readiness — ✅ COMPLETE 2026-08-16
@@ -943,9 +943,53 @@ payload resolved here; asset-class routing (#8) was resolved on 2026-06-13 and h
 left sitting in the "Still open" table by oversight.
 
 **Remaining before the PR:** ~~(1) the `## Cross-References` rename in SKILL.md with a
-byte-cap re-check~~ — **done 2026-09-01**; (2) the root `README.md` refresh — now also
-carrying the install/usage content the dropped skill-level README would have held,
-(3) Phase 5.
+byte-cap re-check~~ — **done 2026-09-01**; ~~(2) the root `README.md` refresh — now also
+carrying the install/usage content the dropped skill-level README would have held~~ —
+**done 2026-09-01**; (3) **Phase 5 — the only thing left.**
+
+### 2026-09-01 — Root README rewritten as a product README
+
+The last content gate before Phase 5. The old README was not merely stale, it argued
+the opposite of the current plan: a dedicated section promised that "install
+instructions and usage examples ship in a **skill-level** `README.md` at
+`finance/passive-deal-screener/README.md`" — the very file Phase 4.5 decided not to
+ship. It also opened with "**Status: Pre-development.** Not installable yet," marked
+`03`/`04`/`05`/`SKILL.md`/`scripts/`/`examples/` as *Planned* in its layout tree, omitted
+`evals/` entirely, and carried a build-status table with six wrong rows.
+
+**Four decisions, locked in a grill-me pass before writing:**
+
+1. **It is a product README, not a repo introduction.** The deciding evidence: the root
+   README is **not in the PR payload** (§7 ships `SKILL.md` + `references/` + `scripts/` +
+   `evals/evals.json` + `examples/`), so an upstream reviewer never sees it in the diff.
+   The real reader is someone landing on the GitHub repo — a would-be user or a hiring
+   manager. Structure now leads with what it does, install, and usage; build context is
+   demoted below the fold.
+2. **Install documents the manual path, not the plugin.** Clone, then copy exactly
+   `SKILL.md` + `references/` + `scripts/` into `~/.claude/skills/passive-deal-screener/`
+   — the same subset that ships upstream, so a local install behaves identically to the
+   merged one. The `/plugin install finance-skills@claude-code-skills` route is named as
+   the post-merge future state without claiming it works today. Verified by executing the
+   copy into a scratch tree; the result is a valid skill directory with intact frontmatter.
+3. **Status callout: "v1.0, working. Not yet merged upstream."** Honest in both
+   directions — doesn't undersell a finished skill, doesn't imply marketplace
+   availability. Eval evidence lives under "How it was built" rather than the headline.
+4. **Build-status table dropped; a short accurate layout tree kept.** A table of ✅s is a
+   build log, and `ROADMAP.md` already owns status. The tree survives because it sits
+   directly above Install and shows what the three copied directories contain.
+
+**Every command in the README was executed before commit**, and one claim did not
+survive that check: the exit-code line originally read "`2` bad input," which is vague
+and half-wrong. `--gross-irr 999` returns **1**, not 2 — it is a runnable unit-slip
+warning that still emits the result. Reading `validate_params()` gave the real contract,
+now documented as a table with a verified example per row: `0` clean, `1` runs-but-suspect
+(warning to stderr, result to stdout), `2` structurally invalid (rejected, no output).
+The worked usage examples are real transcripts, and the two scripts are shown composing —
+`fee_drag_calculator` yields a 12.31% net IRR that becomes `benchmark_comparator`'s input.
+
+Counts re-derived from disk rather than inherited from prose: 5 reference files totalling
+1,274 lines, 34 flag IDs, 25 question IDs, 13 eval fixtures, 3 example pairs, both scripts
+importing only `argparse`/`json`/`sys`.
 
 ### 2026-09-01 — `## Cross-References` rename, and the 10,240-byte cap fails verification
 
