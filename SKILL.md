@@ -106,6 +106,6 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 
 **JSON mode (opt-in):** on "output as JSON", emit the artifact object instead of Markdown — `deal_snapshot`, `return_metrics`, `fee_stack`, `structure_analysis`, `red_flags[]`, `missing_disclosures[]`, `gp_operator_signals`, `questions_to_ask[]`, `overall_verdict`.
 
-## Related skills
+## Cross-References
 - **financial-analyst** — corporate-finance ratios, DCF, forecasting; NOT LP deal screening or waterfalls.
 - **business-investment-advisor** — generic investment analysis; NOT the LP fee-stack / waterfall / red-flag lens.

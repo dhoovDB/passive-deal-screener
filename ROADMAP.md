@@ -911,7 +911,7 @@ carry the line to paste into the PR thread if a maintainer asks.
 | 2 | **Skill-level README** | `SKILL-AUTHORING-STANDARD.md` requires one; CONTRIBUTING's skill-creation guide and PR checklist never mention one; 0 of 4 merged finance skills have one | **ALIGN → don't ship it.** Deletes a planned task. Install/usage moves to this repo's root README |
 | 3 | **Top-level `README.md` + `CHANGELOG.md` edits** (ROADMAP §9) | CONTRIBUTING: "PRs that change the skill count (205)" and "PRs modifying `.codex/`, `.gemini/`, `marketplace.json`" are **not accepted**; maintainers handle docs/changelog/counts after merge | **ALIGN → drop both rows.** §9 corrected in place. This ROADMAP's claim that a draft CHANGELOG entry "signals professionalism" was backwards — CONTRIBUTING asks contributors not to |
 | 4 | **`finance/CLAUDE.md` edit** | Not in any checklist, but #298 did exactly this | **KEEP.** The one file outside the skill folder that belongs in the PR |
-| 5 | **`Cross-References` section** | CONVENTIONS Required Section #5; named in the CONTRIBUTING PR checklist. Ours is labeled `## Related skills` (SKILL.md:109) — right content, wrong label | **ALIGN → rename.** Same class of miss as the Anti-Patterns relabel (2026-07-11). +2 bytes against 16 bytes of headroom under the 10,240 cap. Executed as its own task |
+| 5 | **`Cross-References` section** | CONVENTIONS Required Section #5; named in the CONTRIBUTING PR checklist. Ours was labeled `## Related skills` (SKILL.md:109) — right content, wrong label | **ALIGN → rename. ✅ DONE 2026-09-01.** Heading-only swap; the two bullets already matched CONVENTIONS' "related skills in this repo". SKILL.md now 111 lines / 10,226 B. See the 2026-09-01 decision-log entry — the "16 bytes of headroom under the 10,240 cap" premise did not survive verification |
 | 6 | **Slash command `/cs:screen-deal`** | Locked "add it" on 2026-05-30. But #298 shipped no command; the maintainer added `commands/financial-health.md` in the #309 integration release | **ALIGN → propose in the PR description, don't commit.** Supersedes the 2026-05-30 lock |
 | 7 | **PR payload: `evals/` + `examples/`** | No merged *finance* skill carries either; repo-wide precedent exists (`engineering/{behuman,code-tour,demo-video}/evals.json`, `marketing-skill/webinar-marketing/evals/evals.json`, `marketing-skill/content-creator/examples/`) | **DEFEND → ship `evals/evals.json` + `examples/`; keep the 39 iteration transcripts, `scorecard.md`, `TESTING-PLAN.md`, `sources.md` repo-local.** *PR line:* "13 fixtures and 3 worked outputs are how you verify the screener discriminates instead of flagging everything; the iteration transcripts are process, not product, so they stay out of the diff." |
 | 8 | **5 numbered reference files** vs 2–4 unnumbered in merged finance skills | No rule either way; CONTRIBUTING calls `references/` optional | **DEFEND.** *PR line:* "The numbers encode load order and build order — `04` cites flag IDs defined in `03`, `05` does spread math off `01`'s ranges. SKILL.md's routing table loads a named slice per deal type rather than the whole set." |
@@ -942,9 +942,44 @@ IDs** across `04` *and* `SKILL.md`.
 payload resolved here; asset-class routing (#8) was resolved on 2026-06-13 and had been
 left sitting in the "Still open" table by oversight.
 
-**Remaining before the PR:** (1) the `## Cross-References` rename in SKILL.md with a
-byte-cap re-check, (2) the root `README.md` refresh — now also carrying the install/usage
-content the dropped skill-level README would have held, (3) Phase 5.
+**Remaining before the PR:** ~~(1) the `## Cross-References` rename in SKILL.md with a
+byte-cap re-check~~ — **done 2026-09-01**; (2) the root `README.md` refresh — now also
+carrying the install/usage content the dropped skill-level README would have held,
+(3) Phase 5.
+
+### 2026-09-01 — `## Cross-References` rename, and the 10,240-byte cap fails verification
+
+Divergence-map row 5 executed. `SKILL.md:109` `## Related skills` → `## Cross-References`,
+matching `CONVENTIONS.md:77` ("**Cross-References** — related skills in this repo").
+Heading only — the two bullets (`financial-analyst`, `business-investment-advisor`, each
+with a "NOT this" disambiguation) already matched the required content, so the diff is
+exactly one insertion and one deletion. SKILL.md: 111 lines, 10,226 B.
+
+**The byte cap this ROADMAP has been budgeting against could not be sourced.** Before
+running the rename I went looking for the 10,240-byte limit to confirm the +2 B fit, and
+found no rule to confirm it against:
+
+- `CONVENTIONS.md:62` sets a **line** limit — "Under 500 lines." We are at **111**, with
+  389 lines of headroom.
+- `SKILL-AUTHORING-STANDARD.md` states no size rule at all.
+- `skill_validator.py` has no SKILL.md size check. Its `script_size_range` values
+  (100–300 / 300–500 / 500–800) are **Python script LOC tiers**, not SKILL.md bytes —
+  the likeliest source of the original misreading.
+- `grep -rn "10240\|10,240"` across every `.md` and `.py` upstream returns only unrelated
+  hits (a Grafana colour threshold, a mock file size in a test fixture).
+
+**Why it matters beyond this task.** The phantom cap has been shaping decisions. The
+2026-07-11 Anti-Patterns work was executed as a "consolidate-and-relabel" *specifically*
+to fit inside it, and divergence-map **row 9** still defends the unlabeled Overview with
+the line "a labeled heading would cost bytes against the 10KB cap without adding
+information" — an argument resting on a constraint with no found source. That PR line is
+now weak and should be re-argued on its own merits (the paragraph under the H1 *is* the
+overview; CONVENTIONS says "should include", not "must") rather than on byte scarcity,
+before the PR opens.
+
+**Not re-opened:** the Anti-Patterns consolidation itself. It reads well as written and
+passed three eval cycles; only the *rationale* was wrong, not the result. Re-litigating a
+good outcome because its justification was flawed would burn the session for no gain.
 
 ### 2026-07-25 — Built `examples/` (3 input/output pairs; content ship-gate item)
 
