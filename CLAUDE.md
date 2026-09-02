@@ -42,27 +42,39 @@ path. Do not conflate the two.
 ---
 
 ## File structure
+
+Ships upstream (the PR payload) is marked **[PR]**; everything else is
+development-only and stays in this repo.
+
+```
 passive-deal-screener/
-SKILL.md                          ← primary contribution
-CLAUDE.md                         ← this file
-ROADMAP.md                        ← task list and decision log
-references/
-01-asset-class-norms.md         ← factual foundation, build first
-02-fee-stack-library.md         ← fee ranges by asset class
-03-red-flag-library.md          ← warning signs by category
-04-question-bank.md             ← LP questions + bad answer signals
-05-benchmark-returns.md         ← public market comparators
-examples/
-README.md                       ← index of the three pairs
-equity-syndication/             ← fixture 1 (value-add multifamily)
-input.md
-output.md
-hard-money-fund/                ← fixture 3 (senior-secured bridge fund)
-input.md
-output.md
-private-credit-fund/            ← fixture 13 (diversified BDC-style)
-input.md
-output.md
+├── SKILL.md                        [PR] primary contribution
+├── README.md                            product README — install, usage, positioning
+├── CLAUDE.md                            this file
+├── ROADMAP.md                           task list, decision log, ship gate
+├── references/                     [PR]
+│   ├── 01-asset-class-norms.md          factual foundation, build first
+│   ├── 02-fee-stack-library.md          fee ranges by asset class
+│   ├── 03-red-flag-library.md           34 flags, {ASSET_CLASS}-{NN} IDs
+│   ├── 04-question-bank.md              25 LP questions + bad-answer signals
+│   ├── 05-benchmark-returns.md          public market comparators
+│   └── data/                            dated source snapshots (LAST_UPDATED 2026-06-12)
+├── scripts/                        [PR] stdlib-only, graded exit codes 0/1/2
+│   ├── fee_drag_calculator.py           gross-to-net drag + waterfall
+│   └── benchmark_comparator.py          net IRR vs public comparator + illiquidity hurdle
+├── examples/                       [PR]
+│   ├── README.md                        index of the three pairs
+│   ├── equity-syndication/              fixture 1 (value-add multifamily)
+│   ├── hard-money-fund/                 fixture 3 (senior-secured bridge fund)
+│   └── private-credit-fund/             fixture 13 (diversified BDC-style)
+│                                        each: input.md + output.md
+├── evals/
+│   ├── evals.json                  [PR] 13 fixtures
+│   ├── iteration-1..3/                  run transcripts + scorecards — process, not product
+│   ├── TESTING-PLAN.md                  eval design
+│   └── sources.md                       fixture provenance
+└── deal-evaluator.jsx                   gitignored — claude.ai React artifact, separate surface
+```
 
 ---
 
