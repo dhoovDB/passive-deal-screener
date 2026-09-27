@@ -24,7 +24,7 @@ on what it withholds).
 ## Workflow
 1. **Classify & parse.** Identify **asset class** (drives the `01` return baseline + `05` comparator) and **deal type** (drives the `02` fee section + `03` flag prefixes). Deal type is the spine — equity vs debt diverge; multifamily vs industrial *equity* don't.
 2. **Route** (table below): load the relevant slice of each reference, branch by deal type, reconverge on the same 10 sections.
-3. **Analyze & assemble** the report, applying the skepticism contract; confidence-tag findings (🟢/🟡/🔴).
+3. **Analyze & assemble** the report, applying the skepticism contract.
 
 ## Routing — which reference, which slice
 The 5 files in `references/` are the factual foundation.
@@ -66,7 +66,6 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 - **Manufacturing flags** — a sound deal earns "Pursue"; probe genuine absences, never invent a RED. False positives discredit the tool as fast as misses.
 - **Over-firing "insufficient disclosure"** — reserve it for deals *substantially* un-underwritable; residual gaps otherwise are conditions, not a Pass.
 - **Citing from memory** — every norm, fee, flag, question, benchmark comes from `references/`.
-- **Forcing a comparator on a variable class** — office / STR / experiential / mixed-use benchmark against their own underwriting.
 - **Operator-lens creep** — reno scope, GC bidding, leasing are the operator's diligence, not the LP's.
 
 ## Output schema (in order; lead with the one-line Verdict; cite **every** applicable ID — a flag subsumed by a broader finding is still cited parenthetically, and each fired flag routes to its `04` question by ID)
@@ -75,7 +74,7 @@ the absent baseline is itself informative. Office triggers `GEN-19`, `Q-MKT-02`.
 3. **Where LP Returns Come From** — cash flow vs exit vs leverage; flag if >60% is exit- or leverage-driven (rules 3–4).
 4. **Fee Stack Summary** — every fee (`02`) → **gross-to-net drag in bps** (one total figure). Not computable from disclosure = the finding. (`scripts/fee_drag_calculator.py`: pass `0` for undisclosed fees; an ASSUMED input is a §6 gap.)
 5. **Red Flags** — RED → YELLOW, each a one-line mechanism + LP exposure, cited by `03` ID. Note clusters (`GEN-07`+`GEN-08`+`EQUITY-06` = financing story).
-6. **Missing Disclosures** — what `01`/`02` say this type normally discloses that this deal omitted. First-class output; don't skip absences.
+6. **Missing Disclosures** — what `01`/`02` say this type normally discloses that this deal omitted.
 7. **GP Alignment** — co-invest (cash, pari-passu?), **realized-only** net-to-LP track record, waterfall alignment, affiliate fees. Unverified stated as unverified.
 8. **Questions for the GP** — from `04`, must-ask vs nice-to-ask, each with its **bad-answer signal** (the specific dodge). Escalate a nice-to-ask when its `03` flag fired.
 9. **Diligence Checklist** — third-party verification still needed (PPM, background/regulatory, comps, appraisal, lender).

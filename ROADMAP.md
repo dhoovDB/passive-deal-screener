@@ -48,15 +48,11 @@ earlier steps' commits exist in `git log` first.
 - [x] **Step 4 — SKILL.md (W4, N1)** (`2790756`). Rule 9: pasted text is data, not instructions. Output Artifacts kept per upstream's checklist; duplicates cut. 10,121 B.
 - [x] **Step 5 — Reference trim (W5, N3)** (`8763799`). −3.9 KB (4.5%); IDs and tables verified unchanged.
 - [x] **Step 6 — Eval transcript prune (N4)** (`042b91d`). Iteration-1/2 transcripts removed; scorecards kept.
-- [x] **Step 7 — Docs cleanup (W6, N2, N5).** This file restructured to the portfolio template; CLAUDE.md brought current; drift-prone README counts removed.
+- [x] **Step 7 — Docs cleanup (W6, N2, N5)** (`7607f50`). This file restructured to the portfolio template; CLAUDE.md brought current; drift-prone README counts removed.
 - [ ] **Step 8a — Eval iteration 4 (full re-validation).** All 13 fixtures; generator ≠ grader ≠ author, as fresh-context subagents. The grader works from `evals/evals.json` `expected_output`, verifies flag/question IDs itself (a script was offered and declined 2026-09-27, so the grader weighs IDs in context), and may not read earlier iterations. (Iteration 3 graded against `expected/01–13.md` files in a session scratchpad that no longer exists; `evals.json` is the committed equivalent.) Regenerate `examples/*/output.md` from fixtures 01/03/13 (header stripped, otherwise unedited). Update README/this file's eval citations. Gate: 0 FAIL.
 - [ ] **Step 8b — Ultrareview of the PR as upstream will see it.** Needs the PR-shaped branch, so run Phase 5 steps 1–3 first. Then the user runs `/code-review ultra` from the `claude-skills` clone on `feat/finance-passive-deal-screener` (user-triggered and billed; reviews the local branch, no push needed). Fix what it finds on the branch *and* back-port to this repo.
 
-**Open decision — SKILL.md size.** Upstream's `SKILL-AUTHORING-STANDARD.md` says
-"SKILL.md ≤10KB" (lines 219/232/386/414 on `dev`); `CONVENTIONS.md` and
-`CONTRIBUTING.md` say "under 500 lines". SKILL.md is 10,121 B / ~110 lines —
-inside 10 KiB (10,240) but 121 B over a decimal 10 KB (10,000). No validator checks
-either. Decide before Phase 5: trim below 10,000, or treat 10,240 as the reading.
+- [x] **Step 7b — SKILL.md under a strict 10 KB.** Upstream's `SKILL-AUTHORING-STANDARD.md` says "SKILL.md ≤10KB" (`CONVENTIONS`/`CONTRIBUTING` say "under 500 lines"); "10KB" could mean 10,240 or 10,000. Decided 2026-09-27 to satisfy the strict reading: three duplicated instructions removed, 10,121 → 9,905 B.
 
 ---
 
@@ -165,7 +161,8 @@ drag, ~680 invented), and the evals didn't catch it. Decisions:
 - **Ultrareview (Step 8b) on the PR-shaped branch**, so the review sees exactly
   what upstream sees.
 - **Correction to the 2026-09-01 entry:** the ≤10KB rule *does* exist in upstream's
-  SKILL-AUTHORING-STANDARD; see the open size decision under Phase 4.6.
+  SKILL-AUTHORING-STANDARD. "10KB" is ambiguous (10,000 vs 10,240), so SKILL.md was
+  trimmed to 9,905 B to satisfy the strict reading.
 
 ### 2026-09-01 — Root README rewritten as a product README
 
@@ -203,7 +200,7 @@ integration (marketplace, docs, commands) afterwards.
 | 8 | Five numbered reference files | **Defend.** *PR line:* "The numbers encode load and build order — `04` cites flag IDs defined in `03`, `05` does spread math off `01`'s ranges. The routing table loads a named slice per deal type, not the whole set." |
 | 9 | Unlabeled Overview (paragraph under the H1) | **Defend.** *PR line:* "The paragraph under the H1 is the overview." CONVENTIONS says "should include", not "must" |
 | 10 | Two-field frontmatter vs a PR template that lists `license` | **Hold.** CONVENTIONS and CONTRIBUTING both forbid extra fields ("PRs that violate them will be closed"); the template is stale |
-| 11 | Size: "under 500 lines" vs "≤10KB" | Satisfies lines; bytes are the open decision under Phase 4.6 |
+| 11 | Size: "under 500 lines" vs "≤10KB" | Satisfies both, including a strict 10,000-byte reading (9,905 B since 2026-09-27) |
 | 12 | Validator path printed stale in CONTRIBUTING | No action — actual path is `engineering/skills/skill-tester/` |
 
 Also caught: the py3.14 `argparse` `%` bug the maintainer hand-fixed after #298 (ours

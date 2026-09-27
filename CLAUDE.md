@@ -77,9 +77,8 @@ flagged and routed to a question, never passed over.
 SKILL.md, `04`, and `evals/evals.json`. New entries take the next ID in their
 sequence; existing IDs are never renumbered.
 
-**Size budget.** Upstream's authoring standard says SKILL.md ≤10KB; any addition
-to SKILL.md needs a compensating trim (current size and the open 10,000-vs-10,240
-question are in `ROADMAP.md`).
+**Size budget.** Upstream's authoring standard says SKILL.md ≤10KB. Hold it under
+10,000 bytes (the strict reading); any addition needs a compensating trim.
 
 ---
 
