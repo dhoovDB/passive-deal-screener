@@ -1,6 +1,6 @@
 # passive-deal-screener — Roadmap
 
-**Status:** v1.0 built and re-validated (eval cycle 5). PR branch staged and validated locally; next is the ultrareview (Step 8b), then the upstream PR.
+**Status:** v1.0 built and re-validated (eval cycle 5). Ultrareview done (Step 8b): 5 findings, all fixed on the PR branch and back-ported here. Next: user approval, then push and the upstream PR.
 **Contribution target:** `alirezarezvani/claude-skills`, `finance/passive-deal-screener/`, PR from the `dhoovDB` fork to `:dev`.
 
 ---
@@ -50,7 +50,14 @@ earlier steps' commits exist in `git log` first.
 - [x] **Step 6 — Eval transcript prune (N4)** (`042b91d`). Iteration-1/2 transcripts removed; scorecards kept.
 - [x] **Step 7 — Docs cleanup (W6, N2, N5)** (`7607f50`). This file restructured to the portfolio template; CLAUDE.md brought current; drift-prone README counts removed.
 - [x] **Step 8a — Eval re-validation.** *Cleared by cycle 5 (`evals/iteration-5/`): 11 PASS / 2 PASS w/ notes / 0 FAIL, discrimination 4/4. Examples regenerated from its fixtures 01/03/13.* *Cycle 4 ran 2026-09-27 (`evals/iteration-4/`): 8 PASS / 4 PASS w/ notes / 1 FAIL, discrimination 4/4 — gate not cleared.* The FAIL (fixture 01) decided a merits Pass on assumed leverage and fired GEN-10 on an undisclosed rate cap; fixture 10 fired GEN-08 on an assumed distribution shape. Fix: SKILL.md anti-patterns "deciding on assumed numbers" (new) and the variable-class one (restored — removed in Step 7b, likely behind fixture 07's note), then a full cycle 5 under the same method. *Fix applied 2026-09-27 (SKILL.md 9,993 B; four repeats cut to make room); cycle 5 pending.* Original step text: All 13 fixtures; generator ≠ grader ≠ author, as fresh-context subagents. The grader works from `evals/evals.json` `expected_output`, verifies flag/question IDs itself (a script was offered and declined 2026-09-27, so the grader weighs IDs in context), and may not read earlier iterations. (Iteration 3 graded against `expected/01–13.md` files in a session scratchpad that no longer exists; `evals.json` is the committed equivalent.) Regenerate `examples/*/output.md` from fixtures 01/03/13 (header stripped, otherwise unedited). Update README/this file's eval citations. Gate: 0 FAIL.
-- [ ] **Step 8b — Ultrareview of the PR as upstream will see it. ← RESUME HERE.** Phase 5 steps 1–3 are done, so the branch exists. The user runs, from `C:\Projects\claude-skills-pr`:
+- [x] **Step 8b — Ultrareview of the PR as upstream will see it.** Ran 2026-09-27 (free run 1 of 3; 22 files, +3,256). 5 findings, all reproduced locally, all fixed:
+  1. *(normal)* **Repo counters not updated → blocking CI gate G3 fails.** `derive_counters.py --check` found stale counts in 5 files (README ×5 sites incl. the Finance row and badge, root CLAUDE.md, mkdocs.yml, marketplace.json, .codex-plugin/plugin.json). Updated to 389 skills / 729 tools / 852 refs on the PR branch only (those files are upstream's, not this repo's). See the G3 decision-log entry.
+  2. *(nit)* **`fee_drag_calculator.py` crashed with `OverflowError` on a huge `--hold-years`** (e.g. 7000). Now: hold > 100 is an error (exit 2), 30–100 warns "years, not months?", `main()` catches `OverflowError` as exit 2 (also covers an absurd `--gross-irr`), and `--self-check` asserts hold-years 7000 is rejected.
+  3. *(nit)* **`--json` instead of `finance/CLAUDE.md`'s required `--format`.** Both scripts now take `--format {text,json}`; `--json` stays as shorthand. Upstream is split (4 finance scripts use `--format`, 8 use `--json`), so the Phase 5 note calling the guideline stale was half right.
+  4. *(nit)* **`finance/CLAUDE.md` counts stale; our section sat after the footer.** passive-deal-screener is now item 4 of the skill list; counts true for the skills that file documents. (It omits 2 of the 6 finance skills on disk — pre-existing, left for the maintainer.)
+  5. *(nit)* **`04-question-bank.md` claimed 20 distinct flag IDs; the table cites 28.** Corrected.
+
+  Original step text: Phase 5 steps 1–3 are done, so the branch exists. The user runs, from `C:\Projects\claude-skills-pr`:
 
   ```
   /code-review ultra 527a1b82
@@ -88,7 +95,21 @@ earlier steps' commits exist in `git log` first.
    #   + finance/CLAUDE.md (one row in the domain skill list)
    ```
 
-3. ✅ **Validators, run 2026-09-27 on the staged branch.** Upstream CI blocks a PR
+3. ✅ **Validators, run 2026-09-27 on the staged branch.** *Correction (post-ultrareview):
+   the claim below that CI blocks only on the security audit was wrong. `ci-quality-gate.yml`
+   has 9 blocking steps, and G3 (`derive_counters.py --check`) failed until the counters
+   were updated. Full local CI run, 2026-09-27 after the fixes:*
+   - *Blocking, pass:* Python syntax (`compileall`), `check_plugin_json --all`,
+     `check_skill_names --all`, G1 `check_paths --all`, G10 `check_frontmatter --all`,
+     G4 `check_dual_publish`, G7 `check_model_freshness --all`, G8 `smoke_scripts`,
+     G3 `derive_counters --check`; YAML lint of workflows also passes.
+   - *Advisory:* G9 `smoke_json_output` exits 1 on 8 `agent-launcher` tools (not ours);
+     our two scripts are listed as "no `--sample`" along with 247 others. Workflow schema
+     check, `safety`, and the markdown link check are `|| true` / warning-only.
+   - *Windows artifacts, not CI failures:* G8 and yamllint fail locally under cp1252
+     and CRLF; with `PYTHONUTF8=1` and LF line endings (what the Linux runner sees) both pass.
+
+   Original text: Upstream CI blocks a PR
    only on the security audit; the rest are posted as a comment.
    - Security auditor `--strict`: **PASS, 0 findings**.
    - `check_frontmatter --strict`, `check_skill_names`, `check_model_freshness`: all clean.
@@ -96,8 +117,9 @@ earlier steps' commits exist in `git log` first.
    - `script_tester`: pass. `skill_validator`: **88.2/100 GOOD**. Its only ERROR —
      "SKILL.md too short", which counts *non-blank* lines (91 < 100) — was fixed by
      re-wrapping long lines at zero byte cost (101 lines, still 9,993 B).
-   - `finance/CLAUDE.md`'s "use a `--format` flag" guideline is stale: every other
-     finance script upstream uses `--json`, as ours do.
+   - ~~`finance/CLAUDE.md`'s "use a `--format` flag" guideline is stale: every other
+     finance script upstream uses `--json`, as ours do.~~ Wrong: 4 use `--format`, 8
+     use `--json`. Both scripts now accept `--format {text,json}` (Step 8b finding 3).
 
    Original step text: **Run all three validators against the staged path.** `--strict` on the auditor
    has never been run. On Windows set `PYTHONIOENCODING=utf-8`. The validator path
@@ -114,14 +136,15 @@ earlier steps' commits exist in `git log` first.
    python3 engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener --strict
    ```
 
-4. **Step 8b** (ultrareview) runs here, on this branch — see Phase 4.6 for the exact command.
+4. ✅ **Step 8b** (ultrareview) ran on this branch — findings and fixes under Phase 4.6.
 5. **Commit, push, open the PR** to `alirezarezvani:dev`:
    `feat(finance): add passive-deal-screener — LP-perspective deal screening for syndications, preferred equity, hard money, and private credit`.
 
-**Files outside the skill folder.** Only `finance/CLAUDE.md` (the one external
-finance PR, #298, touched exactly that). **Not** the top-level README (CONTRIBUTING
-rejects skill-count changes), **not** CHANGELOG (maintainers own it post-merge),
-**never** `.codex/`, `.gemini/`, `marketplace.json`, `docs/` (auto-generated).
+**Files outside the skill folder.** `finance/CLAUDE.md`, plus — superseded
+2026-09-27 by blocking gate G3 — the five counter files `derive_counters.py --check`
+reads (README, root CLAUDE.md, mkdocs.yml, marketplace.json, .codex-plugin/plugin.json),
+count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
+**never** `.codex/`, `.gemini/`, `docs/`. The PR description explains the counter edits.
 
 **PR description** — the user wants a detailed one:
 - what the skill does and who it's for; the positioning above;
@@ -165,11 +188,26 @@ rejects skill-count changes), **not** CHANGELOG (maintainers own it post-merge),
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
 
+### 2026-09-27 — CI gate G3 overrides divergence-map row 3; counters updated in the PR
+
+The ultrareview's one non-nit finding: the PR fails `derive_counters.py --check`
+(gate G3, added upstream 2026-08-25, **blocking**), because a new SKILL.md, 2 scripts
+and 10 reference files change the derived counts. The Phase 4.5 map (row 3) said
+"drop" count/index edits, following CONTRIBUTING's "PRs that change the skill count
+(205) — curated number" rule. That rule dates from 2026-03-26 and predates G3; its
+reason (a curated number) no longer holds now that counts are derived and
+CI-enforced. **Decision (user, 2026-09-27): update the counters in the PR** — count
+lines only, in the five files G3 reads — and explain the conflict in the PR
+description. Risk accepted: a reviewer may cite CONTRIBUTING; the red-CI alternative
+is worse for a first-time contributor. Lesson: run *every* step of
+`ci-quality-gate.yml`, not a hand-picked validator list.
+
 ### 2026-09-27 — Phase 5 prep done; ultrareview replaces `/adversarialreview` for this series
 
-The PR branch is staged in a worktree off `upstream/dev` and passes every
-validator upstream's CI blocks on (security `--strict`, frontmatter, skill names,
-model freshness). Decisions:
+The PR branch is staged in a worktree off `upstream/dev` and passes the validators
+we ran (security `--strict`, frontmatter, skill names, model freshness) — *not*
+"every validator upstream's CI blocks on", as first written: G3 was not run and
+failed (see the entry above). Decisions:
 - **`/adversarialreview` skipped for the fix-pass series; the Step 8b ultrareview
   is the full end-to-end review before shipping.** Both would review the same
   payload, and the ultrareview does it from upstream's point of view with more
@@ -252,7 +290,7 @@ integration (marketplace, docs, commands) afterwards.
 |---|---|---|
 | 1 | Directory: `finance/skills/<name>/` in the tree vs `<domain>/<skill>/` in three docs | **Align → `finance/passive-deal-screener/`.** The nesting is a maintainer post-merge restructure (#591/#593); #298 was contributed flat |
 | 2 | Skill-level README: required only by SKILL-AUTHORING-STANDARD; 0 of 4 finance skills have one | **Align → don't ship it.** Install/usage lives in the root README |
-| 3 | Top-level README / CHANGELOG edits | **Align → drop.** CONTRIBUTING rejects skill-count and index-file changes |
+| 3 | Top-level README / CHANGELOG edits | **Align → drop.** CONTRIBUTING rejects skill-count and index-file changes. *Superseded 2026-09-27 for counter lines: blocking gate G3 requires them (see that entry).* |
 | 4 | `finance/CLAUDE.md` edit | **Keep** — #298 did exactly this |
 | 5 | `## Related skills` vs required `Cross-References` | **Align → renamed** (2026-09-01) |
 | 6 | `/cs:screen-deal` slash command | **Align → propose in the PR, don't commit.** The maintainer adds commands in the integration release (#309) |
