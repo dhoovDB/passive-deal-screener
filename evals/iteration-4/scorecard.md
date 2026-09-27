@@ -1,0 +1,68 @@
+# Iteration-4 Scorecard — passive-deal-screener eval run
+
+**Method.** The 13 reports in this folder were produced by blind generators: fresh-context agents (model: Opus) running against SKILL.md @ 1c7faff, one per fixture. Fixture 11 answers the second message of a conversation that opened with fixture 10's prompt. Grading was done by an independent fresh-context grader (model: Opus) that was forbidden from reading `evals/iteration-1/` through `iteration-3/`, `examples/`, `README.md`, `ROADMAP.md`, and git history. The grading criteria are each fixture's `expected_output` in `evals/evals.json`, plus TESTING-PLAN §4: the four universal checks, and the conditional §4.5 (Tier-4) and §4.6 (clean-case) checks where they apply. Every flag ID and question ID a report cites was checked against `references/03-red-flag-library.md` and `references/04-question-bank.md`. CLAUDE.md files were auto-loaded into the generators' contexts. They contain portfolio and working-rule context only, not expected answers.
+
+## Headline
+
+**8 PASS / 4 PASS w/ notes / 1 FAIL.** Discrimination: **4/4**.
+
+The single FAIL is a verdict-level miss on fixture 1. Its flags, questions, fee drag, and missing-data routing all met criteria.
+
+## Results table
+
+| Id | Fixture | Classification | Target flags | Questions | Missing-data fires | Verdict match | Grade |
+|---|---|---|---|---|---|---|---|
+| 1 | MF value-add, full memo | ✓ MF value-add equity; 02 equity, VNQ + NPI overlay | ✓ EQUITY-06 RED, GEN-08 RED, GEN-05 RED, EQUITY-01 (YELLOW; clawback unstated, not absent). GEN-01/GEN-10/GEN-11 routed. Drag ≈464 bps computed | ✓ Q-DS-01, Q-EXIT-01, Q-FEE-03, Q-FEE-04, Q-GP-02 | ✓ co-invest, rate cap, distribution schedule, catch-up, fee bases | ✗ Expected **Pursue-with-conditions**; got "Pass as presented" (a merits Pass) | **✗ FAIL** |
+| 2 | Pref-equity email | ✓ Pref equity from 3 sentences | ✓ GEN-15, GEN-16, GEN-17, GEN-03 fired. PREF-01/EQUITY-05 armed | ✓ Q-FEE-01, Q-FEE-04, Q-LIQ-01 | ✓ Output is mostly §6 and must-asks | ✓ Pass as presented — insufficient disclosure, with re-screen list | **✓ PASS** |
+| 3 | HML sound (3a) | ✓ HML/bridge; HYG + Treasury | ✓ HML-01…05 explicitly cleared; no RED | ✓ Q-RISK-04, Q-RISK-05 | ✓ carry, fund leverage, term, co-invest routed | ✓ Pursue with conditions (conditions are confirmatory) | **✓ PASS** |
+| 4 | HML problematic (3b) | ✓ HML/bridge | ◐ HML-01 RED, HML-02, HML-03/04 RED, GEN-14 RED fired. **HML-05 held "unassessable — not fired"** | ✓ Q-RISK-04, Q-RISK-05 | ✓ as-is LTV, default, recovery routed | ✓ Pass (as presented — insufficient disclosure) | **◐ PASS w/ notes** |
+| 5 | Private credit, 2.5x, 60% sector | ✓ Private credit; HYG + 2yr | ✓ CREDIT-01 RED, CREDIT-02, GEN-16 | ✓ Q-RISK-06 | ✓ hurdle, recovery, lev/unlev basis routed | ✓ Pass (merits) | **✓ PASS** (minor: cites HML-05/HML-03/04 on a credit fund via the 02 row and parenthetically) |
+| 6 | Development, first-timer | ✓ Development equity; 18–22% target, VNQ discounted | ✓ GEN-13, GEN-08, EQUITY-06, GEN-07, GEN-06 (dev + CM stacking), GEN-14 (first-timer) | ✓ Q-DS-03, Q-DS-01 | ✓ all five 01 development essentials | ✓ Pass (merits) | **✓ PASS** |
+| 7 | Office 2026 (variable) | ✓ Office = variable; "comparator: none" | ✓ GEN-19 RED, GEN-17, GEN-09 RED | ✓ Q-MKT-02 | ✓ physical occupancy, sublease routed | ✓ Pass as presented — insufficient disclosure | **◐ PASS w/ notes** (ran a VNQ "analog" table anyway) |
+| 8 | Packed flags | ✓ MF equity, single asset | ✓ GEN-01, GEN-02, EQUITY-01, EQUITY-02, 50% promote, GEN-10, GEN-09 (YELLOW probe, hold unstated), GEN-13, GEN-14 | ✓ Q-GP-01/02/03, Q-FEE-03, Q-RISK-02 | ✓ | ✓ Pass. §4.5 met: zero co-invest (Nightingale) and cap expiry before maturity (Applesway) both named | **✓ PASS** |
+| 9 | Teaser, no disclosures | ✓ MF equity fund | ✓ GEN-15, GEN-16, GEN-17; GEN-14 held unassessable → Q-GP-02 | ✓ most must-asks | ✓ §6 is the output | ✓ Pass as presented — insufficient disclosure | **✓ PASS** |
+| 10 | J-curve Deal A | ✓ MF equity | ◐ GEN-11 "largely addressed" ✓, but **GEN-08 listed under "Fired"** on the lower-risk half | ✓ Q-DIST-01 | ✓ | n/a (no verdict specified). Framed as the front-loaded, lower-risk side | **◐ PASS w/ notes** |
+| 11 | J-curve Deal B + compare | ✓ MF equity | ✓ GEN-08 RED (stated 100% exit), GEN-11 cited as frame | ✓ Q-DIST-01 (conditional) | ✓ | ✓ "Deal A is preferable… not equal at 14%"; B called riskier with a shortfall table | **✓ PASS** (minor: GEN-01/09/10 listed under RED while labeled unassessable) |
+| 12 | Clean equity | ✓ MF value-add equity | ✓ no RED. Single YELLOW GEN-11 is a genuine absence (no schedule, hold, or target stated). All satisfied flags cited as cleared | ✓ clarifiers, mostly marked confirmatory | ✓ target return, hold, catch-up routed | ✓ Pursue | **✓ PASS** |
+| 13 | Clean private credit | ✓ BDC-style credit | ✓ CREDIT-01 cleared at 1.1x; CREDIT-02 cleared; no RED | ✓ Q-RISK-06, Q-RISK-05 | ✓ figures not pasted, seniority | ✓ Pursue | **◐ PASS w/ notes** (un-IDed YELLOW on the disclosed fee base) |
+
+## Notes
+
+**Fixture 1: FAIL (verdict).** `expected_output` names a single verdict, "Pursue-with-conditions." The report's verdict is "Pass as presented. This is a financing story." It then says this is "a verdict on the merits, not 'insufficient disclosure'." That reuses SKILL.md's insufficient-disclosure label ("Pass as presented") for a merits Pass, which is its own contract slip. The number carrying the verdict is a flat-exit-cap net of 7.46%, said to fail the 5-yr hurdle. That figure comes from a cash-flow model whose leverage (~65% on ~$143M) and distribution shape are tagged 🔴 assumed. The Pass also relies on `GEN-10` fired as RED even though no cap terms are disclosed ("unverifiable until disclosed; treat as RED until answered"). The expected output routes rate-cap terms to a must-ask, and SKILL.md's anti-pattern says "residual gaps otherwise are conditions, not a Pass." Every other criterion was met: EQUITY-06, GEN-08, GEN-05, EQUITY-01 by ID; drag ≈464 bps as a labeled floor; exit-cap sensitivity; Q-DS-01, Q-EXIT-01, Q-FEE-03, Q-FEE-04, Q-GP-02. The report's §10 even gives the conditions under which it "could move to Pursue with conditions." Grade: FAIL on the verdict criterion. If the author concludes that Pass is defensible for this fact pattern, that means changing the fixture, not the grade.
+
+**Fixture 4: PASS w/ notes.** `expected_output` lists `HML-05 (no fee step-down stated)` among the flags to fire. The report puts HML-05 under "Unassessable — not fired, routed to must-ask" ("fund term and management-fee basis unknown") and asks it only as a nice-to-ask (#13). SKILL.md says a nice-to-ask escalates when its flag fires. The flag's mechanism (no step-down in a long-dated fund) is exactly what an undisclosed fee stack leaves open. The verdict, HML-01/02/03/04, GEN-14, Q-RISK-04/05, and the 3-vs-4 discrimination all hold, so this is a severity/placement gap on one of five HML targets, not a miss of the pair's purpose.
+
+**Fixture 7: PASS w/ notes.** The report correctly states that office has no comparator ("`benchmark_comparator.py --deal-type office` returns 'none, variable class' by design") and drives the verdict off the deal's own missing underwriting. It still runs "the closest stable analog (equity RE → VNQ)" and prints a table with "Clears" verdicts at 18% and 12.81%. It calls this "context only" and "weak grounding," but SKILL.md says variable classes get "no category baseline and no spread comparator." It also uses the 05 NCREIF office 3.4% figure to infer "roughly 14–15 points from leverage, lease-up, and value recovery," which grounds the inferred GEN-07/GEN-08. Stated FAIL condition ("applies a category IRR range to office"): **not met**. No 01 office IRR range is applied, and the verdict does not rest on the analog.
+
+**Fixture 10: PASS w/ notes.** `expected_output` says "No major timing flag. This is the LOWER-risk half of the pair." The report lists `GEN-08` under "**Fired**" ("RED threshold; borderline, inferred… ≈57–61% of LP profit comes from the exit"). That figure comes from a model that assumes "a flat 7% on original equity with the balance paid at exit," which contradicts the disclosed fact that "capital returns progressively over the hold." The report says itself that progressive return lowers the exit share. The fixture-11 report then describes A as "near but below threshold," so the two halves disagree on whether GEN-08 fired for A. The lower-risk framing survives ("Deal A's quarterly-from-Year-1 profile beats a deal that back-loads"), so the pair still discriminates.
+
+**Fixture 13: PASS w/ notes.** No RED, CREDIT-01 correctly cleared, Pursue. However, §5 lists a YELLOW with **no `03` ID** ("Fee base on gross assets (no `03` ID; `02` fee finding)"). It restates the disclosed 1.5%-of-gross-assets fee as "~3.1% of NAV… well past the >2% aggressive line." The report also concedes this is "the conventional BDC fee base, and the net IRR already reflects it… not a hidden cost." TESTING-PLAN §5 row 11 allows YELLOW probes only "on genuine absences… none manufactured against disclosed facts." This YELLOW is raised against a disclosed, market-standard term. The arithmetic itself (2.0E × 1.5% + 0.1E × 1.0%) is correct under the BDC tier convention. The report also rewords the prompt's "1.0% on assets *below* the 200% asset-coverage threshold" as "beyond the 200% asset-coverage threshold." The meaning is equivalent under that convention but not verbatim. This is not a FAIL condition, because the case fails only on a RED or on CREDIT-01, but it is a clean-case discipline slip.
+
+### Observation 1: Discrimination tests (TESTING-PLAN §6 cases 3, 9, 10–11, plus the id 5 vs 13 leverage contrast)
+
+| Test | Result | Evidence |
+|---|---|---|
+| Hard-money pair (3 vs 4) | ✓ | 3 → "Pursue with conditions", all HML flags cleared. 4 → "Pass as presented — insufficient disclosure", HML-01/03/04 RED. Different verdicts within one deal type. |
+| J-curve pair (10 vs 11) | ✓ | 11: "the two deals are not equal at 14%… Deal A is preferable". GEN-08 fires on B at 100% exit. Shortfall table widens from ~35 to ~260 bps. |
+| Clean pair (12, 13) | ✓ | Both "Pursue", "RED: none" in both. Only YELLOWs: 12 GEN-11 (genuine absence); 13 GEN-11/GEN-17 (genuine) plus the fee-base note above. |
+| Leverage contrast (5 vs 13) | ✓ | 5: CREDIT-01 RED at ~2.5x (>1.5x), verdict Pass. 13: CREDIT-01 "cleared by disclosure" at ~1.1x with levered/unlevered basis shown, verdict Pursue. |
+
+**4/4.**
+
+### Observation 2: Fee-input honesty
+
+**No violations found.** Every report passes undisclosed fees as 0 in the disclosed-only run and labels any typical-stack scenario as hypothetical ("ASSUMED", 🔴, "illustrative only", "§6 gap"). Examples: fixture 2 "all fee inputs ASSUMED; §6 gap"; 7 "Illustrative only… 🔴 assumed: every input is a §6 gap"; 9, 10, and 11 name the ASSUMED stack inline; 12 "Admin fee: passed as 0… Catch-up: assumed 100%"; 13 "incentive terms are 🔴 assumed". Borderline case: fixture 1 reports its headline drag ("≈464bps/yr… using the disclosed fees") with a 🔴-assumed 100% catch-up folded in. It is explicitly called "a floor" that "assumes a 100% catch-up 🔴", so it is not presented as the deal's actual terms. The one related concern is not fees but capital structure: fixture 1's verdict-driving flat-cap figure rests on 🔴-assumed leverage (see its note).
+
+### Observation 3: Variable-class discipline
+
+Only fixture 7 involves a variable class. It does **not** use a category comparator *as its baseline*: it states "no category net-IRR baseline" and gives a disclosure-driven verdict. It does run a VNQ "analog" table and uses the NCREIF office 3.4% unlevered figure as an inference anchor, both labeled context (see its note). No other report benchmarks office, STR, experiential retail, or mixed-use.
+
+### Observation 4: Length
+
+Report size did not bury the verdict in any report. Every report opens with a bolded one-line verdict and repeats it in §10, and must-asks are always in a single §8 table with bad-answer signals. What length does hurt is **must-ask triage**. Must-ask tables run 14–18 rows (fixture 1: 17; 6: 18 + 1 escalated; 7: 18 + 1; 10: 18 for a two-sentence prompt; 12: 14 on a *clean* deal, most marked "confirmatory"). Once almost every `04` question is a must-ask, the label stops ranking anything. On clean fixture 12, 14 must-asks sits awkwardly with "minor clarifying must-asks only," even though their content is clarifying. Section 2 scenario tables and §4 script-run detail account for most of the bulk. A short top-3 must-ask list under the verdict would recover usability without cutting content.
+
+*Other (not graded):* several reports list flags under RED whose trigger is unassessed rather than met. Examples: fixture 1 GEN-10; fixture 11 GEN-01, GEN-09, GEN-10 ("unassessable" yet under **RED**). 03 marks only YELLOW–RED flags as "treat as RED until answered", and GEN-01/09/10 are plain RED flags. This is harmless on non-clean fixtures, but it is the same mechanism that tipped fixture 1's verdict.
+
+## Gate
+
+**The run does not clear the exit bar.** TESTING-PLAN §8 requires all cases to pass, and fixture 1 FAILs on verdict ("Pass as presented" vs the expected Pursue-with-conditions). The other 12 fixtures pass (4 with notes), and discrimination is 4/4. The fix belongs in SKILL.md: tighten when a disclosed-but-aggressive deal with residual gaps earns a merits Pass rather than Pursue-with-conditions, and bar the "Pass as presented" label on merits verdicts. Alternatively, the author can decide that the fixture's single expected verdict is wrong. Either way, that is a decision for the author.
