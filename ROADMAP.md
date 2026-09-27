@@ -1,6 +1,6 @@
 # passive-deal-screener — Roadmap
 
-**Status:** v1.0 built. Pre-PR fix pass in progress (Phase 4.6), then the upstream PR (Phase 5).
+**Status:** v1.0 built and re-validated (eval cycle 5). PR branch staged and validated locally; next is the ultrareview (Step 8b), then the upstream PR.
 **Contribution target:** `alirezarezvani/claude-skills`, `finance/passive-deal-screener/`, PR from the `dhoovDB` fork to `:dev`.
 
 ---
@@ -50,7 +50,16 @@ earlier steps' commits exist in `git log` first.
 - [x] **Step 6 — Eval transcript prune (N4)** (`042b91d`). Iteration-1/2 transcripts removed; scorecards kept.
 - [x] **Step 7 — Docs cleanup (W6, N2, N5)** (`7607f50`). This file restructured to the portfolio template; CLAUDE.md brought current; drift-prone README counts removed.
 - [x] **Step 8a — Eval re-validation.** *Cleared by cycle 5 (`evals/iteration-5/`): 11 PASS / 2 PASS w/ notes / 0 FAIL, discrimination 4/4. Examples regenerated from its fixtures 01/03/13.* *Cycle 4 ran 2026-09-27 (`evals/iteration-4/`): 8 PASS / 4 PASS w/ notes / 1 FAIL, discrimination 4/4 — gate not cleared.* The FAIL (fixture 01) decided a merits Pass on assumed leverage and fired GEN-10 on an undisclosed rate cap; fixture 10 fired GEN-08 on an assumed distribution shape. Fix: SKILL.md anti-patterns "deciding on assumed numbers" (new) and the variable-class one (restored — removed in Step 7b, likely behind fixture 07's note), then a full cycle 5 under the same method. *Fix applied 2026-09-27 (SKILL.md 9,993 B; four repeats cut to make room); cycle 5 pending.* Original step text: All 13 fixtures; generator ≠ grader ≠ author, as fresh-context subagents. The grader works from `evals/evals.json` `expected_output`, verifies flag/question IDs itself (a script was offered and declined 2026-09-27, so the grader weighs IDs in context), and may not read earlier iterations. (Iteration 3 graded against `expected/01–13.md` files in a session scratchpad that no longer exists; `evals.json` is the committed equivalent.) Regenerate `examples/*/output.md` from fixtures 01/03/13 (header stripped, otherwise unedited). Update README/this file's eval citations. Gate: 0 FAIL.
-- [ ] **Step 8b — Ultrareview of the PR as upstream will see it.** Needs the PR-shaped branch, so run Phase 5 steps 1–3 first. Then the user runs `/code-review ultra` from the `claude-skills` clone on `feat/finance-passive-deal-screener` (user-triggered and billed; reviews the local branch, no push needed). Fix what it finds on the branch *and* back-port to this repo.
+- [ ] **Step 8b — Ultrareview of the PR as upstream will see it. ← RESUME HERE.** Phase 5 steps 1–3 are done, so the branch exists. The user runs, from `C:\Projects\claude-skills-pr`:
+
+  ```
+  /code-review ultra 527a1b82
+  ```
+
+  - **Pass the base explicitly.** Without it, ultrareview diffs against the fork's default branch (`main`), which differs from `upstream/dev` in hundreds of unrelated files. `527a1b82` is the `upstream/dev` commit the branch was cut from. The launch dialog should show 22 files (21 in the skill folder + `finance/CLAUDE.md`); far more means the base is wrong, so cancel.
+  - **Billing:** usage credits, not plan usage. Pro/Max accounts get 3 one-time free runs; a run counts once it starts.
+  - **Replaces `/adversarialreview` for this series** (decided 2026-09-27): it reviews exactly what ships, with more reviewers.
+  - Fix findings on the branch *and* back-port them to this repo, then re-copy.
 
 - [x] **Step 7b — SKILL.md under a strict 10 KB.** Upstream's `SKILL-AUTHORING-STANDARD.md` says "SKILL.md ≤10KB" (`CONVENTIONS`/`CONTRIBUTING` say "under 500 lines"); "10KB" could mean 10,240 or 10,000. Decided 2026-09-27 to satisfy the strict reading: three duplicated instructions removed, 10,121 → 9,905 B.
 
@@ -58,10 +67,14 @@ earlier steps' commits exist in `git log` first.
 
 ## Next — Phase 5: branch, validate, open the PR
 
-1. **Refresh the `claude-skills` fork** (read-only clone otherwise). As of
-   2026-09-27 local `main` is 304 commits behind `upstream/main` and 33 behind its
-   own `origin`. Follow the portfolio's fork-refresh procedure.
-2. **Cut the PR branch from `upstream/dev` directly**, never from fork `main` — a
+1. ✅ **Refresh the `claude-skills` clone** (2026-09-27): local `main` fast-forwarded
+   33 commits to `origin/main`. The GitHub fork's own sync with upstream was not
+   done — not needed, since the PR branch is cut from `upstream/dev` directly.
+2. ✅ **Cut the PR branch from `upstream/dev` directly** (2026-09-27): worktree
+   `C:\Projects\claude-skills-pr`, branch `feat/finance-passive-deal-screener` at
+   `527a1b82`, payload committed locally, not pushed. The `finance/CLAUDE.md` edit
+   copies #298's contributor pattern: one appended `## passive-deal-screener`
+   paragraph (the maintainer folded #298's into the numbered list later). Never from fork `main` — a
    fork-merge history is CONTRIBUTING's "bloated diff" rejection. (Fork `main` was
    76 commits ahead of `dev` on 2026-08-16 and 0 on 2026-09-27; the rule stands
    regardless.) There is no `upstream` remote in this repo; the branch lives in the
@@ -75,7 +88,18 @@ earlier steps' commits exist in `git log` first.
    #   + finance/CLAUDE.md (one row in the domain skill list)
    ```
 
-3. **Run all three validators against the staged path.** `--strict` on the auditor
+3. ✅ **Validators, run 2026-09-27 on the staged branch.** Upstream CI blocks a PR
+   only on the security audit; the rest are posted as a comment.
+   - Security auditor `--strict`: **PASS, 0 findings**.
+   - `check_frontmatter --strict`, `check_skill_names`, `check_model_freshness`: all clean.
+     (`check_frontmatter` needs PyYAML; run it from a throwaway venv.)
+   - `script_tester`: pass. `skill_validator`: **88.2/100 GOOD**. Its only ERROR —
+     "SKILL.md too short", which counts *non-blank* lines (91 < 100) — was fixed by
+     re-wrapping long lines at zero byte cost (101 lines, still 9,993 B).
+   - `finance/CLAUDE.md`'s "use a `--format` flag" guideline is stale: every other
+     finance script upstream uses `--json`, as ours do.
+
+   Original step text: **Run all three validators against the staged path.** `--strict` on the auditor
    has never been run. On Windows set `PYTHONIOENCODING=utf-8`. The validator path
    on `dev` is `engineering/skills/skill-tester/…` (CONTRIBUTING prints a stale
    `engineering/skill-tester/…`). Upstream changed its tooling after 2026-08-16
@@ -90,7 +114,7 @@ earlier steps' commits exist in `git log` first.
    python3 engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py finance/passive-deal-screener --strict
    ```
 
-4. **Step 8b** (ultrareview) runs here, on this branch.
+4. **Step 8b** (ultrareview) runs here, on this branch — see Phase 4.6 for the exact command.
 5. **Commit, push, open the PR** to `alirezarezvani:dev`:
    `feat(finance): add passive-deal-screener — LP-perspective deal screening for syndications, preferred equity, hard money, and private credit`.
 
@@ -140,6 +164,23 @@ rejects skill-count changes), **not** CHANGELOG (maintainers own it post-merge),
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-09-27 — Phase 5 prep done; ultrareview replaces `/adversarialreview` for this series
+
+The PR branch is staged in a worktree off `upstream/dev` and passes every
+validator upstream's CI blocks on (security `--strict`, frontmatter, skill names,
+model freshness). Decisions:
+- **`/adversarialreview` skipped for the fix-pass series; the Step 8b ultrareview
+  is the full end-to-end review before shipping.** Both would review the same
+  payload, and the ultrareview does it from upstream's point of view with more
+  reviewers. Recorded because the portfolio rule is adversarial review before push
+  of multi-commit work, and this series was pushed commit by commit.
+- **SKILL.md re-wrapped, not padded,** to clear `skill_validator`'s 100-non-blank-line
+  minimum: the long lines were split at existing spaces, so the byte count is
+  unchanged and it renders the same. (The 2026-07-19 entry declined to pad; a
+  zero-byte re-wrap wasn't considered then.)
+- **The PR branch lives in a worktree** (`C:\Projects\claude-skills-pr`), so the
+  clone's `main` checkout stays untouched. Remove it after the PR merges.
 
 ### 2026-09-27 — Eval cycles 4 and 5: the gate re-clears after one skill fix
 
@@ -430,4 +471,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-09-27 (Phase 4.6 steps 0–8a done; Step 8b and Phase 5 remain).*
+*Last updated: 2026-09-27 (Phase 4.6 done except Step 8b; Phase 5 steps 1–3 done; next: the ultrareview, then push and open the PR).*
