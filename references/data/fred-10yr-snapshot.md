@@ -4,25 +4,30 @@
 and `DGS3MO` (3-month) for duration-matching debt comparators — all Market Yield
 on U.S. Treasury Securities at constant maturity, investment basis (daily).
 **Source:** FRED, Federal Reserve Bank of St. Louis —
-<https://fred.stlouisfed.org/series/DGS10>
-**As of:** 10yr early June 2026; short points 2026-06-11 (daily closes below)
-**Captured:** 2026-06-06 (10yr); 2026-06-12 (2yr, 3mo short points)
+<https://fred.stlouisfed.org/series/DGS10>, pulled directly from the
+`fredgraph.csv` endpoint
+**As of:** 2026-09-24 (latest daily close available at capture)
+**Captured:** 2026-09-27
 
 ## Value — Treasury curve
 
 | Point | Value | As of | Duration-matches | Source |
 |---|---|---|---|---|
-| 3-month T-bill (DGS3MO) | **≈ 3.71%** | 2026-06-11 | very-short hard money (6–18mo loans) | TradingEconomics (US 3M) |
-| 2-year (DGS2) | **≈ 4.15%** | 2026-06-11 | short/mid private debt | TradingEconomics (US 2Y) |
-| 10-year (DGS10) | **≈ 4.5%** | early June 2026 | equity-RE hold (~7yr); general anchor | FRED `DGS10`, via public reporting |
+| 3-month T-bill (DGS3MO) | **4.24%** | 2026-09-24 | very-short hard money (6–18mo loans) | FRED `DGS3MO` |
+| 2-year (DGS2) | **4.87%** | 2026-09-24 | short/mid private debt | FRED `DGS2` |
+| 10-year (DGS10) | **5.18%** | 2026-09-24 | equity-RE hold (~7yr); general anchor | FRED `DGS10` |
 
-The curve is normally upward-sloping (3.71% → 4.15% → 4.5%). 10yr supporting
-detail: most recent daily close 4.54%, intra-week range 4.46–4.54% (early June
-2026, TradingEconomics US 10Y).
+The curve is upward-sloping (4.24% → 4.87% → 5.18%). Rates moved sharply up
+through September: the 10yr closed at 4.94% on 2026-09-17 and 5.18% one week
+later. Against the prior snapshot (June 2026: 3.71% / 4.15% / ≈4.5%), every point
+is roughly 50–70bps higher — a material regime shift, which is the refresh
+trigger `README.md` names.
 
-The week's move reflected a stronger-than-expected jobs report and a market
-re-pricing toward a possible additional Fed hike by year-end — context only;
-the snapshot value is the level, not the narrative.
+**Read against the comparators:** the 10yr (5.18%) now *exceeds* the trailing
+10yr return of VNQ (4.92%) and HYG (4.83%). A risk-free Treasury out-yields what
+the REIT and high-yield indices actually delivered over the last decade, so at
+this snapshot the duration-matched Treasury, not the trailing comparator, is the
+tighter floor.
 
 ## Why this file exists
 
@@ -39,10 +44,8 @@ hard-money fund's honest risk-free comparison is the 3mo/2yr bill, not the 10yr.
 
 ## Provenance / refresh note
 
-FRED's own pages (`/series/DGS10`, the `fredgraph.csv` endpoint) returned HTTP
-403 to automated fetch on 2026-06-06, so the value here is the publicly reported
-daily close, not a direct FRED pull. **On refresh, confirm the precise current
-`DGS10` value directly at FRED** (the figure above is a daily-volatile market
-rate and should be re-pulled, not assumed). FRED `DGS10` is the authoritative
-daily series; `GS10` is its monthly-average sibling if a smoothed figure is
+Pulled directly from FRED's `fredgraph.csv` endpoint
+(`?id=DGS10,DGS2,DGS3MO`), which was fetchable on 2026-09-27 (it had returned
+HTTP 403 on 2026-06-06). These are daily-volatile market rates: re-pull, don't
+assume. `GS10` is the monthly-average sibling of `DGS10` if a smoothed figure is
 preferred.

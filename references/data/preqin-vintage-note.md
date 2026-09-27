@@ -8,7 +8,8 @@ citable analysis, so `05-benchmark-returns.md` can make one essential LP point:
 single headline IRR is nearly meaningless without the dispersion around it.
 
 **As of:** 2001–2017 fund vintages (latest publicly citable study window)
-**Captured:** 2026-06-06
+**Captured:** 2026-06-06; public citation re-confirmed 2026-09-27 (no newer
+publicly citable Preqin dispersion study; current tables remain subscription-gated)
 **Source:** CAIS, citing Preqin / private-markets benchmark data (public
 secondary citation)
 

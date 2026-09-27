@@ -1,6 +1,6 @@
 # Benchmark Returns (LP perspective)
 
-*LAST_UPDATED: 2026-06-12. All figures trace to `references/data/` snapshots —
+*LAST_UPDATED: 2026-09-27. All figures trace to `references/data/` snapshots —
 this file synthesizes, it does not source. When a snapshot is refreshed, update
 the figures here and bump this stamp.*
 
@@ -23,18 +23,16 @@ illiquid, for 7 years, good *versus* what the LP could hold liquid and free?"
   yield, preferred→preferreds), then the residual mismatch is named. A raw spread
   over a mismatched comparator misleads.
 - **The 10yr trailing is the spine; the 5yr is context.** Trailing windows carry
-  their cycle: SPY's 10yr (15.54%) reflects an exceptional equity decade and is
-  *not* a forward promise; LQD's ~0% 5yr reflects the 2022 bond drawdown. Read
-  the window, don't extrapolate it.
-- **Volatility is read against the equity baseline, not as an absolute number.**
-  Uniform annualized std-dev across one basis isn't cleanly available from public
-  aggregators (fund fact sheets 403; sources mix daily / 1yr / since-inception
-  bases). Rather than imply false precision, the Vol column expresses each
-  comparator *relative to the SPY broad-equity baseline* (≈ / below / well below),
-  plus a drawdown contrast. This makes the baseline load-bearing: the sharp read
-  is that REITs sit at ≈ equity volatility with a **deeper** drawdown (−73% vs
-  −55%) for **lower** return — less reward, more tail. The relative ordering is
-  robust even where the absolute numbers aren't.
+  their cycle: SPY's 10yr (15.39%) reflects an exceptional equity decade and is
+  *not* a forward promise; LQD's negative 5yr reflects the 2022 bond drawdown.
+  Read the window, don't extrapolate it.
+- **Volatility and worst drop are measured on one basis.** Vol is the annualized
+  standard deviation of daily returns over the same 10yr window as the return;
+  worst drop is the largest peak-to-trough fall over each fund's full history.
+  Read them against the SPY baseline: REITs run *higher* vol than equities with a
+  **deeper** worst drop (−73% vs −55%) for **lower** return — less reward, more
+  tail. And "income" instruments aren't crash-proof: preferreds (PFF) fell 65%
+  in 2008–09 despite low day-to-day vol.
 - **Levered vs unlevered.** ETF equity comparators are levered-equity-like. The
   NCREIF NPI (unlevered private RE) is carried alongside so the skill can tell
   "clears the illiquidity hurdle" from "the return is leverage, not alpha"
@@ -56,43 +54,47 @@ illiquid, for 7 years, good *versus* what the LP could hold liquid and free?"
 
 ## Public comparators at a glance
 
-Source: `references/data/etf-comparators-snapshot.md` (returns as of Q1 2026
-quarter-end / latest daily; captured 2026-06-06, VTI + volatility 2026-06-12).
-Net of expense ratio. Vol is expressed *relative to the SPY equity baseline* —
-see the snapshot for why a uniform absolute std-dev isn't available.
+Source: `references/data/etf-comparators-snapshot.md` (returns to the Q2 2026
+quarter-end, 2026-06-30, one date for every fund; captured 2026-09-27). Net of
+expense ratio. Vol = annualized std-dev of daily returns over the 10yr window;
+worst drop = largest peak-to-trough fall over the fund's full history.
 
-| Ticker | Trailing 10yr | Trailing 5yr | Vol vs SPY | Expense | Best comparator for |
-|---|---|---|---|---|---|
-| SPY | 15.54% | 14.11% | baseline (~17%, −55% DD) | 0.0945% | Universal equity anchor — the liquid opportunity cost |
-| VTI | 14.88% | 12.31% | ≈ SPY | 0.03% | Broad-equity anchor — total-market alternative to SPY |
-| VNQ | 6.47% | 5.13% | ≈ SPY vol, deeper tail § | 0.13% | Equity real estate (REITs) — primary RE comparator |
-| IYR | ~6.4–6.8% † | ~5.7–6.7% † | ≈ VNQ § | 0.39% | Equity RE cross-check on VNQ |
-| LQD | ~3.1% | ~0.1% ‡ | below SPY | 0.14% | Stabilized core / IG-quality debt; senior preferred proxy |
-| HYG | 5.0% | 3.8% | below SPY | 0.49% | High yield → hard-money & private-credit proxy |
-| PFF | 3.72% | 1.6% | well below SPY | 0.45% | Preferred equity |
-| PRIV | n/a ※ | n/a ※ | n/a ※ | 0.70% | Public+private IG credit — most direct, but unseasoned |
+| Ticker | Trailing 10yr | Trailing 5yr | Vol (10yr) | Worst drop | Expense | Best comparator for |
+|---|---|---|---|---|---|---|
+| SPY | 15.39% | 13.30% | 18.0% | −55% (2009) | 0.0945% | Universal equity anchor — the liquid opportunity cost |
+| VTI | 15.04% | 12.24% | 18.3% | −56% (2009) | 0.03% | Broad-equity anchor — total-market alternative to SPY |
+| VNQ | 4.92% | 2.80% | 20.9% | −73% (2009) § | 0.13% | Equity real estate (REITs) — primary RE comparator |
+| IYR | 5.21% | 2.65% | 20.5% | −74% (2009) § | 0.39% | Equity RE cross-check on VNQ |
+| LQD | 2.36% | −0.30% ‡ | 8.7% | −25% (2022) | 0.14% | Stabilized core / IG-quality debt; senior preferred proxy |
+| HYG | 4.83% | 3.66% | 8.2% | −34% (2008) | 0.49% | High yield → hard-money & private-credit proxy |
+| PFF | 3.00% | 0.75% | 12.9% | −65% (2009) | 0.45% | Preferred equity |
+| PRIV | n/a ※ | n/a ※ | n/a ※ | n/a ※ | 0.70% | Public+private IG credit — most direct, but unseasoned |
 
-† IYR figures diverged across aggregators; ranges carried honestly. VNQ is the
-primary REIT comparator, IYR the cross-check. ‡ LQD's ~0% 5yr is the 2022 IG-bond
-drawdown sitting in the window (3yr had recovered to ~4%). ※ PRIV launched
-2025-02-26 — no trailing return exists; since-inception NAV was 1.81% as of
-2025-06-30. Use HYG/LQD for credit hurdles until PRIV seasons. § Vol ≈ the equity
-baseline but the **tail is deeper**: VNQ's max drawdown ≈ −73% vs SPY/VTI ≈ −55%
-— REITs carry equity-like volatility with a worse drawdown *while trailing the
-equity anchor on return*. That asymmetry (less return, more tail) is the sharpest
+VNQ is the primary REIT comparator, IYR the cross-check. ‡ LQD's negative 5yr is
+the 2022 IG-bond drawdown still sitting in the window. ※ PRIV launched
+2025-02-27 — no 5yr/10yr trailing return exists; since inception to 2026-06-30 it
+returned ≈4.57% annualized, too short a history for a meaningful vol or worst
+drop. Use HYG/LQD for credit hurdles until PRIV seasons. § REITs run *higher* vol
+than the equity anchor with a far deeper worst drop (−73% vs −55%) *while
+trailing it on return*. That asymmetry (less return, more tail) is the sharpest
 single read in this table.
 
-**Risk-free anchor (Treasury curve, `fred-10yr-snapshot.md`):** 3mo ≈ **3.71%**,
-2yr ≈ **4.15%**, 10yr ≈ **4.5%** (10yr early June 2026; short points 2026-06-11).
+**Risk-free anchor (Treasury curve, `fred-10yr-snapshot.md`):** 3mo ≈ **4.24%**,
+2yr ≈ **4.87%**, 10yr ≈ **5.18%** (FRED daily closes, 2026-09-24).
 The illiquidity premium sits *on top of* the duration-matched point — when the
-curve moves, every hurdle below moves with it.
+curve moves, every hurdle below moves with it. **At this snapshot the 10yr
+Treasury out-yields VNQ's and HYG's trailing 10yr returns**: a risk-free bond
+pays more today than the REIT and high-yield indices delivered over the last
+decade. For equity-RE and credit deals, check the net return against the
+duration-matched Treasury as well as the comparator — the Treasury is currently
+the tighter floor.
 
 ---
 
 ## Per-comparator notes
 
 - **SPY (broad equity).** The humbling anchor: over the trailing decade, *every*
-  private RE type below trailed SPY's 15.54% except development's *target* (which
+  private RE type below trailed SPY's 15.39% except development's *target* (which
   is rarely realized). This does not mean "just buy SPY" — private RE is a
   diversifier with a different risk factor — but a deal pitched as "high return"
   that trails a free, liquid index over 10 years owes the LP an explicit
@@ -100,26 +102,26 @@ curve moves, every hurdle below moves with it.
   decade when using it forward.
 - **VTI (total market).** The total-market alternative anchor — same role as SPY,
   cheaper (0.03%), and arguably the truer "all my equity dollars" opportunity cost
-  since it includes mid- and small-cap. Tracks SPY closely (14.88% vs 15.54% 10yr;
+  since it includes mid- and small-cap. Tracks SPY closely (15.04% vs 15.39% 10yr;
   ≈ same vol and −55% drawdown). Use whichever anchor the LP thinks in — they are
   near-substitutes, not distinct exposures, so the spread table maps to RE/credit
   comparators, not to either equity anchor.
 - **VNQ (REITs).** The cleanest liquid proxy for equity real estate, and the
-  primary RE comparator. Broad, cheap (0.13%), daily-liquid. Its ~6.5% 10yr is
+  primary RE comparator. Broad, cheap (0.13%), daily-liquid. Its ~4.9% 10yr is
   the number a private equity-RE deal's *net* return must beat by an illiquidity
   premium. Higher vol than its return suggests — REITs price like equities.
 - **IYR (REITs, cross-check).** Same exposure, pricier (0.39%). Use only to
   sanity-check VNQ. The fee gap is itself an LP lesson: identical exposure, more
   drag — the same scrutiny applies to private fee stacks (`02`).
 - **LQD (IG corporates).** The liquid analog for stabilized "core" cash-flow risk
-  and the senior end of preferred. Its rate sensitivity (near-0% 5yr) is the
+  and the senior end of preferred. Its rate sensitivity (negative 5yr) is the
   cautionary tale for any deal selling "bond-like stability" — duration is risk.
 - **HYG (high yield).** The closest liquid proxy for hard-money / bridge funds and
-  private credit. Its 5.0% 10yr is the bar a private credit fund's net yield must
+  private credit. Its 4.83% 10yr is the bar a private credit fund's net yield must
   clear, *plus* premium for illiquidity and single-borrower concentration that
   HYG diversifies away.
 - **PFF (preferreds).** The direct comparator for preferred-equity positions. Its
-  sober trailing returns (3.72% 10yr) set a low but real bar — and a reminder that
+  sober trailing returns (3.00% 10yr) set a low but real bar — and a reminder that
   preferred is a capped-upside, income instrument, so a private pref's coupon is
   the thing to compare, not an equity-like IRR.
 - **PRIV (public+private credit).** Conceptually the most direct private-credit
@@ -140,15 +142,20 @@ point estimates.
 
 | Private type (net-to-LP, from `01`) | Comparator (10yr) | Approx. premium | Read |
 |---|---|---|---|
-| Multifamily value-add (12–15%) | VNQ (6.47%) | ≈550–850bps | Clears comfortably — but verify it's not leverage (see unlevered overlay) |
-| Multifamily core/core-plus (8–12%) | VNQ (6.47%) | ≈150–550bps | Low end is *thin* for a 7–10yr lock-up |
-| Industrial (7–15%) | VNQ (6.47%) | ≈50–850bps | Stabilized end barely clears; value-add end clears |
-| Retail — necessity (8–12%) | VNQ (6.47%) | ≈150–550bps | Low end thin; anchor-credit risk not in the comparator |
-| SFR (8–14%) | VNQ (6.47%) | ≈150–750bps | Mid-range adequate; shorter track record than the comparator |
-| Development (18–22% *target*) | VNQ (6.47%) | ≈1150–1550bps *target* | Largest *target* premium **and** widest dispersion — discount heavily for realized-below-target |
-| Hard money / bridge (8–10% net) | HYG (5.0%) | ≈300–500bps | Clears — premium pays for illiquidity + concentration HYG diversifies |
-| Private credit (8–12%) | HYG (5.0%) | ≈300–700bps | Clears; check fund leverage isn't manufacturing the spread (`03` → `CREDIT-01`) |
-| Preferred equity (coupon ≥6%; pref <6% is a flag, `03` → `EQUITY-04`) | PFF (3.72%) | ≈230bps+ at a 6% pref | **Thin** — a 6% pref over PFF is ~230bps for capped upside + illiquidity |
+| Multifamily value-add (12–15%) | VNQ (4.92%) | ≈700–1000bps | Clears comfortably — but verify it's not leverage (see unlevered overlay) |
+| Multifamily core/core-plus (8–12%) | VNQ (4.92%) | ≈300–700bps | Low end is *thin* for a 7–10yr lock-up |
+| Industrial (7–15%) | VNQ (4.92%) | ≈200–1000bps | Stabilized end barely clears; value-add end clears |
+| Retail — necessity (8–12%) | VNQ (4.92%) | ≈300–700bps | Low end thin; anchor-credit risk not in the comparator |
+| SFR (8–14%) | VNQ (4.92%) | ≈300–900bps | Mid-range adequate; shorter track record than the comparator |
+| Development (18–22% *target*) | VNQ (4.92%) | ≈1300–1700bps *target* | Largest *target* premium **and** widest dispersion — discount heavily for realized-below-target |
+| Hard money / bridge (8–10% net) | HYG (4.83%) | ≈300–500bps | Clears — premium pays for illiquidity + concentration HYG diversifies |
+| Private credit (8–12%) | HYG (4.83%) | ≈300–700bps | Clears; check fund leverage isn't manufacturing the spread (`03` → `CREDIT-01`) |
+| Preferred equity (coupon ≥6%; pref <6% is a flag, `03` → `EQUITY-04`) | PFF (3.00%) | ≈300bps+ at a 6% pref | **Thin** — a 6% pref over PFF is ~300bps for capped upside + illiquidity |
+
+The equity-RE premiums widened in this refresh because VNQ's trailing return
+fell, not because private deals improved. Read them together with the Treasury
+floor above: a 12% net deal is ≈700bps over VNQ but only ≈680bps over the 10yr
+Treasury.
 
 ***Variable* classes — office, experiential retail, STR, mixed-use — get no row.**
 Per `01`, their baseline is the deal's own underwriting, not a category default,
@@ -166,10 +173,10 @@ hard money and private credit, the credit-analyst lens is the deal's net yield
 over the *duration-matched* risk-free point (`fred-10yr-snapshot.md`), which is
 the **credit + illiquidity spread** the LP is paid:
 
-- Hard money (8–10% net, 6–18mo loans) over the 3mo–2yr bill (3.71–4.15%)
-  → ≈ **385–630bps**.
-- Private credit (8–12% net, 3–7yr) over the 2yr (4.15%; true 3–7yr floor sits a
-  touch higher, between 2yr and 10yr) → ≈ **385–785bps**.
+- Hard money (8–10% net, 6–18mo loans) over the 3mo–2yr bill (4.24–4.87%)
+  → ≈ **315–575bps**.
+- Private credit (8–12% net, 3–7yr) over the 2yr (4.87%; true 3–7yr floor sits a
+  touch higher, between 2yr and 10yr) → ≈ **315–715bps**.
 
 This complements the HYG row rather than duplicating it: HYG already embeds the
 high-yield *credit* spread, so the Treasury floor isolates the **absolute** risk
@@ -196,7 +203,7 @@ floor, **scaled up by lock-up length**. A rough tiering:
 This is a **heuristic, not a law** — it scales the price of illiquidity with its
 duration; precise calibration is LP judgment (risk tolerance, portfolio liquidity
 need, conviction in the GP). Apply it against the *spread table* above: a
-multifamily core deal at 8% net (≈150bps over VNQ) for a 9-year lock-up **fails**
+multifamily core deal at 8% net (≈310bps over VNQ) for a 9-year lock-up **fails**
 the ~400–600bps hurdle even though it "beats REITs" — that is the framework's
 sharpest, least-intuitive output.
 
@@ -217,11 +224,12 @@ Two amplifiers that *raise* the premium an LP should demand:
 The design-review requirement (2026-06-01): without an unlevered baseline, the
 financing-story flag (`03` → `GEN-07`) is assertion, not measurement.
 
-**NCREIF NPI (unlevered institutional private RE), 2025:** total return **4.9%**,
-of which income was **~4.8%** and appreciation **~0.2%**
-(`references/data/ncreif-npi-snapshot.md`). Read this as the **unlevered, in-place**
-return of institutional real estate: almost entirely income, with appreciation
-near zero in 2025.
+**NCREIF NPI (unlevered institutional private RE):** trailing four quarters to
+Q2 2026, total return **5.00%**. The latest quarter was 1.29%, of which income
+was **1.17%** and appreciation **0.12%**; full-year 2025 was 4.9% (≈4.8% income,
+≈0.2% appreciation) (`references/data/ncreif-npi-snapshot.md`). Read this as the
+**unlevered, in-place** return of institutional real estate: almost entirely
+income, with appreciation near zero.
 
 How to use it: if a multifamily deal projects a 15% *levered* net IRR while the
 unlevered private-RE baseline is ~5% (mostly income), then **~10 of those points
@@ -243,7 +251,7 @@ office baseline.
 This file is **synthesis only** — every figure is sourced and dated in
 `references/data/`:
 
-- ETF comparators (returns, expense ratios, vol caveat) →
+- ETF comparators (returns, expense ratios, vol, worst drop) →
   `etf-comparators-snapshot.md`
 - 10yr Treasury anchor → `fred-10yr-snapshot.md`
 - Unlevered private-RE baseline (NCREIF NPI) → `ncreif-npi-snapshot.md`

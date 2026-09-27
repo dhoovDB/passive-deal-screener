@@ -111,8 +111,8 @@ $ python scripts/benchmark_comparator.py --deal-type multifamily-equity \
 
 Benchmark comparison (screening, not underwriting)
 ==================================================
-  Comparator           VNQ - Vanguard Real Estate / REITs (6.47% 10yr)
-  Implied premium           584 bps over comparator
+  Comparator           VNQ - Vanguard Real Estate / REITs (4.92% 10yr)
+  Implied premium           739 bps over comparator
   Lock-up              5 yr  ->  illiquidity hurdle ~300-400 bps
   Verdict              CLEARS comfortably
 ```
@@ -130,7 +130,7 @@ fee is worse than one that refuses and says why:
 | `2` | Structurally invalid, rejected with no output | `--hold-years 0`, `--mgmt-fee -1`, `--gross-irr nan` |
 
 Comparator figures are hardcoded from dated snapshots in `references/data/`
-(`LAST_UPDATED 2026-06-12`) — the stdlib-only constraint rules out a live data
+(`LAST_UPDATED 2026-09-27`) — the stdlib-only constraint rules out a live data
 pull. Pass `--benchmark-return` to override with a current figure.
 
 ---

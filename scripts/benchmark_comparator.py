@@ -34,23 +34,23 @@ import sys
 # Data (config only - no logic). Source: references/data/ snapshots.
 # --------------------------------------------------------------------------- #
 
-# ETF returns as-of 2026-03-31 quarter-end; Treasury 10yr early-June 2026, short
-# points 2026-06-11. Source: references/data/etf-comparators-snapshot.md and
+# ETF returns to the 2026-06-30 quarter-end; Treasury daily closes 2026-09-24.
+# Source: references/data/etf-comparators-snapshot.md and
 # references/data/fred-10yr-snapshot.md. Refresh both, then bump this stamp.
-LAST_UPDATED = "2026-06-12"
+LAST_UPDATED = "2026-09-27"
 
 # Trailing 10yr total return, net of expense ratio (%).
 COMPARATORS = {
-    "VNQ": {"name": "Vanguard Real Estate / REITs", "ten_yr": 6.47},
-    "HYG": {"name": "iShares iBoxx High-Yield Corp", "ten_yr": 5.00},
-    "PFF": {"name": "iShares Preferred & Income", "ten_yr": 3.72},
-    "LQD": {"name": "iShares iBoxx IG Corp Bond", "ten_yr": 3.10},
-    "SPY": {"name": "SPDR S&P 500 (equity anchor)", "ten_yr": 15.54},
-    "VTI": {"name": "Vanguard Total Market (equity anchor)", "ten_yr": 14.88},
+    "VNQ": {"name": "Vanguard Real Estate / REITs", "ten_yr": 4.92},
+    "HYG": {"name": "iShares iBoxx High-Yield Corp", "ten_yr": 4.83},
+    "PFF": {"name": "iShares Preferred & Income", "ten_yr": 3.00},
+    "LQD": {"name": "iShares iBoxx IG Corp Bond", "ten_yr": 2.36},
+    "SPY": {"name": "SPDR S&P 500 (equity anchor)", "ten_yr": 15.39},
+    "VTI": {"name": "Vanguard Total Market (equity anchor)", "ten_yr": 15.04},
 }
 
 # Risk-free curve points (%), for duration-matched debt floors.
-TREASURY = {"3mo": 3.71, "2yr": 4.15, "10yr": 4.50}
+TREASURY = {"3mo": 4.24, "2yr": 4.87, "10yr": 5.18}
 
 # Private deal type -> risk-matched comparator (per `05` spread table). Debt types
 # also carry a duration-matched Treasury point for the credit+illiquidity spread.
@@ -322,26 +322,26 @@ def _self_check():
             "illiquidity_premium_assumed": None, "benchmark_return": None,
         })
 
-    # Multifamily value-add 13% net vs VNQ 6.47% -> ~653 bps, clears comfortably (7yr).
+    # Multifamily value-add 13% net vs VNQ 4.92% -> ~808 bps, clears comfortably (7yr).
     r = run("multifamily-value-add", 13.0, 7.0)
-    if not (640 <= r["implied_premium_bps"] <= 660 and "CLEARS comfortably" in r["verdict"]):
+    if not (800 <= r["implied_premium_bps"] <= 815 and "CLEARS comfortably" in r["verdict"]):
         ok = False
         print(f"FAIL mf value-add: {r['implied_premium_bps']} bps / {r['verdict']}")
     else:
         print(f"ok   mf value-add = {r['implied_premium_bps']:.0f} bps ({r['verdict']})")
 
-    # Preferred equity 6% net vs PFF 3.72% -> ~228 bps, thin for a 5yr lock-up.
+    # Preferred equity 6% net vs PFF 3.00% -> ~300 bps, thin for a 5yr lock-up.
     r = run("preferred-equity", 6.0, 5.0)
-    if not (220 <= r["implied_premium_bps"] <= 235 and "comfortably" not in r["verdict"]):
+    if not (295 <= r["implied_premium_bps"] <= 305 and "comfortably" not in r["verdict"]):
         ok = False
         print(f"FAIL pref equity: {r['implied_premium_bps']} bps / {r['verdict']}")
     else:
         print(f"ok   pref equity = {r['implied_premium_bps']:.0f} bps ({r['verdict']})")
 
-    # Hard money 9% net: HYG spread ~400 bps and a duration-matched 3mo Treasury floor ~529 bps.
+    # Hard money 9% net: HYG spread ~417 bps and a duration-matched 3mo Treasury floor ~476 bps.
     r = run("hard-money", 9.0, 1.0)
     t = r.get("treasury_floor", {})
-    if not (abs(r["implied_premium_bps"] - 400) <= 5 and abs(t.get("spread_bps", 0) - 529) <= 5):
+    if not (abs(r["implied_premium_bps"] - 417) <= 5 and abs(t.get("spread_bps", 0) - 476) <= 5):
         ok = False
         print(f"FAIL hard-money: {r['implied_premium_bps']} bps / treasury {t.get('spread_bps')}")
     else:

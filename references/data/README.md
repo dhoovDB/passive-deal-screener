@@ -12,42 +12,39 @@ illiquidity-premium comparison the skill makes.
 
 | File | Source | As of | What it holds |
 |---|---|---|---|
-| `fred-10yr-snapshot.md` | FRED `DGS10` / `DGS2` / `DGS3MO` (St. Louis Fed) | 10yr early June 2026; short points 2026-06-11 | Treasury curve — 10yr risk-free anchor + 3mo/2yr short points for duration-matching debt deals |
-| `etf-comparators-snapshot.md` | Fund fact sheets, cross-checked vs public aggregators | Q1 2026 quarter-end (2026-03-31) / latest daily | Trailing 5yr/10yr total returns + expense ratios for the 7 public comparators |
-| `ncreif-npi-snapshot.md` | NCREIF (via public secondary reporting) | Q4 2025 | NPI total / income / appreciation returns — the institutional private-RE baseline |
-| `preqin-vintage-note.md` | Preqin (via public secondary citation) | 2001–2017 study window (latest public) | Categorical note on private-fund vintage-year net-IRR dispersion |
+| `fred-10yr-snapshot.md` | FRED `DGS10` / `DGS2` / `DGS3MO` (St. Louis Fed), direct CSV pull | 2026-09-24 | Treasury curve — 10yr risk-free anchor + 3mo/2yr short points for duration-matching debt deals |
+| `etf-comparators-snapshot.md` | Computed from Yahoo Finance dividend-adjusted daily closes | Q2 2026 quarter-end (2026-06-30) | Trailing 5yr/10yr total returns, vol, worst drop, and expense ratios for the 8 public comparators |
+| `ncreif-npi-snapshot.md` | NCREIF, via IREI's report of the quarterly release | Q2 2026 | NPI total / income / appreciation returns — the institutional private-RE baseline |
+| `preqin-vintage-note.md` | Preqin, via CAIS's public citation | 2001–2017 study window (latest public; re-confirmed 2026-09-27) | Categorical note on private-fund vintage-year net-IRR dispersion |
 
-## How the figures were captured (2026-06-06)
+## Sources — four, one per kind of data
 
-Captured via `WebSearch` across public aggregators (financecharts.com,
-stockanalysis.com, Morningstar, Yahoo Finance) and public secondary reporting
-of institutional indices (RCLCO, Capital Economics, CAIS). **Issuer fact sheets
-(ishares.com, vanguard.com, ssga.com) and FRED's own pages return HTTP 403 to
-automated fetch**, so the figures here come from aggregators reporting those
-sources, not the issuers directly. Where two aggregators diverged materially,
-both are shown rather than one chosen silently.
+| Data | Source | How |
+|---|---|---|
+| Treasury curve | **FRED** | Direct CSV: `https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10,DGS2,DGS3MO` |
+| ETF returns, vol, worst drop | **Yahoo Finance** | Public chart endpoint, dividend-adjusted daily closes; all figures computed from the one price history |
+| NCREIF NPI | **IREI** | Its report of each NCREIF quarterly release |
+| Private-fund dispersion | **CAIS** | Public citation of Preqin data (Preqin's own tables are subscription-gated) |
 
-Gated sources are marked as such: NCREIF detail beyond the public headline, and
-Preqin's current per-vintage quartile tables, sit behind membership/subscription
-paywalls. The snapshots capture the latest *publicly reported* figure and flag
-the rest categorical — a documented gap is a correct output; a fabricated number
-is a defect.
+Two figures sit outside the quarterly cycle and are confirmed **once a year**:
+ETF expense ratios (on each fund company's page) and the NPI full-year and
+property-type returns (from the annual recaps). A documented gap is a correct
+output; a fabricated number is a defect.
 
-## Refresh procedure (v1.0 → v1.1)
+## Refresh procedure
 
-1. **ETF returns** — re-run the per-ticker trailing-return searches; prefer the
-   most recent quarter-end fact-sheet figures (uniform as-of date across funds).
-   Cross-check each against ≥2 aggregators; fix the basis as **NAV total return,
-   post-expense** (apples-to-apples with net-to-LP private returns).
-2. **FRED 10yr** — confirm the current `DGS10` daily close at
-   <https://fred.stlouisfed.org/series/DGS10> (or its CSV endpoint if fetchable).
-3. **NCREIF NPI** — pull the latest quarter's NPI total/income/appreciation from
-   NCREIF's release or public secondary reporting; update the vintage quarter.
-4. **Preqin** — if a subscription is available, replace the categorical note with
-   current per-vintage quartile boundaries; otherwise re-confirm the public
-   secondary citation and its study window.
-5. Update each file's `LAST_UPDATED` / `As of` stamp, then update `05`'s table
-   and its own `LAST_UPDATED`.
+1. **Treasury curve** — download the FRED CSV above; take the latest daily close
+   for each of the three series.
+2. **ETF figures** — for each of the eight tickers, pull the full daily history
+   from Yahoo and compute, as of the latest quarter-end: trailing 5yr and 10yr
+   annualized total return, 10yr annualized vol, and full-history worst drop
+   (method in `etf-comparators-snapshot.md` → Provenance).
+3. **NCREIF NPI** — take the latest quarter's total / income / appreciation and
+   the trailing four-quarter total from IREI's report.
+4. **Preqin** — re-confirm the CAIS citation; if a Preqin subscription is
+   available, replace the categorical note with current quartile boundaries.
+5. Update each file's `As of` / `Captured` stamp, then update `05`'s table and
+   its own `LAST_UPDATED`.
 6. Update the hardcoded copies in `scripts/benchmark_comparator.py`
    (`COMPARATORS`, `TREASURY`, `LAST_UPDATED`) and its `_self_check` anchors,
    then run `python scripts/benchmark_comparator.py --self-check`. Its drift
