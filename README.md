@@ -180,7 +180,7 @@ Surveyed against existing real-estate and deal-analyzer skills, the positioning 
 before `SKILL.md` was written, so the skill was built against a harness that
 already knew how to fail it.
 
-- **Five reference files, 1,274 lines** — asset-class norms, a fee-stack library,
+- **Five reference files** — asset-class norms, a fee-stack library,
   34 red flags with `{ASSET_CLASS}-{NN}` IDs, 25 LP questions each citing the flags
   they answer, and public-market comparators. The skill loads a named slice per
   deal type, not the whole set.

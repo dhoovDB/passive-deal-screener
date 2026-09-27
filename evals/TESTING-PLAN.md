@@ -29,7 +29,7 @@ one canonical place per fixture (the `prompt` field), with `sources.md` the
 provenance for real-sourced prompts. Real-deal prompts are condensed, authentic
 pastes with names/addresses/sponsors scrubbed (`§3`).
 
-The eval is a manual run, per ROADMAP §8 Phase 3: load `SKILL.md`, screen each
+The eval is a manual run: load `SKILL.md`, screen each
 `evals.json` prompt, capture the output to `iteration-N/`, score against §4, fix
 SKILL.md or a reference, re-run. The bar is **all 11 cases (13 fixtures) passing
 after ≥2 cycles** (§8).
@@ -240,7 +240,7 @@ in *both* branches.
 
 ## 7. Execution protocol
 
-Per ROADMAP §8 Phase 3:
+Protocol (cycles 2 onward also separate generator, grader, and author into fresh-context subagents):
 
 1. Load `SKILL.md`; screen each `evals.json` prompt (ids 1-13).
 2. Capture each output verbatim to `evals/iteration-N/NN.md` (NN = the fixture id).
