@@ -538,7 +538,7 @@ before the last push.
 the earlier steps' commits exist in `git log`, and continue from there.
 
 - [x] **Step 0 — Record this fix pass in ROADMAP.md** (this section + decision-log entry).
-- [ ] **Step 1 — Script correctness (C1, W1, W2).**
+- [x] **Step 1 — Script correctness (C1, W1, W2).** Done 2026-09-27; `benchmark_comparator.py` had the same silent-default pattern (`--net-irr` / `--deal-type` / `--hold-years`) and got the same ASSUMED labeling.
   - C1: `fee_drag_calculator.py` fills omitted inputs from defaults without saying so (a sparse hard-money call reported 780 bps drag, ~680 of it invented). Keep the defaults, but report every defaulted input as `ASSUMED (not supplied)` in human output and as `assumed_inputs` in JSON.
   - W1: `clears_hurdle` compares compound IRR to the simple pref *rate*, so gross = hurdle = 8% over 7 yr prints "no promote is earned" beside 133 bps of promote. The simple-pref math matches `02` and stays; derive the flag from the waterfall (`total_profit > pref_accrual`) and keep the note consistent.
   - W2: NaN/inf pass validation in both scripts. Reject non-finite numbers (exit 2).

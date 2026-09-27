@@ -23,12 +23,40 @@ Two deliberate simplifications, consistent with `02`'s screening stance:
     by the skill (`03` -> GEN-11), not a fee-drag input.
 
 For the precise per-deal answer, replace the inputs with the real fee schedule
-and waterfall from the PPM. stdlib-only by design (no pip installs).
+and waterfall from the PPM. Omitted inputs fall back to the `02` worked example
+and are reported as ASSUMED, so pass 0 for any fee or carry the deal doesn't
+charge. stdlib-only by design (no pip installs).
 """
 
 import argparse
 import json
+import math
 import sys
+
+
+# --------------------------------------------------------------------------- #
+# Data (config only - no logic)
+# --------------------------------------------------------------------------- #
+
+# Inputs the caller omits fall back to these, which reproduce the `02` worked
+# example so a bare run is a live demo. A non-zero fallback is a number the deal
+# never disclosed, so every one used is reported as ASSUMED - never silently
+# folded into the drag. Omitted zero-default fees are simply not charged.
+DEFAULTS = {
+    "gross_irr": 15.0,
+    "hold_years": 7.0,
+    "carry": 20.0,
+    "hurdle": 8.0,
+    "catch_up": 100.0,
+    "acquisition_fee": 2.0,
+    "disposition_fee": 1.0,
+    "loan_placement_fee": 0.0,
+    "refinance_fee": 0.0,
+    "mgmt_fee": 1.5,
+    "admin_fee": 0.3,
+    "servicing_fee": 0.0,
+    "fund_mgmt_fee": 0.0,
+}
 
 
 # --------------------------------------------------------------------------- #
@@ -61,28 +89,37 @@ def promote_drag(gross_irr_pct, hurdle_pct, carry_pct, hold_years, catch_up_pct=
     governs distribution *timing*, not the final split — the GP still ends with
     exactly `carry` of total profit. The pref only changes the LP's share when
     the catch-up is below 100%.
+
+    "Clears the hurdle" is read off the waterfall itself: total profit exceeds
+    the simple pref accrual. Comparing the compound gross IRR to the pref *rate*
+    would disagree with the promote actually paid - at 8% gross over an 8% simple
+    pref for 7 years, profit (71%) still exceeds the accrual (56%).
     """
     g = gross_irr_pct / 100.0
     pref = hurdle_pct / 100.0
     carry = carry_pct / 100.0
     catch_up = catch_up_pct / 100.0
 
+    total_profit = (1.0 + g) ** hold_years - 1.0 if hold_years > 0 else 0.0
+    pref_accrual = pref * hold_years            # simple pref on $1 (per `02`)
+    clears = hold_years > 0 and total_profit > pref_accrual
+
     detail = {
-        "clears_hurdle": g > pref,
+        "clears_hurdle": clears,
         "gp_profit_share_pct": 0.0,
         "lp_profit_share_pct": 100.0,
         "note": "",
     }
 
-    if hold_years <= 0 or carry <= 0.0:
+    if not clears:
+        detail["note"] = (f"Profit does not exceed the simple {hurdle_pct:g}% pref accrual - "
+                          "no promote is earned, but the LP may not realize the full pref.")
+        return 0.0, detail
+    if carry <= 0.0:
+        detail["note"] = "No carry - the LP keeps all profit."
         return 0.0, detail
 
-    total_profit = (1.0 + g) ** hold_years - 1.0
-    if total_profit <= 0.0:
-        return 0.0, detail
-
-    pref_accrual = pref * hold_years            # simple pref on $1 (per `02`)
-    profit_above_pref = max(0.0, total_profit - pref_accrual)
+    profit_above_pref = total_profit - pref_accrual
 
     # Full catch-up target: the GP take that makes GP == carry of (pref + take).
     if carry < 1.0:
@@ -101,9 +138,10 @@ def promote_drag(gross_irr_pct, hurdle_pct, carry_pct, hold_years, catch_up_pct=
 
     detail["gp_profit_share_pct"] = round(gp_profit / total_profit * 100.0, 2)
     detail["lp_profit_share_pct"] = round((1.0 - gp_profit / total_profit) * 100.0, 2)
-    if not detail["clears_hurdle"]:
-        detail["note"] = ("Gross IRR is at or below the preferred return - no "
-                          "promote is earned, but the LP may not realize the full pref.")
+    if g <= pref:
+        detail["note"] = (f"Gross IRR is at or below the {hurdle_pct:g}% pref rate, but the pref "
+                          "is simple (non-compounding), so profit still exceeds the accrual "
+                          "and promote is earned. A compounding pref would change this.")
     elif catch_up_pct >= 100.0:
         detail["note"] = (f"With a 100% catch-up, the {hurdle_pct:g}% pref governs "
                           "distribution timing, not the final split - the GP still "
@@ -114,9 +152,10 @@ def promote_drag(gross_irr_pct, hurdle_pct, carry_pct, hold_years, catch_up_pct=
     return drag_bps, detail
 
 
-def compute_fee_drag(params):
+def compute_fee_drag(params, assumed=()):
     """Orchestrate the drag estimate from a params dict. Pure: returns a result
-    dict, prints nothing."""
+    dict, prints nothing. `assumed` names the params that fell back to DEFAULTS;
+    they are carried into the result so no invented input goes unreported."""
     hold = params["hold_years"]
 
     recurring_pct = (params["mgmt_fee"] + params["admin_fee"]
@@ -135,6 +174,7 @@ def compute_fee_drag(params):
 
     return {
         "inputs": params,
+        "assumed_inputs": {k: params[k] for k in assumed},
         "gross_irr_pct": round(params["gross_irr"], 4),
         "net_irr_pct": round(net_irr, 2),
         "total_drag_bps": round(total_bps, 1),
@@ -158,44 +198,45 @@ def parse_args(argv):
         epilog="Run with no arguments to reproduce the 02-fee-stack-library worked "
                "example (15 percent gross multifamily, 7-year hold, full stack, ~10.6 percent net).",
     )
-    # Defaults reproduce the `02` worked example so a bare run is a live demo.
-    p.add_argument("--gross-irr", type=float, default=15.0, help="Gross deal IRR, %% (default: 15)")
-    p.add_argument("--hold-years", type=float, default=7.0, help="Hold period in years (default: 7)")
-    p.add_argument("--carry", type=float, default=20.0, help="GP promote / carry, %% (default: 20)")
-    p.add_argument("--hurdle", type=float, default=8.0, help="Preferred return / hurdle, %% (default: 8)")
-    p.add_argument("--catch-up", type=float, default=100.0,
-                   help="GP catch-up, %% (100 = full catch-up to carry share; 0 = none)")
+    # Omitted inputs fall back to DEFAULTS (the `02` worked example) and are
+    # reported as ASSUMED. Pass 0 explicitly for a fee or carry the deal lacks.
+    def num(flag, help_text):
+        d = DEFAULTS[flag.lstrip("-").replace("-", "_")]
+        note = f"reported as ASSUMED: {d:g}" if d else "0, not charged"
+        p.add_argument(flag, type=float, default=None,
+                       help=f"{help_text} (default if omitted: {note})")
+    num("--gross-irr", "Gross deal IRR, %%")
+    num("--hold-years", "Hold period in years")
+    num("--carry", "GP promote / carry, %%; 0 if the deal has none")
+    num("--hurdle", "Preferred return / hurdle, %%")
+    num("--catch-up", "GP catch-up, %% (100 = full catch-up to carry share; 0 = none)")
     # One-time fees
-    p.add_argument("--acquisition-fee", type=float, default=2.0, help="One-time, %% (default: 2)")
-    p.add_argument("--disposition-fee", type=float, default=1.0, help="One-time, %% (default: 1)")
-    p.add_argument("--loan-placement-fee", type=float, default=0.0, help="One-time, %% (default: 0)")
-    p.add_argument("--refinance-fee", type=float, default=0.0, help="One-time, %% (default: 0)")
+    num("--acquisition-fee", "One-time, %%")
+    num("--disposition-fee", "One-time, %%")
+    num("--loan-placement-fee", "One-time, %%")
+    num("--refinance-fee", "One-time, %%")
     # Recurring (annual) fees
-    p.add_argument("--mgmt-fee", type=float, default=1.5, help="Annual asset-mgmt fee, %% (default: 1.5)")
-    p.add_argument("--admin-fee", type=float, default=0.3, help="Annual admin/IR fee, %% (default: 0.3)")
-    p.add_argument("--servicing-fee", type=float, default=0.0, help="Annual servicing fee, %% (default: 0)")
-    p.add_argument("--fund-mgmt-fee", type=float, default=0.0, help="Annual fund mgmt fee, %% (default: 0)")
+    num("--mgmt-fee", "Annual asset-mgmt fee, %%")
+    num("--admin-fee", "Annual admin/IR fee, %%")
+    num("--servicing-fee", "Annual servicing fee, %%")
+    num("--fund-mgmt-fee", "Annual fund mgmt fee, %%")
     p.add_argument("--json", action="store_true", help="Emit JSON instead of a human-readable summary")
     p.add_argument("--self-check", action="store_true", help="Run internal checks against `02` and exit")
     return p.parse_args(argv)
 
 
 def args_to_params(args):
-    return {
-        "gross_irr": args.gross_irr,
-        "hold_years": args.hold_years,
-        "carry": args.carry,
-        "hurdle": args.hurdle,
-        "catch_up": args.catch_up,
-        "acquisition_fee": args.acquisition_fee,
-        "disposition_fee": args.disposition_fee,
-        "loan_placement_fee": args.loan_placement_fee,
-        "refinance_fee": args.refinance_fee,
-        "mgmt_fee": args.mgmt_fee,
-        "admin_fee": args.admin_fee,
-        "servicing_fee": args.servicing_fee,
-        "fund_mgmt_fee": args.fund_mgmt_fee,
-    }
+    """Returns (params, assumed): params with omitted inputs filled from
+    DEFAULTS, and the keys whose non-zero default was used."""
+    params, assumed = {}, []
+    for key, default in DEFAULTS.items():
+        value = getattr(args, key)
+        if value is None:
+            value = default
+            if default != 0:
+                assumed.append(key)
+        params[key] = value
+    return params, assumed
 
 
 def validate_params(params):
@@ -210,6 +251,11 @@ def validate_params(params):
     fee_fields = ("mgmt_fee", "admin_fee", "servicing_fee", "fund_mgmt_fee",
                   "acquisition_fee", "disposition_fee", "loan_placement_fee",
                   "refinance_fee")
+
+    # NaN compares False against every bound below, so it must be caught first.
+    bad = [k for k, v in params.items() if not math.isfinite(v)]
+    if bad:
+        return [f"{k.replace('_', '-')} must be a finite number" for k in bad], []
 
     if params["hold_years"] <= 0:
         errors.append("hold-years must be greater than 0")
@@ -246,6 +292,13 @@ def format_human(r):
     lines = [
         "Fee-drag estimate (screening, not underwriting)",
         "=" * 48,
+    ]
+    if r["assumed_inputs"]:
+        assumed = ", ".join(f"{k.replace('_', '-')} {v:g}" for k, v in r["assumed_inputs"].items())
+        lines += [f"  ASSUMED (not supplied): {assumed}",
+                  "  These are demo defaults, not disclosed terms - pass 0 for any the deal lacks.",
+                  ""]
+    lines += [
         f"  Gross deal IRR        {r['gross_irr_pct']:>8.2f}%",
         f"  Estimated net LP IRR  {r['net_irr_pct']:>8.2f}%",
         f"  Total fee drag        {r['total_drag_pct']:>8.2f}%  ({r['total_drag_bps']:.0f} bps/yr)",
@@ -269,7 +322,7 @@ def _self_check():
     ok = True
 
     # Full worked example (total-drag section): ~10.5-11% net.
-    full = compute_fee_drag(args_to_params(parse_args([])))
+    full = compute_fee_drag(*args_to_params(parse_args([])))
     if not (10.4 <= full["net_irr_pct"] <= 11.0):
         ok = False
         print(f"FAIL worked example: net {full['net_irr_pct']}% not in 10.4-11.0%")
@@ -285,14 +338,38 @@ def _self_check():
         else:
             print(f"ok   promote @ {gross:g}% gross = {bps:.0f} bps")
 
-    # Input validation: a known-bad input must be rejected; a suspect one warned.
-    bad = args_to_params(parse_args(["--hold-years", "0"]))
-    if not validate_params(bad)[0]:
+    # Hurdle flag agrees with the promote actually paid, on both sides of the accrual.
+    for gross, hurdle, hold, want_clear in ((8.0, 8.0, 7.0, True), (5.0, 8.0, 3.0, False)):
+        bps, detail = promote_drag(gross, hurdle, 20.0, hold, 100.0)
+        if detail["clears_hurdle"] != want_clear or (bps > 0) != want_clear:
+            ok = False
+            print(f"FAIL hurdle flag @ {gross:g}/{hurdle:g}/{hold:g}yr: "
+                  f"clears={detail['clears_hurdle']} promote={bps:.0f} bps")
+        else:
+            print(f"ok   hurdle flag @ {gross:g}% gross / {hurdle:g}% pref / {hold:g}yr "
+                  f"= clears {detail['clears_hurdle']}, promote {bps:.0f} bps")
+
+    # A sparse call reports every non-zero default it used; explicit inputs are not assumed.
+    _, assumed = args_to_params(parse_args(
+        ["--gross-irr", "10", "--hold-years", "1", "--servicing-fee", "1"]))
+    want = {"carry", "hurdle", "catch_up", "acquisition_fee", "disposition_fee",
+            "mgmt_fee", "admin_fee"}
+    if set(assumed) != want:
         ok = False
-        print("FAIL validator: hold-years 0 should error")
+        print(f"FAIL assumed inputs: {sorted(assumed)}")
     else:
-        print("ok   validator rejects hold-years 0")
-    suspect = args_to_params(parse_args(["--gross-irr", "150"]))
+        print(f"ok   sparse call reports {len(assumed)} assumed inputs")
+
+    # Input validation: a known-bad input must be rejected; a suspect one warned.
+    for argv, label in ((["--hold-years", "0"], "hold-years 0"),
+                        (["--gross-irr", "nan"], "gross-irr nan"),
+                        (["--mgmt-fee", "inf"], "mgmt-fee inf")):
+        if not validate_params(args_to_params(parse_args(argv))[0])[0]:
+            ok = False
+            print(f"FAIL validator: {label} should error")
+        else:
+            print(f"ok   validator rejects {label}")
+    suspect, _ = args_to_params(parse_args(["--gross-irr", "150"]))
     if not validate_params(suspect)[1]:
         ok = False
         print("FAIL validator: gross-irr 150 should warn")
@@ -308,15 +385,18 @@ def main(argv=None):
     args = parse_args(argv)
     if args.self_check:
         return _self_check()
-    params = args_to_params(args)
+    params, assumed = args_to_params(args)
     errors, warnings = validate_params(params)
+    if assumed:  # invented inputs deserve the same exit 1 as a suspected unit slip
+        warnings.append("not supplied, demo defaults assumed: "
+                        + ", ".join(k.replace("_", "-") for k in assumed))
     for w in warnings:
         print(f"warning: {w}", file=sys.stderr)
     if errors:
         for e in errors:
             print(f"error: {e}", file=sys.stderr)
         return 2
-    result = compute_fee_drag(params)
+    result = compute_fee_drag(params, assumed)
     if args.json:
         print(json.dumps(result, indent=2))
     else:

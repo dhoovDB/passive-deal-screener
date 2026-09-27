@@ -24,6 +24,7 @@ away. stdlib-only by design (no pip installs).
 
 import argparse
 import json
+import math
 import sys
 
 
@@ -68,6 +69,10 @@ DEAL_TYPES = {
 # the deal's own underwriting, not a category default.
 VARIABLE_TYPES = {"office", "experiential-retail", "str", "mixed-use"}
 
+# Omitted inputs fall back to the `05` demo deal so a bare run is a live demo.
+# Every fallback used is reported as ASSUMED - never silently compared.
+DEFAULTS = {"deal_type": "multifamily-equity", "net_irr": 11.2, "hold_years": 5.0}
+
 
 # --------------------------------------------------------------------------- #
 # Pure calculation core (same input -> same output, no side effects)
@@ -100,16 +105,19 @@ def verdict_for(implied_bps, low, high):
     return "CLEARS comfortably"
 
 
-def compute_comparison(params):
+def compute_comparison(params, assumed=()):
     """Orchestrate the comparison from a params dict. Pure: returns a result
-    dict, prints nothing. Raises ValueError on an unknown deal type."""
+    dict, prints nothing. Raises ValueError on an unknown deal type. `assumed`
+    names the params that fell back to DEFAULTS; they are carried into the result."""
     deal_type = normalize_deal_type(params["deal_type"])
     net_irr = params["net_irr"]
     hold = params["hold_years"]
+    assumed_inputs = {k: params[k] for k in assumed}
 
     if deal_type in VARIABLE_TYPES:
         return {
             "deal_type": deal_type,
+            "assumed_inputs": assumed_inputs,
             "variable": True,
             "guidance": ("This is a `variable` class (05): no category comparator. "
                          "Benchmark against the deal's own underwriting and the closest "
@@ -144,6 +152,7 @@ def compute_comparison(params):
 
     result = {
         "deal_type": deal_type,
+        "assumed_inputs": assumed_inputs,
         "variable": False,
         "net_irr_pct": round(net_irr, 2),
         "comparator": comparator_label,
@@ -183,14 +192,16 @@ def parse_args(argv):
                 f"(LAST_UPDATED {LAST_UPDATED}); pass --benchmark-return to override with a "
                 "current figure. Run with no arguments for the 05-benchmark-returns demo."),
     )
-    # Defaults reproduce the ROADMAP example so a bare run is a live demo.
-    p.add_argument("--deal-type", type=str, default="multifamily-equity",
-                   help="Private deal type (default: multifamily-equity). "
-                        "See --list-types for the full set.")
-    p.add_argument("--net-irr", type=float, default=11.2,
-                   help="Deal's net-to-LP IRR, %% (default: 11.2)")
-    p.add_argument("--hold-years", type=float, default=5.0,
-                   help="Lock-up / hold period in years (default: 5)")
+    # Omitted inputs fall back to DEFAULTS (the `05` demo) and are reported as ASSUMED.
+    p.add_argument("--deal-type", type=str, default=None,
+                   help=f"Private deal type (default if omitted, reported as ASSUMED: "
+                        f"{DEFAULTS['deal_type']}). See --list-types for the full set.")
+    p.add_argument("--net-irr", type=float, default=None,
+                   help=f"Deal's net-to-LP IRR, %% (default if omitted, reported as "
+                        f"ASSUMED: {DEFAULTS['net_irr']:g})")
+    p.add_argument("--hold-years", type=float, default=None,
+                   help=f"Lock-up / hold period in years (default if omitted, reported "
+                        f"as ASSUMED: {DEFAULTS['hold_years']:g})")
     p.add_argument("--illiquidity-premium-assumed", type=float, default=None,
                    help="Override the hold-based illiquidity hurdle, %% (e.g. 2 = 200 bps)")
     p.add_argument("--benchmark-return", type=float, default=None,
@@ -202,13 +213,20 @@ def parse_args(argv):
 
 
 def args_to_params(args):
-    return {
-        "deal_type": args.deal_type,
-        "net_irr": args.net_irr,
-        "hold_years": args.hold_years,
+    """Returns (params, assumed): params with omitted inputs filled from
+    DEFAULTS, and the keys whose default was used."""
+    params = {
         "illiquidity_premium_assumed": args.illiquidity_premium_assumed,
         "benchmark_return": args.benchmark_return,
     }
+    assumed = []
+    for key, default in DEFAULTS.items():
+        value = getattr(args, key)
+        if value is None:
+            value = default
+            assumed.append(key)
+        params[key] = value
+    return params, assumed
 
 
 def validate_params(params):
@@ -218,6 +236,12 @@ def validate_params(params):
     case stays handled by compute_comparison (ValueError -> exit 2); this covers
     the numeric domain. Kept out of the pure core."""
     errors, warnings = [], []
+
+    # NaN compares False against every bound below, so it must be caught first.
+    numeric = ("net_irr", "hold_years", "illiquidity_premium_assumed", "benchmark_return")
+    bad = [k for k in numeric if params[k] is not None and not math.isfinite(params[k])]
+    if bad:
+        return [f"{k.replace('_', '-')} must be a finite number" for k in bad], []
 
     if params["hold_years"] <= 0:
         errors.append("hold-years must be greater than 0")
@@ -238,15 +262,20 @@ def validate_params(params):
 
 
 def format_human(r):
+    lines = ["Benchmark comparison (screening, not underwriting)", "=" * 50]
+    if r["assumed_inputs"]:
+        assumed = ", ".join(f"{k.replace('_', '-')} {v:g}" if isinstance(v, float)
+                            else f"{k.replace('_', '-')} {v}"
+                            for k, v in r["assumed_inputs"].items())
+        lines += [f"  ASSUMED (not supplied): {assumed}",
+                  "  These are demo defaults, not the deal's terms - pass the deal's own values.",
+                  ""]
     if r.get("variable"):
-        return ("Benchmark comparison (screening, not underwriting)\n"
-                + "=" * 50
-                + f"\n  Deal type      {r['deal_type']}\n"
-                + "  Comparator     none - variable class\n"
-                + f"  Guidance       {r['guidance']}")
-    lines = [
-        "Benchmark comparison (screening, not underwriting)",
-        "=" * 50,
+        lines += [f"  Deal type      {r['deal_type']}",
+                  "  Comparator     none - variable class",
+                  f"  Guidance       {r['guidance']}"]
+        return "\n".join(lines)
+    lines += [
         f"  Deal type            {r['deal_type']}",
         f"  Deal net IRR (LP)    {r['net_irr_pct']:>8.2f}%",
         f"  Comparator           {r['comparator']}",
@@ -304,14 +333,25 @@ def _self_check():
     else:
         print("ok   office -> variable class (no forced comparator)")
 
+    # Omitted inputs are reported as assumed; supplied ones are not.
+    _, assumed = args_to_params(parse_args(["--deal-type", "hard-money"]))
+    if set(assumed) != {"net_irr", "hold_years"}:
+        ok = False
+        print(f"FAIL assumed inputs: {sorted(assumed)}")
+    else:
+        print("ok   omitted net-irr / hold-years reported as assumed")
+
     # Input validation: a known-bad input must be rejected; a suspect one warned.
     base = {"deal_type": "multifamily-equity", "net_irr": 11.2, "hold_years": 5.0,
             "illiquidity_premium_assumed": None, "benchmark_return": None}
-    if not validate_params({**base, "hold_years": 0.0})[0]:
-        ok = False
-        print("FAIL validator: hold-years 0 should error")
-    else:
-        print("ok   validator rejects hold-years 0")
+    for override, label in (({"hold_years": 0.0}, "hold-years 0"),
+                            ({"net_irr": float("nan")}, "net-irr nan"),
+                            ({"benchmark_return": float("inf")}, "benchmark-return inf")):
+        if not validate_params({**base, **override})[0]:
+            ok = False
+            print(f"FAIL validator: {label} should error")
+        else:
+            print(f"ok   validator rejects {label}")
     if not validate_params({**base, "net_irr": 150.0})[1]:
         ok = False
         print("FAIL validator: net-irr 150 should warn")
@@ -333,8 +373,11 @@ def main(argv=None):
             print(f"  {dt:<22} -> {DEAL_TYPES[dt]['comparator']}")
         print("Variable (no category comparator): " + ", ".join(sorted(VARIABLE_TYPES)))
         return 0
-    params = args_to_params(args)
+    params, assumed = args_to_params(args)
     errors, warnings = validate_params(params)
+    if assumed:  # invented inputs deserve the same exit 1 as a suspected unit slip
+        warnings.append("not supplied, demo defaults assumed: "
+                        + ", ".join(k.replace("_", "-") for k in assumed))
     for w in warnings:
         print(f"warning: {w}", file=sys.stderr)
     if errors:
@@ -342,7 +385,7 @@ def main(argv=None):
             print(f"error: {e}", file=sys.stderr)
         return 2
     try:
-        result = compute_comparison(params)
+        result = compute_comparison(params, assumed)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2

@@ -73,7 +73,7 @@ Add `output as JSON` to get the structured shape instead of Markdown.
 
 ### The two scripts
 
-Both are standalone, stdlib-only (`argparse`, `json`, `sys` — nothing to install),
+Both are standalone, stdlib-only (`argparse`, `json`, `math`, `sys` — nothing to install),
 and usable without the skill. They compose: the fee calculator gives you a net IRR,
 which is the input the benchmark comparator wants.
 
@@ -85,6 +85,9 @@ $ python scripts/fee_drag_calculator.py --gross-irr 18 --hold-years 5 \
 
 Fee-drag estimate (screening, not underwriting)
 ================================================
+  ASSUMED (not supplied): catch-up 100, disposition-fee 1, admin-fee 0.3
+  These are demo defaults, not disclosed terms - pass 0 for any the deal lacks.
+
   Gross deal IRR           18.00%
   Estimated net LP IRR     12.31%
   Total fee drag            5.69%  (568 bps/yr)
@@ -94,6 +97,11 @@ Fee-drag estimate (screening, not underwriting)
     One-time fees           60.0
     Promote                278.5
 ```
+
+Any input you leave out falls back to the worked example in
+`references/02-fee-stack-library.md`, and the output names every value it had to
+assume, so a fee the deal never disclosed can't hide in the total. Pass `0` for a
+fee or carry the deal doesn't charge.
 
 **Is that good, versus something liquid?**
 
@@ -117,9 +125,9 @@ fee is worse than one that refuses and says why:
 
 | Code | Meaning | Example |
 |---|---|---|
-| `0` | Clean run | `--gross-irr 18` |
-| `1` | Runs, but the inputs look like a unit slip — warning on stderr, result still on stdout | `--gross-irr 999` ("15 means 15%, not 0.15") |
-| `2` | Structurally invalid, rejected with no output | `--hold-years 0`, `--mgmt-fee -1` |
+| `0` | Clean run — every input supplied and plausible | the fee calculator with all thirteen inputs passed |
+| `1` | Runs, but check the inputs — warning on stderr, result still on stdout. Either a likely unit slip, or some inputs were filled from demo defaults | `--gross-irr 999` ("15 means 15%, not 0.15"); the sample above (three inputs assumed) |
+| `2` | Structurally invalid, rejected with no output | `--hold-years 0`, `--mgmt-fee -1`, `--gross-irr nan` |
 
 Comparator figures are hardcoded from dated snapshots in `references/data/`
 (`LAST_UPDATED 2026-06-12`) — the stdlib-only constraint rules out a live data
