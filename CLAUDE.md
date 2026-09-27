@@ -68,6 +68,8 @@ passive-deal-screener/
 │   ├── hard-money-fund/                 fixture 3 (senior-secured bridge fund)
 │   └── private-credit-fund/             fixture 13 (diversified BDC-style)
 │                                        each: input.md + output.md
+├── tools/
+│   └── refresh_benchmarks.py            pulls FRED + Yahoo, computes the benchmark figures (repo-only; makes network calls)
 ├── evals/
 │   ├── evals.json                  [PR] 13 fixtures
 │   ├── iteration-1..3/                  run transcripts + scorecards — process, not product

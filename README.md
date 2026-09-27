@@ -23,6 +23,7 @@ passive-deal-screener/
 ├── scripts/          # 2 stdlib-only CLIs (no pip install)
 ├── examples/         # 3 worked input/output pairs
 ├── evals/            # 13 fixtures + 3 iteration logs
+├── tools/            # benchmark-data refresh (maintenance only; not part of the skill)
 └── ROADMAP.md        # build plan, decision log, ship gate
 ```
 
