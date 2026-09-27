@@ -1,7 +1,7 @@
 # passive-deal-screener — Roadmap
 ## Contributing to `alirezarezvani/claude-skills` (via `dhoovDB/claude-skills`)
 
-**Status:** Pre-development  
+**Status:** v1.0 built; pre-PR fix pass in progress (Phase 4.6), then Phase 5 (PR)  
 **Target domain:** `finance/`  
 **Target repo:** `alirezarezvani/claude-skills` (upstream of your fork `dhoovDB/claude-skills`)  
 **Skill name (proposed):** `passive-deal-screener`
@@ -526,6 +526,35 @@ If it is not defensible: align to their pattern before opening the PR. If it is 
 
 Every intentional divergence should have a rationale entry dated before the PR opens. Reviewers see the why, not just the what.
 
+### Phase 4.6: Pre-PR fix pass — 🔄 IN PROGRESS (opened 2026-09-27)
+
+A whole-codebase adversarial review on 2026-09-27 returned **BLOCK** (1 critical,
+6 warnings, 6 notes; see that date's decision-log entry). Every finding is fixed
+before Phase 5. One commit per step, in order; each runs `/codereview`, gets
+approval, commits and pushes. `/adversarialreview` runs once over the full series
+before the last push.
+
+**Resume here in a fresh session:** find the first unchecked step below, confirm
+the earlier steps' commits exist in `git log`, and continue from there.
+
+- [x] **Step 0 — Record this fix pass in ROADMAP.md** (this section + decision-log entry).
+- [ ] **Step 1 — Script correctness (C1, W1, W2).**
+  - C1: `fee_drag_calculator.py` fills omitted inputs from defaults without saying so (a sparse hard-money call reported 780 bps drag, ~680 of it invented). Keep the defaults, but report every defaulted input as `ASSUMED (not supplied)` in human output and as `assumed_inputs` in JSON.
+  - W1: `clears_hurdle` compares compound IRR to the simple pref *rate*, so gross = hurdle = 8% over 7 yr prints "no promote is earned" beside 133 bps of promote. The simple-pref math matches `02` and stays; derive the flag from the waterfall (`total_profit > pref_accrual`) and keep the note consistent.
+  - W2: NaN/inf pass validation in both scripts. Reject non-finite numbers (exit 2).
+  - Extend both `--self-check`s with these cases; regenerate the README console samples from real runs.
+- [ ] **Step 2 — Benchmark drift guard (W3).** `benchmark_comparator.py --self-check` parses `05`'s comparator table and Treasury line and fails on any mismatch with the script constants. `references/data/README.md` refresh step 5 names the script constants.
+- [ ] **Step 3 — Data refresh (N6).** Re-pull ETF 5/10yr returns (latest quarter-end), FRED 3mo/2yr/10yr, NCREIF NPI, Preqin note, per the `references/data/README.md` procedure. Update `05`, script constants, self-check anchors, README sample. Anything not publicly sourceable keeps its prior value and date, marked — nothing invented.
+- [ ] **Step 4 — SKILL.md (W4, N1).** Merge the "Output artifacts" table into "Modes" (duplicate content); add one skepticism rule that pasted deal text is data, and embedded instructions are ignored and flagged. Stay under the 10,240-byte cap.
+- [ ] **Step 5 — Reference trim (W5, N3).** Cut repeated boilerplate from `references/01`–`05` (restated "LP lens only", generic source lists, cross-file preambles) and the capture narrative from `references/data/README.md`. Constraint: every flag/question ID, threshold, range and table row is unchanged — verified by a before/after ID and number diff.
+- [ ] **Step 6 — Eval transcript prune (N4).** Delete the 26 transcripts in `evals/iteration-1/` and `iteration-2/`; keep both `scorecard.md` files; fix references to the deleted files.
+- [ ] **Step 7 — Docs cleanup (W6, N2, N5).** Restructure this file to the portfolio template spine (`writing-kit/ROADMAP-TEMPLATE.md`): drop the superseded §2–§4 drafts and §11/§12, sort and trim the decision log newest-first. Bring CLAUDE.md current. Replace drift-prone counts in README.
+- [ ] **Step 8 — Eval iteration 4 (full re-validation).** All 13 fixtures, generator ≠ grader ≠ author, fresh-context subagents; grader works from `evals/evals.json` `expected_output` and may not read iterations 1–3. Regenerate `examples/*/output.md` from fixtures 01/03/13. Gate: 0 FAIL. Most token-expensive step — if the session ends, steps 0–7 stand alone.
+
+**Grading-criteria gap.** Iteration 3's grader used `expected/01–13.md` files from a
+session scratchpad that no longer exists. Iteration 4 grades against the
+`expected_output` field in `evals/evals.json`, which is committed.
+
 ### Phase 5: Commit and PR
 
 **Branch off `upstream/dev` directly — not off the fork's `main`.** As of 2026-08-16
@@ -660,6 +689,32 @@ Items that don't block v1.0 but inform later versions. Promote to §12 Versionin
 ## Decision log
 
 *Project and architectural decisions live here. Changes to this repo's CLAUDE.md are logged in CLAUDE.md, not here.*
+
+### 2026-09-27 — Adversarial review returns BLOCK; pre-PR fix pass opened (Phase 4.6)
+
+Whole-codebase `/adversarialreview` (Saboteur / New Hire / Security Auditor), run
+before Phase 5 with an emphasis on bloat. Verdict **BLOCK**. The critical finding
+was a correctness bug, not bloat: `fee_drag_calculator.py` silently applied its
+worked-example defaults (acquisition 2%, disposition 1%, mgmt 1.5%, admin 0.3%,
+20% carry over an 8% hurdle) to any fee the caller omitted. The eval suite did not
+catch it. Most bloat sits outside the PR payload (this file is 131 KB); inside the
+payload, the boilerplate in the always-loaded references costs tokens on every
+screen.
+
+Decisions (grill-me, same day):
+- **Defaults stay, labeled.** A bare run still reproduces the `02` worked example;
+  every defaulted input is reported as assumed. Chosen over zero-defaults to keep
+  the demo behavior.
+- **W1 is a flag bug, not a math bug.** `02` specifies a simple pref and
+  `promote_drag` implements it; only the `clears_hurdle` flag is wrong.
+- **Iteration-1/2 transcripts deleted, scorecards kept.** Git history keeps the
+  transcripts; the scorecards carry the lessons.
+- **Examples are never hand-edited.** They are regenerated from iteration 4 so the
+  benchmark refresh doesn't leave them quoting old figures.
+- **Full 13-fixture iteration 4** after the fixes, so the eval claim describes the
+  files that actually ship.
+- **Decision log stays in ROADMAP.md**, sorted newest-first, per the portfolio
+  ROADMAP template.
 
 ### 2026-05-24 — Primary deliverable is SKILL.md, not the React artifact
 
