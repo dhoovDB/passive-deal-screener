@@ -1,5 +1,7 @@
 # Eval suite — Iteration 2 scorecard (independent grader)
 
+*The 13 run transcripts this scorecard grades were removed on 2026-09-27 as superseded by iteration 3. Recover any of them with `git show 8763799:evals/iteration-2/<file>.md`.*
+
 <!-- Finalized 2026-07-04. Grades below are the independent grader's verbatim; orchestrator additions are this comment block and the Method chain section. -->
 
 ## Method chain (orchestrator note)

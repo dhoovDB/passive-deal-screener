@@ -72,7 +72,8 @@ passive-deal-screener/
 │   └── refresh_benchmarks.py            pulls FRED + Yahoo, computes the benchmark figures (repo-only; makes network calls)
 ├── evals/
 │   ├── evals.json                  [PR] 13 fixtures
-│   ├── iteration-1..3/                  run transcripts + scorecards — process, not product
+│   ├── iteration-1..2/                  scorecards only (transcripts pruned 2026-09-27; in git history)
+│   ├── iteration-3/                     run transcripts + scorecard — process, not product
 │   ├── TESTING-PLAN.md                  eval design
 │   └── sources.md                       fixture provenance
 └── deal-evaluator.jsx                   gitignored — claude.ai React artifact, separate surface

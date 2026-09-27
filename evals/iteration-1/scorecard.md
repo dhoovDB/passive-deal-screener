@@ -1,5 +1,7 @@
 # Eval suite — Iteration 1 scorecard
 
+*The 13 run transcripts this scorecard grades were removed on 2026-09-27 as superseded by iteration 3. Recover any of them with `git show 8763799:evals/iteration-1/<file>.md`.*
+
 **Run:** 2026-07-03, all 13 fixtures from `evals/evals.json`, against SKILL.md @ cddc52d (9.07KB compressed body, minimal frontmatter).
 **Method:** For each fixture, only the `prompt` field was read before generating the report (blind generation); `expected_output` was read only after the report was on disk (contamination-controlled grading). Grading is per-check binary against each fixture's stated criteria, not holistic.
 
