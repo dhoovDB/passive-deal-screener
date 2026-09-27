@@ -25,6 +25,8 @@ away. stdlib-only by design (no pip installs).
 import argparse
 import json
 import math
+import os
+import re
 import sys
 
 
@@ -290,6 +292,26 @@ def format_human(r):
     return "\n".join(lines)
 
 
+def _figures_in_05():
+    """Read the figures this script hardcodes back out of `05`, so a refresh that
+    updates one and not the other fails the self-check. Returns None when `05`
+    isn't beside the script (e.g. the script was copied out on its own)."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        os.pardir, "references", "05-benchmark-returns.md")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return None
+    stamp = re.search(r"LAST_UPDATED: (\d{4}-\d{2}-\d{2})", text)
+    ten_yr = {m.group(1): float(m.group(2)) for m in re.finditer(
+        r"^\| ([A-Z]{2,5}) \| ~?(-?\d+(?:\.\d+)?)%", text, re.MULTILINE)}
+    treasury = {m.group(1): float(m.group(2)) for m in re.finditer(
+        r"(3mo|2yr|10yr) ≈ \*\*(\d+(?:\.\d+)?)%\*\*", text)}  # ≈ = approx-equal sign
+    return {"last_updated": stamp.group(1) if stamp else None,
+            "ten_yr": ten_yr, "treasury": treasury}
+
+
 def _self_check():
     """Validate against `05-benchmark-returns.md` spread-table anchors."""
     ok = True
@@ -357,6 +379,29 @@ def _self_check():
         print("FAIL validator: net-irr 150 should warn")
     else:
         print("ok   validator warns on net-irr 150")
+
+    # Drift guard: the hardcoded constants must match `05`, which is refreshed
+    # from references/data/. A refresh that skips this file fails here.
+    ref = _figures_in_05()
+    if ref is None:
+        print("skip drift guard - references/05-benchmark-returns.md not beside the script")
+    else:
+        mismatches = []
+        if ref["last_updated"] != LAST_UPDATED:
+            mismatches.append(f"LAST_UPDATED {LAST_UPDATED} vs 05 {ref['last_updated']}")
+        for ticker, spec in COMPARATORS.items():
+            if ref["ten_yr"].get(ticker) != spec["ten_yr"]:
+                mismatches.append(f"{ticker} 10yr {spec['ten_yr']} vs 05 {ref['ten_yr'].get(ticker)}")
+        for point, rate in TREASURY.items():
+            if ref["treasury"].get(point) != rate:
+                mismatches.append(f"Treasury {point} {rate} vs 05 {ref['treasury'].get(point)}")
+        if mismatches:
+            ok = False
+            for m in mismatches:
+                print(f"FAIL drift vs 05: {m}")
+        else:
+            print(f"ok   constants match 05 ({len(COMPARATORS)} comparators, "
+                  f"{len(TREASURY)} Treasury points, LAST_UPDATED {LAST_UPDATED})")
 
     print("PASS" if ok else "FAILED")
     return 0 if ok else 1
