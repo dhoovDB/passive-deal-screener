@@ -22,7 +22,7 @@ passive-deal-screener/
 ├── references/       # 01–05, loaded on demand by deal type
 ├── scripts/          # 2 stdlib-only CLIs (no pip install)
 ├── examples/         # 3 worked input/output pairs
-├── evals/            # 13 fixtures + scorecards for 3 eval cycles
+├── evals/            # 13 fixtures + scorecards for 5 eval cycles
 ├── tools/            # benchmark-data refresh (maintenance only; not part of the skill)
 └── ROADMAP.md        # build plan, decision log, ship gate
 ```
@@ -144,11 +144,11 @@ each a real validated run rather than an illustration:
 | Example | Deal type | Verdict |
 |---|---|---|
 | [`equity-syndication/`](examples/equity-syndication/) | Value-add multifamily | Pursue with conditions |
-| [`hard-money-fund/`](examples/hard-money-fund/) | Senior-secured bridge fund | Pursue with conditions |
+| [`hard-money-fund/`](examples/hard-money-fund/) | Senior-secured bridge fund | Pursue |
 | [`private-credit-fund/`](examples/private-credit-fund/) | Diversified BDC-style credit | Pursue with conditions |
 
-All three land on *Pursue with conditions* because they are the sound deals in the
-suite. The Pass and Pass-as-presented paths — packed red flags, sparse
+All three are the sound deals in the suite, so they land on *Pursue* or *Pursue
+with conditions*. The Pass and Pass-as-presented paths — packed red flags, sparse
 solicitations, aggressive development pro formas — are exercised in `evals/`.
 
 ---
@@ -184,10 +184,11 @@ already knew how to fail it.
   34 red flags with `{ASSET_CLASS}-{NN}` IDs, 25 LP questions each citing the flags
   they answer, and public-market comparators. The skill loads a named slice per
   deal type, not the whole set.
-- **13 eval fixtures across 3 iteration cycles** — 12 PASS / 1 PASS-with-notes /
-  0 FAIL on the final run, with 5/5 on the discrimination tests that check the
+- **13 eval fixtures across 5 iteration cycles** — 11 PASS / 2 PASS-with-notes /
+  0 FAIL on the final run, with 4/4 on the discrimination tests that check the
   screener distinguishes sound deals from bad ones instead of flagging everything.
-  The last two cycles ran under generator ≠ grader ≠ author separation.
+  Every cycle since the second ran under generator ≠ grader ≠ author separation,
+  and cycle 4's single FAIL drove the fix that cycle 5 validated.
 - **No invented numbers.** Where a fee range or market norm isn't well established,
   it is flagged as *variable* rather than fabricated. Benchmark figures trace to
   dated snapshots in `references/data/`.

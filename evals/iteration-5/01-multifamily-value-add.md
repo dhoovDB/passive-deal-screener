@@ -1,5 +1,5 @@
-# Deal Analysis — Sun Belt value-add multifamily syndication
-*Produced by the passive-deal-screener skill from the deal in `input.md`. Illustrative example; figures route to the `references/` files, not memory.*
+# Eval fixture 01 — Sun Belt value-add multifamily syndication
+*Iteration-5 run, 2026-09-27, blind generation by fresh-context agent (model: Opus), against SKILL.md @ 7712624.*
 
 **Verdict: Pursue with conditions.** As underwritten, this is a financing story: the 16% / 2.0x rests on 50bps of exit-cap compression (5.5% in, 5.0% out) and on floating-rate bridge debt that has to be refinanced well before the 5-year exit. It is worth more diligence only if the GP can show the IRR at a flat 5.5% exit cap, the full debt and rate-cap terms, and a realized, net-to-LP restatement of the "30% IRR" track record. **Biggest swing factor: the exit cap.**
 

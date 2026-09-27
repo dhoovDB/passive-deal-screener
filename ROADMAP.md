@@ -49,7 +49,7 @@ earlier steps' commits exist in `git log` first.
 - [x] **Step 5 — Reference trim (W5, N3)** (`8763799`). −3.9 KB (4.5%); IDs and tables verified unchanged.
 - [x] **Step 6 — Eval transcript prune (N4)** (`042b91d`). Iteration-1/2 transcripts removed; scorecards kept.
 - [x] **Step 7 — Docs cleanup (W6, N2, N5)** (`7607f50`). This file restructured to the portfolio template; CLAUDE.md brought current; drift-prone README counts removed.
-- [ ] **Step 8a — Eval re-validation.** *Cycle 4 ran 2026-09-27 (`evals/iteration-4/`): 8 PASS / 4 PASS w/ notes / 1 FAIL, discrimination 4/4 — gate not cleared.* The FAIL (fixture 01) decided a merits Pass on assumed leverage and fired GEN-10 on an undisclosed rate cap; fixture 10 fired GEN-08 on an assumed distribution shape. Fix: SKILL.md anti-patterns "deciding on assumed numbers" (new) and the variable-class one (restored — removed in Step 7b, likely behind fixture 07's note), then a full cycle 5 under the same method. *Fix applied 2026-09-27 (SKILL.md 9,993 B; four repeats cut to make room); cycle 5 pending.* Original step text: All 13 fixtures; generator ≠ grader ≠ author, as fresh-context subagents. The grader works from `evals/evals.json` `expected_output`, verifies flag/question IDs itself (a script was offered and declined 2026-09-27, so the grader weighs IDs in context), and may not read earlier iterations. (Iteration 3 graded against `expected/01–13.md` files in a session scratchpad that no longer exists; `evals.json` is the committed equivalent.) Regenerate `examples/*/output.md` from fixtures 01/03/13 (header stripped, otherwise unedited). Update README/this file's eval citations. Gate: 0 FAIL.
+- [x] **Step 8a — Eval re-validation.** *Cleared by cycle 5 (`evals/iteration-5/`): 11 PASS / 2 PASS w/ notes / 0 FAIL, discrimination 4/4. Examples regenerated from its fixtures 01/03/13.* *Cycle 4 ran 2026-09-27 (`evals/iteration-4/`): 8 PASS / 4 PASS w/ notes / 1 FAIL, discrimination 4/4 — gate not cleared.* The FAIL (fixture 01) decided a merits Pass on assumed leverage and fired GEN-10 on an undisclosed rate cap; fixture 10 fired GEN-08 on an assumed distribution shape. Fix: SKILL.md anti-patterns "deciding on assumed numbers" (new) and the variable-class one (restored — removed in Step 7b, likely behind fixture 07's note), then a full cycle 5 under the same method. *Fix applied 2026-09-27 (SKILL.md 9,993 B; four repeats cut to make room); cycle 5 pending.* Original step text: All 13 fixtures; generator ≠ grader ≠ author, as fresh-context subagents. The grader works from `evals/evals.json` `expected_output`, verifies flag/question IDs itself (a script was offered and declined 2026-09-27, so the grader weighs IDs in context), and may not read earlier iterations. (Iteration 3 graded against `expected/01–13.md` files in a session scratchpad that no longer exists; `evals.json` is the committed equivalent.) Regenerate `examples/*/output.md` from fixtures 01/03/13 (header stripped, otherwise unedited). Update README/this file's eval citations. Gate: 0 FAIL.
 - [ ] **Step 8b — Ultrareview of the PR as upstream will see it.** Needs the PR-shaped branch, so run Phase 5 steps 1–3 first. Then the user runs `/code-review ultra` from the `claude-skills` clone on `feat/finance-passive-deal-screener` (user-triggered and billed; reviews the local branch, no push needed). Fix what it finds on the branch *and* back-port to this repo.
 
 - [x] **Step 7b — SKILL.md under a strict 10 KB.** Upstream's `SKILL-AUTHORING-STANDARD.md` says "SKILL.md ≤10KB" (`CONVENTIONS`/`CONTRIBUTING` say "under 500 lines"); "10KB" could mean 10,240 or 10,000. Decided 2026-09-27 to satisfy the strict reading: three duplicated instructions removed, 10,121 → 9,905 B.
@@ -128,9 +128,10 @@ rejects skill-count changes), **not** CHANGELOG (maintainers own it post-merge),
   clawback gaps `02` can't absorb.
 - **Multi-agent split** (fees / flags / GP evaluation) — only measured against the
   v1.0 eval baseline.
-- **Eval watch-items:** expected 01's EQUITY-01 "high promote" phrasing vs `03`'s
-  bands (20% is mid-band); fixture 4's expected HML-05 could read "cited or subsumed
-  under GEN-16".
+- **Eval watch-items:** insufficient-disclosure verdict rate (8/13 in cycle 5; 05
+  over-fired); expected 01's EQUITY-01 "high promote" phrasing vs `03`'s bands (20% is
+  mid-band); fixture 4's expected HML-05 could read "cited or subsumed under GEN-16";
+  fixture 8's EQUITY-04 fired on an unstated pref.
 
 ---
 
@@ -139,6 +140,24 @@ rejects skill-count changes), **not** CHANGELOG (maintainers own it post-merge),
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-09-27 — Eval cycles 4 and 5: the gate re-clears after one skill fix
+
+Cycle 4 (the fix pass's re-validation, all roles on Opus) failed fixture 01: a
+merits Pass decided on assumed leverage, with GEN-10 fired on an undisclosed rate
+cap; fixture 10 fired GEN-08 on an assumed distribution shape. Both trace to one
+gap, so one anti-pattern fixed both — **flags fire and verdicts turn on stated or
+inferred facts only; a finding that needs an assumed input is a must-ask or a
+condition** — and the variable-class anti-pattern removed in Step 7b was restored.
+Cycle 5 cleared: 11 PASS / 2 w-notes / 0 FAIL, 4/4 discrimination, fixture 01 back
+to Pursue-with-conditions.
+
+**Watch-item, not fixed:** 8 of 13 cycle-5 verdicts use "Pass as presented —
+insufficient disclosure". The grader judged six correct, one over-fired (05, where
+the stated 2.5x leverage supports a merits Pass) and one borderline (06). Both
+still match their expected verdicts, so this is recorded, not re-run; watch it in
+v1.1. Also noted: 04 routes HML-05 instead of firing it; 08 fires EQUITY-04 on an
+unstated (not absent) pref.
 
 ### 2026-09-27 — Adversarial review returns BLOCK; pre-PR fix pass (Phase 4.6)
 
@@ -394,6 +413,7 @@ foundation invents that foundation.
 |---|---|---|
 | 2 — Build | 2026-05-25 → 2026-06-18 | References `01`–`05` + data snapshots, SKILL.md, both scripts |
 | 3 — Evals | 2026-07-04 | Three cycles (12/13 → 11/13 → 12 PASS / 1 w-notes / 0 FAIL), 5/5 discrimination each run; last two with independent grading |
+| 4.6 — Re-validation | 2026-09-27 | Cycle 4: 8 / 4 w-notes / 1 FAIL → skill fix → cycle 5: 11 PASS / 2 w-notes / 0 FAIL, 4/4 discrimination |
 | 4 — Quality checklist | 2026-07-19 | Two-field frontmatter; third-person trigger description; Anti-Patterns section; graded exit codes; references linked with load triggers; security auditor PASS; no secrets |
 | 4 — v1.0 content gate | 2026-08-16 | References within 300 lines each; cross-reference integrity (34 flags, 25 questions, 28 flags cited, zero dangling IDs); 3 examples; root README |
 | 4.5 — PR readiness | 2026-08-16 | 12-row divergence map vs upstream's merged practice; no open design choices |
@@ -410,4 +430,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-09-27 (Phase 4.6 steps 0–7 done; Step 8a/8b and Phase 5 remain).*
+*Last updated: 2026-09-27 (Phase 4.6 steps 0–8a done; Step 8b and Phase 5 remain).*

@@ -1,5 +1,5 @@
-# Deal Analysis — Hard-money bridge fund (well-disclosed)
-*Produced by the passive-deal-screener skill from the deal in `input.md`. Illustrative example; figures route to the `references/` files, not memory.*
+# Eval fixture 03 — Hard-money bridge fund (well-disclosed)
+*Iteration-5 run, 2026-09-27, blind generation by fresh-context agent (model: Opus), against SKILL.md @ 7712624.*
 
 **Verdict: Pursue.** This is a well-disclosed senior-secured bridge fund. It answers the questions that sink most hard-money pitches: LTV on as-is value, default and recovery rates through 2020 and 2022–23, geographic mix, and a fee step-down. Its 9% net target is inside the 8–10% category norm and clears HYG plus the illiquidity hurdle for a 3–5 year lock-up. No RED flags fired. The biggest swing factor is **loss severity in the next downturn**: whether the 92% recovery holds if defaults double or triple. The open items (performance fee, servicing fee, fund leverage, GP co-invest, realized net-to-LP history, liquidity terms) are confirmations to close in diligence. None of them is a reason to stop.
 
