@@ -3,17 +3,10 @@
 Categorized warning signs an LP should catch when screening a passive deal,
 each with the **mechanism** (why it's a flag) and a one-line **response** (what
 to ask the GP). Use this file to convert a vague unease about a deal into a
-specific, severity-ranked list of exposures and questions. Pairs with
-`01-asset-class-norms.md` (the baseline a flag deviates from), draws many of
-its "aggressive threshold" lines from `02-fee-stack-library.md`, and feeds
-`04-question-bank.md` (every flag's response question is a seed for the
-question bank, cited by flag ID).
+specific, severity-ranked list of exposures and questions.
 
 ## How to read this file
 
-- **LP lens only.** Every flag is the LP's risk exposure — what threatens the
-  passive investor's capital or return. Operator-side underwriting concerns
-  (acquisition strategy, asset-management execution) are out of scope.
 - **Severity is RED or YELLOW, from the LP's recovery perspective.**
   - **RED** — a structural or financial feature that can impair LP capital or
     materially break the return story. A RED flag is a pass-or-resolve before
@@ -39,10 +32,6 @@ question bank, cited by flag ID).
   comes from `02-fee-stack-library.md`; where a pattern is real but the
   threshold is cycle-sensitive, the flag describes the pattern qualitatively
   and the deal's own underwriting is the baseline.
-- **Provenance is categorical.** ILPA LP-protection standards, SEC enforcement
-  patterns, Preqin / NCREIF performance dispersion, sector trade-group
-  diligence guidance, and post-2022 distress case studies (the rate-cap /
-  frozen-refi failures). See the Provenance footer.
 
 ## Contents
 
@@ -208,22 +197,16 @@ yield is levered into a marketable LP IRR, and it unwinds the same way.
 
 ## Provenance
 
-- **ILPA.** LP-protection standards — clawback, catch-up, fee, and waterfall
-  conventions that define what well-aligned GP-LP terms look like.
+The shared sources in `01-asset-class-norms.md` → Provenance (ILPA
+LP-protection standards; Preqin / NCREIF realized-vs-marketed dispersion, the
+basis for treating unrealized marks and project-level IRRs skeptically), plus:
+
 - **SEC enforcement patterns.** The recurring fact patterns in real-estate and
   private-fund enforcement actions (undisclosed affiliate fees, unrealized
   marks presented as returns, misleading track-record IRRs).
-- **Preqin / NCREIF / ILPA performance data.** Realized-vs-marketed return
-  dispersion — the empirical basis for treating unrealized marks and
-  project-level IRRs skeptically.
-- **Sector trade groups.** NMHC (multifamily), NAIOP (commercial), ICSC
-  (retail), MBA (debt) diligence and disclosure guidance.
 - **Post-2022 distress case studies.** The rate-cap-expiry / frozen-refi
   failures in 2022–24 retail-LP multifamily syndications — the source for
   `GEN-10`, `GEN-09`, and `EQUITY-07` as a connected failure mode.
-- **LP marketing materials.** Cross-section of recent offerings from
-  EquityMultiple, CrowdStreet, RealtyMogul, and direct GP private placements —
-  the surface where these flags actually present (or fail to).
 
 *Last reviewed: 2026-06-01. Re-baseline when a new failure mode emerges at scale
 (the rate-cap-expiry cluster is the canonical recent example) or when a flag's

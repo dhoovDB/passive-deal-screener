@@ -1,12 +1,9 @@
 # `references/data/` — versioned source snapshots
 
-This folder holds the external-source data that `05-benchmark-returns.md`
-synthesizes into LP-facing benchmark comparisons. It exists so that **every
-number in `05` traces to a dated, source-cited snapshot** — a v1.1 refresh is
-"re-pull into these snapshots," not "rewrite `05`'s prose." This is the
-"no hallucinated ranges" rule (CLAUDE.md) enforced at the data boundary: the
-highest-stakes place for it, because a wrong benchmark silently corrupts every
-illiquidity-premium comparison the skill makes.
+The external-source data that `05-benchmark-returns.md` synthesizes. **Every
+number in `05` traces to a dated, source-cited snapshot here**, so a refresh
+means re-pulling these files, not rewriting `05`'s prose — and a benchmark can't
+be invented, only sourced.
 
 ## Files
 

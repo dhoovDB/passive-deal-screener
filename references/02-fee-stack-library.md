@@ -4,16 +4,11 @@ The fees an LP pays in a private deal, plus the waterfall mechanics that
 determine how promote / carry actually flows. Use this file to spot when a
 deal's fee stack is in market-norm territory, when it's aggressive enough to
 warrant pushback, and when an essential fee category is suspiciously absent.
-Pairs with `01-asset-class-norms.md` (the return baseline this file's drag
-math runs against) and feeds `03-red-flag-library.md` (where many of the
-"aggressive threshold" lines surface as flags).
 
 ## How to read this file
 
-- **LP lens only.** Every fee is recorded from the perspective of what the LP
-  actually pays — net of any operator-borne or seller-paid components.
-  Operator-side concerns (deal sourcing economics, sponsor cost-of-capital)
-  are out of scope.
+- **What the LP actually pays.** Every fee is net of any operator-borne or
+  seller-paid components.
 - **"Variable" is a real value.** Where a fee's market norm is genuinely
   unstable — direct GP-sponsored deals with no platform overhead, niche
   asset-class promote structures, definitionally-drifting "servicing" fees in
@@ -28,14 +23,6 @@ math runs against) and feeds `03-red-flag-library.md` (where many of the
   as a one-time fee vs an annual recurring charge. Frequency is in every fee
   row precisely because the same nominal rate can produce 10× different LP
   drag depending on it.
-- **Ranges and aggressive thresholds are LP-bearing.** Gross GP economics
-  (what the GP claims pre-fee-split) aren't comparable across deal types and
-  aren't tracked here.
-- **Provenance is categorical.** "Industry norms" means the broad consensus
-  across ILPA fee templates, Preqin private-markets data, SEC Form ADV fund
-  filings, sector trade groups (NMHC / NAIOP / ICSC / MBA), and a
-  cross-section of LP marketing materials. When the cycle shifts faster than
-  this file, the file lags — re-baseline against recent deal flow.
 
 ## At a glance
 
@@ -281,18 +268,11 @@ calculation with configurable parameters.)
 
 ## Provenance
 
-- **ILPA.** Fee templates and reporting standards; the canonical source for
-  what a well-structured GP-LP fee disclosure looks like.
-- **Preqin.** Private markets fee benchmarking across real estate, private
-  credit, and PE funds.
-- **NCREIF.** Real-estate-specific institutional fee surveys (NPI / ODCE
-  expense ratios).
-- **Sector trade groups.** NMHC (multifamily), NAIOP (industrial / office /
-  commercial), ICSC (retail), MBA (debt funds and originators).
+The shared sources in `01-asset-class-norms.md` → Provenance, read for fees
+(ILPA fee templates, Preqin fee benchmarking, NCREIF expense ratios), plus:
+
 - **SEC Form ADV filings.** For RIA-managed funds — fee schedules disclosed
   in Part 2.
-- **LP marketing materials.** Cross-section of recent offerings from
-  EquityMultiple, CrowdStreet, RealtyMogul, and direct GP private placements.
 
 *Last reviewed: 2026-05-30. Re-baseline when realized fee drag across
 surveyed funds shifts materially or when a new fee category emerges (e.g.

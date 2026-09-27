@@ -7,10 +7,6 @@ questions, and to flag absent disclosures against the typical baseline.
 
 ## How to read this file
 
-- **LP lens only.** Every field is from the passive limited-partner perspective:
-  what the LP receives **net of fees**, what hold the fund commits to, what risk
-  the LP carries. Nothing here covers underwriting for acquisition, asset
-  management, or operator economics.
 - **"Variable" is a real value.** Where current-cycle conditions make a
   category's norms genuinely unstable (post-2020 office, regulatory-sensitive
   STR, cycle-sensitive development), the cell says *variable* with a one-line
@@ -21,12 +17,6 @@ questions, and to flag absent disclosures against the typical baseline.
   one is a flag, not a neutral silence.
 - **Ranges are net to LP, not gross.** Gross IRRs are not directly comparable
   across categories — fee stacks differ enough that gross-on-gross misleads.
-- **Provenance is categorical.** "Industry survey norms" means the broad
-  consensus across NCREIF (NPI, ODCE), Preqin private-markets data, ILPA LP
-  performance reports, sector trade groups (NMHC, NAIOP, ICSC, MBA), and a
-  cross-section of LP marketing materials from the major platforms. When the
-  cycle shifts faster than this file, the file lags — re-baseline against
-  recent realized deal flow.
 
 ## At a glance
 
@@ -242,6 +232,11 @@ the analog doesn't apply.
 ---
 
 ## Provenance
+
+"Industry survey norms" throughout `references/` means the broad consensus of
+the sources below; each other file lists only the sources unique to it. When the
+cycle shifts faster than these files, they lag — re-baseline against recent
+realized deal flow.
 
 - **NCREIF.** NPI (National Property Index) and ODCE (Open-end Diversified Core
   Equity Fund Index) for institutional realized real-estate returns.

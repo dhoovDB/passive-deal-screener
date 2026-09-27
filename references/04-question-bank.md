@@ -4,17 +4,10 @@ The questions an LP should put to a GP before committing capital — each paired
 with what a **good answer** sounds like and, more importantly, what a **bad
 answer** sounds like. The bad-answer signals are this file's reason to exist:
 plenty of tools tell you what to ask; the differentiator is naming the specific
-evasion so an LP can recognize it in real time. Pairs with
-`03-red-flag-library.md` — most questions here are the full-length version of a
-flag's one-line "Response," cited by flag ID — and draws thresholds from
-`02-fee-stack-library.md` and baselines from `01-asset-class-norms.md`.
+evasion so an LP can recognize it in real time.
 
 ## How to read this file
 
-- **LP lens only.** Every question informs the LP's own *commit-or-pass*
-  decision. Questions about how to run the asset (renovation scope, GC bidding,
-  leasing strategy) are operator diligence and are out of scope — even when the
-  LP would find the answer interesting.
 - **Priority is must-ask or nice-to-ask.** A **must-ask** is one where a bad
   answer is, on its own, a reason to pass or to hard-condition the commitment.
   A **nice-to-ask** sharpens the picture but rarely decides the outcome alone.
@@ -24,8 +17,8 @@ flag's one-line "Response," cited by flag ID — and draws thresholds from
   useful. Each bad-answer cell names the *specific* dodge for that question —
   the redirect, the substituted metric, the silence — so the evasion is
   identifiable, not just felt.
-- **Cross-references point into `03-red-flag-library.md`.** Where a question
-  exists to resolve a specific flag, the flag ID is cited. Ask the question
+- **Cross-references point into `03-red-flag-library.md`.** Most questions are
+  the full-length version of a flag's one-line "Response"; the flag ID is cited. Ask the question
   *because* the flag fired; treat a bad answer as the flag confirmed.
 - **Conditional questions are marked.** Some questions only apply to a deal type
   or a cycle position (HML/credit debt funds, post-2020 office). They are
@@ -203,22 +196,17 @@ a vague promise of liquidity that doesn't exist is the bad one.
 
 ## Provenance
 
-- **ILPA.** LP due-diligence questionnaire conventions and the alignment
-  standards (co-invest, clawback, fee transparency) the must-ask questions test
-  against.
+The shared sources in `01-asset-class-norms.md` → Provenance (ILPA
+due-diligence and alignment standards; Preqin / NCREIF realized-vs-marketed
+dispersion, why net-to-LP realized figures (Q-GP-02) are the only validated
+track record), plus:
+
 - **SEC enforcement patterns.** The fact patterns that make Q-GP-02 and Q-GP-03
   high-yield — undisclosed affiliate fees, unrealized marks as returns,
   misleading track-record IRRs.
-- **Preqin / NCREIF / ILPA performance data.** Realized-vs-marketed dispersion —
-  why net-to-LP realized figures (Q-GP-02) are the only validated track record.
-- **Sector trade groups.** NMHC, NAIOP, ICSC, MBA diligence guidance behind the
-  market- and debt-fund-specific questions.
 - **Post-2022 distress case studies.** The rate-cap-expiry / frozen-refi
   failures of 2022–24 — the source for Q-RISK-01, Q-RISK-02, and Q-EXIT-02 as a
   connected line of questioning.
-- **LP marketing materials.** Cross-section of EquityMultiple, CrowdStreet,
-  RealtyMogul, and direct GP placements — where these answers (and these
-  evasions) actually show up.
 
 *Last reviewed: 2026-06-03. Questions and bad-answer signals derive from the
 flags in `03-red-flag-library.md`; when a flag's ID or threshold changes, update
