@@ -118,7 +118,7 @@ Benchmark comparison (screening, not underwriting)
   Verdict              CLEARS comfortably
 ```
 
-`--list-types` shows the comparator map. `--json` emits machine-readable output.
+`--list-types` shows the comparator map. `--format json` (or `--json`) emits machine-readable output.
 `--self-check` runs internal assertions against `references/05`.
 
 Exit codes are graded, because a screening tool that silently accepts a negative
