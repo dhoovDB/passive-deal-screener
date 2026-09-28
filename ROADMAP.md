@@ -161,24 +161,26 @@ count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
 
 ---
 
-## v1.1+ backlog (parking lot — not committed)
+## v1.1 — reserved for PR #1026 feedback
 
-- **Benchmark staleness warning.** `tools/refresh_benchmarks.py` automates the
-  pull; nothing yet *detects* stale snapshots. Surface "benchmark data is N months
-  old" when `05` is loaded or via a date check; the 10yr Treasury is the most
-  time-sensitive input.
-- **`deal_scorer.py`** — composite 0–100 score for comparing deals. Deferred: false
-  precision; no eval requires it.
-- **Sector deep-dives** (senior housing, self-storage, industrial) once real deal
-  flow shows gaps.
-- **`06-syndication-mechanics-deep-dive.md`** — only if evals expose waterfall /
-  clawback gaps `02` can't absorb.
-- **Multi-agent split** (fees / flags / GP evaluation) — only measured against the
-  v1.0 eval baseline.
-- **Eval watch-items:** insufficient-disclosure verdict rate (8/13 in cycle 5; 05
-  over-fired); expected 01's EQUITY-01 "high promote" phrasing vs `03`'s bands (20% is
-  mid-band); fixture 4's expected HML-05 could read "cited or subsumed under GEN-16";
-  fixture 8's EQUITY-04 fired on an unstated pref.
+Empty until the maintainer responds. Whatever review, CI or bot feedback #1026
+draws becomes v1.1.
+
+## v2 candidates (parking lot — not committed)
+
+| Item | Why v2 | Trigger |
+|---|---|---|
+| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,993 / 10,000 B, so any new capability needs a matching cut. Measure the split against the cycle-5 baseline |
+| **Benchmark staleness warning** — surface "benchmark data is N months old" when `05` loads | `tools/refresh_benchmarks.py` automates the pull, but nothing *detects* stale snapshots | Before the next material rate move; the 10yr Treasury is the most time-sensitive input |
+| **`deal_scorer.py`** — composite 0–100 score for comparing deals | Multi-deal comparison | Only if evals show it adds signal rather than false precision |
+| **Sector deep-dives** (senior housing, self-storage, industrial) | Coverage | Real deal flow shows gaps |
+| **`06-syndication-mechanics-deep-dive.md`** | Waterfall / clawback depth | Evals expose gaps `02` can't absorb |
+| **Distribution** — own-repo plugin marketplace, then an issue to `himself65/finance-skills` (no private-markets coverage), then awesome-list links | Reach beyond one collection; one canonical copy, listed rather than duplicated | After #1026 resolves. `travisvn/awesome-claude-skills` needs ≥10 stars and rejects AI-assisted PRs, so write that one by hand |
+| **Eval watch-items** — insufficient-disclosure rate (8/13 in cycle 5; 05 over-fired); fixture 01's EQUITY-01 phrasing vs `03`'s bands; fixture 4's HML-05 could read "cited or subsumed under GEN-16"; fixture 8's EQUITY-04 fired on an unstated pref | Calibration | Carried into the next eval cycle |
+
+The v2.0 multi-agent idea and its trigger come from the versioning plan removed in
+Step 7 (`git show 042b91d:ROADMAP.md`, §12); restored here because its trigger has
+since been reached.
 
 ---
 
@@ -509,4 +511,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-09-27 (PR #1026 opened; Phase 5 done pending maintainer review).*
+*Last updated: 2026-09-27 (PR #1026 open; backlog split into v1.1 = PR feedback, v2 candidates).*
