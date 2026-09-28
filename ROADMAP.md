@@ -1,6 +1,6 @@
 # passive-deal-screener — Roadmap
 
-**Status:** v1.0 built and re-validated (eval cycle 5). Ultrareview done (Step 8b): 5 findings, all fixed on the PR branch and back-ported here. Next: user approval, then push and the upstream PR.
+**Status:** v1.0 shipped as **alirezarezvani/claude-skills#1026** (opened 2026-09-27, targeting `dev`); awaiting maintainer review and CI approval.
 **Contribution target:** `alirezarezvani/claude-skills`, `finance/passive-deal-screener/`, PR from the `dhoovDB` fork to `:dev`.
 
 ---
@@ -137,7 +137,7 @@ earlier steps' commits exist in `git log` first.
    ```
 
 4. ✅ **Step 8b** (ultrareview) ran on this branch — findings and fixes under Phase 4.6.
-5. **Commit, push, open the PR** to `alirezarezvani:dev`:
+5. ✅ **Pushed and opened 2026-09-27: [#1026](https://github.com/alirezarezvani/claude-skills/pull/1026)** — 27 files, +3,289 / −17, 5 commits (payload, overflow fix, `--format`, `finance/CLAUDE.md`, counters). CI awaits first-time-contributor workflow approval. **Next:** respond to review; drop the counter commit if the maintainer prefers to own it; after merge, remove the `C:\Projects\claude-skills-pr` worktree. Original step: **Commit, push, open the PR** to `alirezarezvani:dev`:
    `feat(finance): add passive-deal-screener — LP-perspective deal screening for syndications, preferred equity, hard money, and private credit`.
 
 **Files outside the skill folder.** `finance/CLAUDE.md`, plus — superseded
@@ -509,4 +509,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-09-27 (Phase 4.6 done except Step 8b; Phase 5 steps 1–3 done; next: the ultrareview, then push and open the PR).*
+*Last updated: 2026-09-27 (PR #1026 opened; Phase 5 done pending maintainer review).*
