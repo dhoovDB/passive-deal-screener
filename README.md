@@ -8,9 +8,12 @@ gross-to-net fee breakdown, severity-ranked red flags, the disclosures that are
 *missing*, and the questions to ask — each with a note on what a bad answer sounds
 like.
 
-> **Status: v1.0, working.** Installable by hand today (see below). Not yet merged
-> upstream — the PR to [`alirezarezvani/claude-skills`](https://github.com/alirezarezvani/claude-skills)
-> is pending, so it isn't in the `finance-skills` plugin yet.
+> **Status: v1.0, shipped.** Merged into [`alirezarezvani/claude-skills`](https://github.com/alirezarezvani/claude-skills)
+> ([#1026](https://github.com/alirezarezvani/claude-skills/pull/1026)) and released in
+> v2.13.0 as part of the `finance-skills` plugin.
+>
+> **Not investment advice.** The skill screens a deal for further diligence. Its
+> verdict is not a recommendation to invest.
 
 ---
 
@@ -34,9 +37,15 @@ what the skill does and how to run it.
 
 ## Install
 
-The skill is not on the plugin marketplace yet, so install it by hand. Copy the
-three directories that make up the skill — the same subset that ships upstream —
-into your personal skills directory:
+Install it from the upstream plugin marketplace:
+
+```bash
+/plugin marketplace add alirezarezvani/claude-skills
+/plugin install finance-skills@claude-code-skills
+```
+
+To install only this skill, copy the files it needs into your personal skills
+directory:
 
 ```bash
 git clone https://github.com/dhoovDB/passive-deal-screener.git
@@ -45,14 +54,7 @@ cp -r passive-deal-screener/{SKILL.md,references,scripts} \
       ~/.claude/skills/passive-deal-screener/
 ```
 
-Restart Claude Code and the skill loads on any deal-analysis prompt — "is this
-deal worth pursuing", "what should I ask the GP", "analyze this offering memo".
-
-Once the upstream PR merges, this becomes:
-
-```bash
-/plugin install finance-skills@claude-code-skills
-```
+Restart Claude Code, then paste a deal and ask for a screen.
 
 `ROADMAP.md`, `CLAUDE.md`, and `evals/` are development files and deliberately
 stay out of the skill directory.
@@ -198,10 +200,11 @@ The full decision log, including the calls that were later reversed, is in
 
 ---
 
-## Where it's going
+## Where it lives
 
-Contribution target: [`alirezarezvani/claude-skills`](https://github.com/alirezarezvani/claude-skills)
-under `finance/`, via the `dhoovDB` fork, as a PR to the `dev` branch.
+The shipped copy is [`finance/skills/passive-deal-screener/`](https://github.com/alirezarezvani/claude-skills/tree/main/finance/skills/passive-deal-screener)
+in `alirezarezvani/claude-skills`. This repo is the development workspace: it adds
+the eval history, the benchmark refresh tool, and the decision log.
 
 A companion React artifact (`deal-evaluator.jsx`) exists for the claude.ai chat
 surface. It shares the analytical framework but is a separate deliverable on a

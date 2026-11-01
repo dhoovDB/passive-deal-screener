@@ -16,10 +16,12 @@ session. The rest of this file assumes those rules are active.
 
 - **This repo** is the development workspace. Commits go straight to `main`
   and are pushed after approval.
-- **The upstream contribution** (`alirezarezvani/claude-skills`, `finance/`)
-  is a separate branch in the `claude-skills` clone, cut from `upstream/dev`
-  and PR'd to `:dev` from the `dhoovDB` fork. Never commit to upstream `main`,
-  and never branch from the fork's `main` (see `ROADMAP.md` → Phase 5).
+- **The upstream copy** lives at `finance/skills/passive-deal-screener/` in
+  `alirezarezvani/claude-skills` (merged via #1026, released in v2.13.0). A
+  further change goes up as a new branch in the `claude-skills` clone, cut from
+  `upstream/dev` and PR'd to `:dev` from the `dhoovDB` fork. Never commit to
+  upstream `main`, and never branch from the fork's `main`. Set counters by
+  running `python3 scripts/derive_counters.py` there, not by hand.
 
 ---
 
@@ -80,6 +82,10 @@ sequence; existing IDs are never renumbered.
 **Size budget.** Upstream's authoring standard says SKILL.md ≤10KB. Hold it under
 10,000 bytes (the strict reading); any addition needs a compensating trim.
 
+**Not-investment-advice line.** The maintainer requires it near the top of SKILL.md
+and directly under every verdict, including the example outputs. Regenerated
+examples must keep it.
+
 ---
 
 ## Working on the scripts
@@ -99,6 +105,12 @@ sequence; existing IDs are never renumbered.
 
 *Project and architectural decisions are logged in `ROADMAP.md`. This log tracks
 changes to this CLAUDE.md only.*
+
+### 2026-11-01 — Updated after the upstream merge
+
+Replaced the contribution-branch rule with the shipped path and the workflow for
+later PRs, including running `derive_counters.py`. Added the not-investment-advice
+content rule the maintainer required.
 
 ### 2026-09-27 — Brought current after v1.0
 

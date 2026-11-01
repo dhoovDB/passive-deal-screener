@@ -1,7 +1,6 @@
 # passive-deal-screener — Roadmap
 
-**Status:** v1.0 shipped as **alirezarezvani/claude-skills#1026** (opened 2026-09-27, targeting `dev`); awaiting maintainer review and CI approval.
-**Contribution target:** `alirezarezvani/claude-skills`, `finance/passive-deal-screener/`, PR from the `dhoovDB` fork to `:dev`.
+**Upstream home:** `alirezarezvani/claude-skills`, `finance/skills/passive-deal-screener/`. Later changes go up as a PR from the `dhoovDB` fork to `:dev`.
 
 ---
 
@@ -31,14 +30,28 @@ artifact sharing the same framework. It is not contributed and not maintained he
 
 ---
 
-## Now — Phase 4.6: pre-PR fix pass (opened 2026-09-27)
+## Current status (2026-11-01)
+
+- **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
+- **Next:** the owner removes the `C:\Projects\claude-skills-pr` worktree and the `feat/finance-passive-deal-screener` branch (local and fork), and decides when to run the v1.1 eval item.
+- **Open decisions:** none.
+- **Blockers:** none.
+
+---
+
+## Now — v1.1: PR #1026 feedback
+
+- [x] **Not-investment-advice notice** — added by the maintainer near the top of SKILL.md and under the verdict in all three example outputs; pulled back verbatim 2026-11-01.
+- [x] **New description** — from upstream's batch rewrite of 347 descriptions; pulled back verbatim 2026-11-01. SKILL.md is now 9,742 B.
+- [ ] **Eval the merged text** — add a check to `evals/evals.json` that every report carries the notice under its verdict, then run a full cycle on the merged SKILL.md and check triggering against the new description (upstream's cases are in `scripts/evals/cases/trigger_cases.json`). Nothing catches the notice being dropped today, and cycle 5 graded the earlier text. `evals.json` ships upstream, so the new check goes up in a later PR. Done when the cycle clears 0 FAIL.
+
+---
+
+## Done — Phase 4.6: pre-PR fix pass (2026-09-27)
 
 A whole-codebase adversarial review returned **BLOCK** (1 critical, 6 warnings,
-6 notes; see the 2026-09-27 decision-log entry). Every finding is fixed before the
-PR. One commit per step: `/codereview`, approval, commit, push.
-
-**Resume here in a fresh session:** take the first unchecked step, and confirm the
-earlier steps' commits exist in `git log` first.
+6 notes; see the 2026-09-27 decision-log entry). Every finding was fixed before the
+PR, one commit per step.
 
 - [x] **Step 0 — Record the fix pass** (`77d78fc`).
 - [x] **Step 1 — Script correctness (C1, W1, W2)** (`a32e5b4`). Omitted inputs are reported as `ASSUMED` (human output, `assumed_inputs` in JSON, exit 1) in both scripts; `clears_hurdle` read off the waterfall; NaN/inf rejected with exit 2.
@@ -72,7 +85,7 @@ earlier steps' commits exist in `git log` first.
 
 ---
 
-## Next — Phase 5: branch, validate, open the PR
+## Done — Phase 5: branch, validate, open the PR
 
 1. ✅ **Refresh the `claude-skills` clone** (2026-09-27): local `main` fast-forwarded
    33 commits to `origin/main`. The GitHub fork's own sync with upstream was not
@@ -137,7 +150,7 @@ earlier steps' commits exist in `git log` first.
    ```
 
 4. ✅ **Step 8b** (ultrareview) ran on this branch — findings and fixes under Phase 4.6.
-5. ✅ **Pushed and opened 2026-09-27: [#1026](https://github.com/alirezarezvani/claude-skills/pull/1026)** — 27 files, +3,289 / −17, 5 commits (payload, overflow fix, `--format`, `finance/CLAUDE.md`, counters). CI awaits first-time-contributor workflow approval. **Next:** respond to review; drop the counter commit if the maintainer prefers to own it; after merge, remove the `C:\Projects\claude-skills-pr` worktree. Original step: **Commit, push, open the PR** to `alirezarezvani:dev`:
+5. ✅ **Pushed and opened 2026-09-27: [#1026](https://github.com/alirezarezvani/claude-skills/pull/1026)** — 27 files, +3,289 / −17, 5 commits (payload, overflow fix, `--format`, `finance/CLAUDE.md`, counters). Merged 2026-10-21 via #1041; see the 2026-11-01 decision-log entry. Original step: **Commit, push, open the PR** to `alirezarezvani:dev`:
    `feat(finance): add passive-deal-screener — LP-perspective deal screening for syndications, preferred equity, hard money, and private credit`.
 
 **Files outside the skill folder.** `finance/CLAUDE.md`, plus — superseded
@@ -161,21 +174,16 @@ count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
 
 ---
 
-## v1.1 — reserved for PR #1026 feedback
-
-Empty until the maintainer responds. Whatever review, CI or bot feedback #1026
-draws becomes v1.1.
-
 ## v2 candidates (parking lot — not committed)
 
 | Item | Why v2 | Trigger |
 |---|---|---|
-| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,993 / 10,000 B, so any new capability needs a matching cut. Measure the split against the cycle-5 baseline |
+| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,742 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
 | **Benchmark staleness warning** — surface "benchmark data is N months old" when `05` loads | `tools/refresh_benchmarks.py` automates the pull, but nothing *detects* stale snapshots | Before the next material rate move; the 10yr Treasury is the most time-sensitive input |
 | **`deal_scorer.py`** — composite 0–100 score for comparing deals | Multi-deal comparison | Only if evals show it adds signal rather than false precision |
 | **Sector deep-dives** (senior housing, self-storage, industrial) | Coverage | Real deal flow shows gaps |
 | **`06-syndication-mechanics-deep-dive.md`** | Waterfall / clawback depth | Evals expose gaps `02` can't absorb |
-| **Distribution** — own-repo plugin marketplace, then an issue to `himself65/finance-skills` (no private-markets coverage), then awesome-list links | Reach beyond one collection; one canonical copy, listed rather than duplicated | After #1026 resolves. `travisvn/awesome-claude-skills` needs ≥10 stars and rejects AI-assisted PRs, so write that one by hand |
+| **Distribution** — own-repo plugin marketplace, then an issue to `himself65/finance-skills` (no private-markets coverage), then awesome-list links | Reach beyond one collection; one canonical copy, listed rather than duplicated | **Met:** #1026 merged 2026-10-21. `travisvn/awesome-claude-skills` needs ≥10 stars and rejects AI-assisted PRs, so write that one by hand |
 | **Eval watch-items** — insufficient-disclosure rate (8/13 in cycle 5; 05 over-fired); fixture 01's EQUITY-01 phrasing vs `03`'s bands; fixture 4's HML-05 could read "cited or subsumed under GEN-16"; fixture 8's EQUITY-04 fired on an unstated pref | Calibration | Carried into the next eval cycle |
 
 The v2.0 multi-agent idea and its trigger come from the versioning plan removed in
@@ -189,6 +197,31 @@ since been reached.
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — PR #1026 merged; maintainer's edits pulled back verbatim
+
+The maintainer requested three changes, then made them directly and merged through
+#1041 with the five original commits kept. Later, a batch commit rewrote the
+description. Everything else that shipped is unchanged from this repo, ignoring line
+endings. Decisions:
+- **SKILL.md and the three example outputs now match upstream exactly.** Scripts,
+  references, snapshots, `evals.json` and example inputs needed no change.
+- **New description adopted, despite what it drops.** The not-advice notice with the
+  old description would be 10,312 B, over the size budget; the new one gives 9,742 B
+  and keeps both copies identical. It drops "hard money" (now "bridge fund"), the
+  sample trigger phrases and the explicit operator-side exclusion, and "compares
+  terms" loosely describes a net-IRR comparison. The effect on triggering hasn't been
+  measured here (see v1.1).
+- **Exception to "examples are never hand-edited" (2026-09-27).** The added notice
+  line was not produced by a re-run. It is one line of boilerplate, and the reports
+  are otherwise what cycle 5 graded.
+- **Divergence-map row 1 was wrong.** A flat `finance/<name>/` directory never
+  installs, because `finance-skills` ships `"skills": ["./skills"]`. The map followed
+  #298's precedent without checking the plugin manifest.
+- **Counters are script-owned.** The maintainer asked for `derive_counters.py` values
+  rather than hand edits, and `--check` now also reads CHANGELOG.md and delta claims.
+- **PR worktree and branch are safe to remove.** All five commits are in
+  `upstream/main`. Removal is left to the owner; see Current status.
 
 ### 2026-09-27 — CI gate G3 overrides divergence-map row 3; counters updated in the PR
 
@@ -497,6 +530,7 @@ foundation invents that foundation.
 | 4.6 — Re-validation | 2026-09-27 | Cycle 4: 8 / 4 w-notes / 1 FAIL → skill fix → cycle 5: 11 PASS / 2 w-notes / 0 FAIL, 4/4 discrimination |
 | 4 — Quality checklist | 2026-07-19 | Two-field frontmatter; third-person trigger description; Anti-Patterns section; graded exit codes; references linked with load triggers; security auditor PASS; no secrets |
 | 4 — v1.0 content gate | 2026-08-16 | References within 300 lines each; cross-reference integrity (34 flags, 25 questions, 28 flags cited, zero dangling IDs); 3 examples; root README |
+| 5 — Upstream PR | 2026-10-21 | #1026 merged via #1041; released in v2.13.0 at `finance/skills/passive-deal-screener/` |
 | 4.5 — PR readiness | 2026-08-16 | 12-row divergence map vs upstream's merged practice; no open design choices |
 
 ---
@@ -511,4 +545,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-09-27 (PR #1026 open; backlog split into v1.1 = PR feedback, v2 candidates).*
+*Last updated: 2026-11-01 (PR #1026 merged; maintainer's edits pulled back; Current status section added).*
