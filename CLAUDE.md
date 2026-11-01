@@ -49,7 +49,8 @@ passive-deal-screener/
 ├── evals/
 │   ├── evals.json                  [PR] 13 fixtures
 │   ├── iteration-1..2/                  scorecards only (transcripts in git history)
-│   ├── iteration-3/                     run transcripts + scorecard
+│   ├── iteration-3..6/                  run transcripts + scorecard
+│   ├── scan_reports.py                  checks cited IDs and notice placement before grading; never ships
 │   ├── TESTING-PLAN.md                  eval design
 │   └── sources.md                       fixture provenance
 ├── tools/
@@ -110,7 +111,8 @@ changes to this CLAUDE.md only.*
 
 Replaced the contribution-branch rule with the shipped path and the workflow for
 later PRs, including running `derive_counters.py`. Added the not-investment-advice
-content rule the maintainer required.
+content rule the maintainer required. Added `evals/scan_reports.py` to the file tree,
+and widened the transcript line to iterations 3 through 6.
 
 ### 2026-09-27 — Brought current after v1.0
 

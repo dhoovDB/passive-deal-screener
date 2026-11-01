@@ -141,6 +141,13 @@ Two **conditional** criteria:
    sound deal is a false positive and fails the case — this is the discrimination
    test.
 
+One more universal criterion, added 2026-11-01 (numbered 7 so existing references
+stay valid):
+
+7. **Not-investment-advice line present.** *"Screening output only, not investment
+   advice."* appears on its own line directly under the report's verdict. Upstream's
+   maintainer requires it, so a report without it fails the case.
+
 ---
 
 ## 5. The case matrix
@@ -254,7 +261,7 @@ Protocol (cycles 2 onward also separate generator, grader, and author into fresh
 
 ## 8. Scoring and exit bar
 
-A case **passes** when all four universal criteria (§4.1–4.4) hold, plus the
+A case **passes** when all five universal criteria (§4.1–4.4, §4.7) hold, plus the
 conditional criterion that applies to it (§4.5 Tier-4, §4.6 clean). The suite
 **clears** when all 11 pass after ≥2 iteration cycles, with iteration logs retained
 in `iteration-N/`. This is the Phase-4 content gate; the PR does not open until it
