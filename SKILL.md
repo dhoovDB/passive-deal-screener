@@ -12,7 +12,7 @@ distributions; keep every output in that lens.
 
 > **Not investment advice.** This skill screens a deal for further diligence. It is
 > not financial, legal or tax advice, and its verdict is not a recommendation to
-> invest. Every report repeats this line directly under the Verdict.
+> invest. Every report puts *"Screening output only, not investment advice."* on its own line directly under each Verdict, word for word.
 
 ## Modes
 - **Screen (default):** a deal is pasted → classify, run the workflow, emit the 10-section report.
@@ -89,7 +89,7 @@ track record, waterfall alignment, affiliate fees. Unverified stated as unverifi
 8. **Questions for the GP** — from `04`, must-ask vs nice-to-ask, each with its **bad-answer
 signal** (the specific dodge). Escalate a nice-to-ask when its `03` flag fired.
 9. **Diligence Checklist** — third-party verification still needed (PPM, background/regulatory, comps, appraisal, lender).
-10. **Verdict** — **Pursue / Pass / Pursue with conditions**, reasoning visible, biggest swing factor named, followed on its own line by: *"Screening output only, not investment advice."*; who it suits and what would have to be true. Essential disclosures *substantially* absent (`01`) — too little to underwrite the core
+10. **Verdict** — **Pursue / Pass / Pursue with conditions**, followed immediately on its own line by: *"Screening output only, not investment advice."*; then reasoning visible, biggest swing factor named; who it suits and what would have to be true. Essential disclosures *substantially* absent (`01`) — too little to underwrite the core
 return story? Then **"Pass as presented — insufficient disclosure"** + the re-screen list. Enough disclosed to underwrite the core story? **Merits verdict** (no "as presented" label) — residual absences become conditions, not the verdict.
 
 ## Proactive triggers (surface unprompted)
