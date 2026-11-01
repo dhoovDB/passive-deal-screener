@@ -55,7 +55,12 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - [x] **Clear the gate** — eval cycle 7 cleared it 2026-11-01: 11 PASS / 4 w-notes / 0 FAIL (`evals/iteration-7/`). See the decision log.
 - [ ] **Trigger A/B, old vs new description** — run locally, not in the cloud session; needs the owner's `claude` CLI login. Upstream's cases plus the phrases the rewrite dropped, 2 runs each, in an empty folder with only the finance plugin loaded.
 
-### Cloud session: eval cycle 7
+### Cloud session: eval cycle 7 (done 2026-11-01)
+
+*Ran 2026-11-01 and cleared the gate; kept as the template for a future cloud cycle. Lessons from the run:*
+- *Branch: the cloud session can only push to its own session branch (here `claude/peaceful-fermi-e5ciyh`), so a named branch like `eval/cycle-7` won't push. Write future instructions as "push to the session's branch".*
+- *Cost and time: the 15 generators used about 1.83M tokens, roughly 115–130K each and 2–4 minutes each with 4 at once. The grader used 0.31M and took about 6 minutes. That is about 2.1M in total, against the 2.6M estimate. No rate limit was hit at 4 at a time.*
+- *Scanner: treat CHECKs as leads, not results, until `scan_reports.py` is fixed (see the cycle 7 decision-log entry).*
 
 *Written 2026-11-01 for a fresh session with no access to the conversation behind it. The owner approved this scope. The 2026-11-01 cycle 6 entry in the decision log explains why; `evals/iteration-6/scorecard.md` has the detail.*
 
