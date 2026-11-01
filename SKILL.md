@@ -98,6 +98,7 @@ return story? Then **"Pass as presented — insufficient disclosure"** + the re-
 - Debt fund quoting LTV on ARV with no as-is → `HML-01`.
 - IRR with no distribution schedule → `GEN-11` (J-curve).
 - Debt maturity stated but hold unstated → probe `GEN-09` via `Q-RISK-01`; don't wait for the hold to be disclosed.
+- Hold stated but debt maturity unstated → probe `GEN-09` via `Q-RISK-01`, don't fire it; a debt type's usual term, even bridge, isn't this loan's maturity.
 - Beats its own pro forma but trails the `05` comparator + premium → lock-up uncompensated.
 
 ## Output Artifacts

@@ -35,11 +35,10 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
 - **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. Merged to `main` 2026-11-01.
 - **Trigger A/B:** no difference between the old and new descriptions (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
-- **Next:** the owner decides the three items below.
+- **Next:** the owner decides the two items below.
 - **Open decisions:**
-  - **Fixture 01's verdict flip.** Pass in 2 of 4 runs across cycles 6 and 7, each from `GEN-09` fired RED on a maturity the deal never states. A one-line SKILL.md tweak could address it, followed by a re-run of fixture 01.
-  - **Examples.** Regenerate `examples/` so the notice also sits under section 10. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is.
-  - **Upstream PR.** Send the wording fix and the `evals.json` changes upstream as a PR.
+  - **Examples.** Regenerate `examples/` so the notice also sits under section 10, with a blank line before it. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is.
+  - **Upstream PR.** Send the wording fix, the `GEN-09` line and the `evals.json` changes upstream as a PR.
 - **Blockers:** none.
 
 ---
@@ -53,6 +52,7 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - [x] **Clear the gate** — eval cycle 7 cleared it 2026-11-01: 11 PASS / 4 w-notes / 0 FAIL (`evals/iteration-7/`). See the decision log.
 - [x] **Trigger A/B, old vs new description** — run locally 2026-11-01: no difference (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
 - [x] **Fix the scanner** — `evals/scan_reports.py` checks the line right after each verdict line before extending the verdict paragraph. It still catches 06 and 09 in cycle 6, and cycle 7 is now 15/15.
+- [x] **Fixture 01's verdict flip** — one line in SKILL.md: an unstated maturity is a `GEN-09` probe, never fired. Three reruns all gave Pursue with conditions (`evals/iteration-8/`). See the decision log.
 
 ---
 
@@ -187,7 +187,7 @@ count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
 
 | Item | Why v2 | Trigger |
 |---|---|---|
-| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,705 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
+| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,864 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
 | **Benchmark staleness warning** — surface "benchmark data is N months old" when `05` loads | `tools/refresh_benchmarks.py` automates the pull, but nothing *detects* stale snapshots | Before the next material rate move; the 10yr Treasury is the most time-sensitive input |
 | **`deal_scorer.py`** — composite 0–100 score for comparing deals | Multi-deal comparison | Only if evals show it adds signal rather than false precision |
 | **Sector deep-dives** (senior housing, self-storage, industrial) | Coverage | Real deal flow shows gaps |
@@ -206,6 +206,32 @@ since been reached.
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — Fixture 01's verdict flip: GEN-09 fix holds in three reruns
+
+**Problem.** Fixture 01 returned Pass in 2 of 4 runs across cycles 6 and 7, each from
+`GEN-09` fired RED on a maturity the deal never states. SKILL.md covered "maturity stated,
+hold unstated" but not the reverse, so runs inferred a maturity from bridge debt's usual
+term and tagged it 🟡, which is allowed to fire a flag.
+
+**Change.** One line under Proactive triggers: hold stated but maturity unstated means
+probe `GEN-09` via `Q-RISK-01`, don't fire it. Fixture 01's `expected_output` gained the
+matching FAIL clause first, per "build the evaluator first". SKILL.md is now 9,864 B.
+
+**Result (`evals/iteration-8/`, 3 blind Opus runs, independent grader).** All three are
+Pursue with conditions, `GEN-09` is probed in all three, and no finding rests on an
+unstated maturity, including under `EQUITY-07`. Grades: 3 PASS w/ notes, 0 FAIL.
+- **Evidence is limited.** Three runs can't prove stability. At the earlier 50% rate, 3 of
+  3 would still happen about 1 time in 8. The stronger signal is that the mechanism
+  behind the Pass didn't appear in any run.
+- **Only fixture 01 was rerun.** It is the only fixture with a debt type and a stated hold
+  but no stated maturity; fixtures 07, 08 and 12 state theirs. That is reasoning, not a
+  measured no-regression result.
+- **One cost.** Run 2 never explains the forced-refinance failure mode for maturity. The
+  risk is still routed to `Q-RISK-01`, but with less explanation.
+- **Not fixed by this.** Verdict reasons can still lean on other assumed inputs: run 1's
+  rests on an assumed 100% catch-up. Run 3's notice has no blank line before it, the
+  same rendering problem as 4 of 15 cycle 7 reports.
 
 ### 2026-11-01 — Trigger A/B: the new description fires as well as the old one
 
@@ -634,4 +660,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-11-01 (cycle 7 merged; trigger A/B recorded; scanner fixed).*
+*Last updated: 2026-11-01 (GEN-09 fix; fixture 01 reruns recorded in iteration-8).*
