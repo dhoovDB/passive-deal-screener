@@ -33,7 +33,7 @@ artifact sharing the same framework. It is not contributed and not maintained he
 ## Current status (2026-11-01)
 
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
-- **Next:** the owner removes the `C:\Projects\claude-skills-pr` worktree and the `feat/finance-passive-deal-screener` branch (local and fork), and decides when to run the v1.1 eval item.
+- **Next:** the owner decides when to run the v1.1 eval item.
 - **Open decisions:** none.
 - **Blockers:** none.
 
@@ -220,8 +220,7 @@ endings. Decisions:
   #298's precedent without checking the plugin manifest.
 - **Counters are script-owned.** The maintainer asked for `derive_counters.py` values
   rather than hand edits, and `--check` now also reads CHANGELOG.md and delta claims.
-- **PR worktree and branch are safe to remove.** All five commits are in
-  `upstream/main`. Removal is left to the owner; see Current status.
+- **PR worktree and branch removed.** All five commits are in `upstream/main`.
 
 ### 2026-09-27 — CI gate G3 overrides divergence-map row 3; counters updated in the PR
 
