@@ -33,8 +33,15 @@ artifact sharing the same framework. It is not contributed and not maintained he
 ## Current status (2026-11-01)
 
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
-- **Next:** a cloud session runs eval cycle 7 by following "Cloud session: eval cycle 7" below. Cycle 6 did not clear (6 PASS / 6 w-notes / 1 FAIL, discrimination 4/4). Separately, the owner logs in to the `claude` CLI for the trigger A/B.
-- **Open decisions:** none.
+- **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. The results are on branch `claude/peaceful-fermi-e5ciyh` and wait for the owner's review before `main`.
+- **Next:**
+  - The owner reviews the cycle 7 branch.
+  - The owner decides on the examples and the scanner fix (below).
+  - The owner logs in to the `claude` CLI for the trigger A/B.
+- **Open decisions:**
+  - **Examples.** Regenerate `examples/` so the notice also sits under section 10. Cycle 7's fixtures 01, 03 and 13 are candidates.
+  - **Scanner fix.** `evals/scan_reports.py` misses a notice placed on the line right after the verdict. It reported 4 false CHECKs in cycle 7.
+  - **Upstream PR.** Send the wording fix and the `evals.json` changes upstream as a PR.
 - **Blockers:** the CLI is logged out, so the trigger A/B can't run. Cycle 7 doesn't depend on it.
 
 ---
@@ -45,7 +52,7 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - [x] **New description** — from upstream's batch rewrite of 347 descriptions; pulled back verbatim 2026-11-01. SKILL.md is now 9,742 B.
 - [x] **Add the notice check** — criterion 4.7 in `evals/TESTING-PLAN.md`, one sentence in each `expected_output` in `evals/evals.json`. `evals.json` ships upstream, so the new check goes up in a later PR.
 - [x] **Cycle 6 on the merged text** — `evals/iteration-6/`: 6 PASS / 6 w-notes / 1 FAIL, discrimination 4/4. See the decision log.
-- [ ] **Clear the gate** — eval cycle 7, in a cloud session; steps below. Done when the cycle clears 0 FAIL.
+- [x] **Clear the gate** — eval cycle 7 cleared it 2026-11-01: 11 PASS / 4 w-notes / 0 FAIL (`evals/iteration-7/`). See the decision log.
 - [ ] **Trigger A/B, old vs new description** — run locally, not in the cloud session; needs the owner's `claude` CLI login. Upstream's cases plus the phrases the rewrite dropped, 2 runs each, in an empty folder with only the finance plugin loaded.
 
 ### Cloud session: eval cycle 7
@@ -243,6 +250,31 @@ since been reached.
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — Eval cycle 7 on the notice-wording fix: gate cleared
+
+**Setup.** This cycle ran in a cloud session, following "Cloud session: eval cycle 7".
+- **Commit `181fdd7`** made the three approved edits: the notice wording in SKILL.md (now 9,705 B), and fixture 13's premise.
+- **Reports.** 15 blind Opus generators wrote reports, at most 4 at a time, with fixture 01 run three times. One independent Opus grader graded them.
+- **Branch.** The owner chose the session branch `claude/peaceful-fermi-e5ciyh` over `eval/cycle-7`, because the session could only push there. Nothing was merged to `main` and no PR was opened.
+
+**Result.** 11 PASS / 4 PASS w/ notes / 0 FAIL, which clears the gate.
+- **Strict count:** 14/15.
+- **Discrimination:** 4/4.
+- **Notice (4.7):** the sentence sits directly under both verdicts in all 15 reports, so the wording fix worked.
+
+Findings:
+- **Fixture 01's flip repeated once in three runs.** Runs 1 and 3 are Pursue with conditions; run 2 is Pass.
+  - Run 2's Pass rests on an unstated input. It fires GEN-09 RED on a bridge maturity the deal never states, which is the same slip as cycle 6.
+  - Runs 1 and 3 hold GEN-09 and GEN-10 as questions. Run 3's section 10 still cites a figure built on assumed leverage, though its verdict doesn't depend on it.
+  - The split follows how each run treats the undisclosed maturity, not any stated fact.
+- **03 (note).** An illustrative fee-drag run assumes a 0% catch-up without saying so. It gives 291 bps; the calculator's default gives 410 bps.
+- **04 (note).** The expected HML-05 is held as a question, not fired. Two flag-to-question mappings are off.
+- **Scanner false negatives.** `scan_reports.py` flagged 01-run3, 02, 07 and 09. In each of them the notice is on the line right after the verdict with no blank line between, and the two-line-verdict logic absorbs it.
+  - The grader and I confirmed all four by hand.
+  - The scanner needs a fix, and a blank line before the notice would also render better in Markdown.
+
+**Not done, per the instructions.** No examples were regenerated, and the skill and fixtures were not edited.
 
 ### 2026-11-01 — Eval cycle 6 on the shipped text: gate not cleared
 
