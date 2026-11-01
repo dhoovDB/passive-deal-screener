@@ -30,15 +30,25 @@ def next_text_line(lines, start):
     return None
 
 
+def is_notice(line):
+    return line.strip().strip("*_").strip() == NOTICE
+
+
 def notice_follows(lines, verdict_at):
-    """True if the line after the verdict paragraph is the notice and nothing else."""
+    """True if the next line after the verdict is the notice and nothing else.
+
+    A comparison has one verdict line per deal, so walk the verdict paragraph, checking the
+    line after each verdict line before treating it as more of the verdict.
+    """
     if verdict_at is None:
         return False
     end = verdict_at
-    while end + 1 < len(lines) and lines[end + 1].strip():  # a comparison has one line per deal
+    while end + 1 < len(lines) and lines[end + 1].strip():
+        if is_notice(lines[end + 1]):
+            return True
         end += 1
     i = next_text_line(lines, end)
-    return i is not None and lines[i].strip().strip("*_").strip() == NOTICE
+    return i is not None and is_notice(lines[i])
 
 
 def check_report(lines):

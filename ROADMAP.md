@@ -33,70 +33,26 @@ artifact sharing the same framework. It is not contributed and not maintained he
 ## Current status (2026-11-01)
 
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
-- **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. The results are on branch `claude/peaceful-fermi-e5ciyh` and wait for the owner's review before `main`.
-- **Next:**
-  - The owner reviews the cycle 7 branch.
-  - The owner decides on the examples and the scanner fix (below).
-  - The owner logs in to the `claude` CLI for the trigger A/B.
+- **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. Merged to `main` 2026-11-01.
+- **Trigger A/B:** no difference between the old and new descriptions (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
+- **Next:** the owner decides the three items below.
 - **Open decisions:**
-  - **Examples.** Regenerate `examples/` so the notice also sits under section 10. Cycle 7's fixtures 01, 03 and 13 are candidates.
-  - **Scanner fix.** `evals/scan_reports.py` misses a notice placed on the line right after the verdict. It reported 4 false CHECKs in cycle 7.
+  - **Fixture 01's verdict flip.** Pass in 2 of 4 runs across cycles 6 and 7, each from `GEN-09` fired RED on a maturity the deal never states. A one-line SKILL.md tweak could address it, followed by a re-run of fixture 01.
+  - **Examples.** Regenerate `examples/` so the notice also sits under section 10. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is.
   - **Upstream PR.** Send the wording fix and the `evals.json` changes upstream as a PR.
-- **Blockers:** the CLI is logged out, so the trigger A/B can't run. Cycle 7 doesn't depend on it.
+- **Blockers:** none.
 
 ---
 
 ## Now — v1.1: PR #1026 feedback
 
 - [x] **Not-investment-advice notice** — added by the maintainer near the top of SKILL.md and under the verdict in all three example outputs; pulled back verbatim 2026-11-01.
-- [x] **New description** — from upstream's batch rewrite of 347 descriptions; pulled back verbatim 2026-11-01. SKILL.md is now 9,742 B.
+- [x] **New description** — from upstream's batch rewrite of 347 descriptions; pulled back verbatim 2026-11-01. SKILL.md was then 9,619 B.
 - [x] **Add the notice check** — criterion 4.7 in `evals/TESTING-PLAN.md`, one sentence in each `expected_output` in `evals/evals.json`. `evals.json` ships upstream, so the new check goes up in a later PR.
 - [x] **Cycle 6 on the merged text** — `evals/iteration-6/`: 6 PASS / 6 w-notes / 1 FAIL, discrimination 4/4. See the decision log.
 - [x] **Clear the gate** — eval cycle 7 cleared it 2026-11-01: 11 PASS / 4 w-notes / 0 FAIL (`evals/iteration-7/`). See the decision log.
-- [ ] **Trigger A/B, old vs new description** — run locally, not in the cloud session; needs the owner's `claude` CLI login. Upstream's cases plus the phrases the rewrite dropped, 2 runs each, in an empty folder with only the finance plugin loaded.
-
-### Cloud session: eval cycle 7
-
-*Written 2026-11-01 for a fresh session with no access to the conversation behind it. The owner approved this scope. The 2026-11-01 cycle 6 entry in the decision log explains why; `evals/iteration-6/scorecard.md` has the detail.*
-
-**Goal.** Fix the notice wording in SKILL.md, then run a full 13-fixture cycle plus 2 extra runs of fixture 01 (15 reports), so the gate is judged on one version of the text and we learn whether fixture 01's verdict flip repeats.
-
-**Decided; don't reopen.** Fixture 01 keeps its expected verdict of Pursue with conditions. Fixture 13's step-down premise is corrected as in step 1.
-
-**Ground rules**
-- Work on a branch named `eval/cycle-7`. The owner approved committing and pushing to that branch only. Do not merge to `main`, open a PR, or touch the upstream repo.
-- `/globalrules`, `/codereview` and any `C:\Projects` path may not exist here. Skip them; the owner reviews the branch.
-- Do not regenerate `examples/`, change any other fixture, or edit the skill further, even if a fixture fails. Report it instead.
-- Use `python3` for scripts.
-
-**Step 1 — Apply exactly these three edits.**
-
-1. In `SKILL.md`, replace `Every report repeats this line directly under the Verdict.` with `Every report puts *"Screening output only, not investment advice."* on its own line directly under each Verdict, word for word.`
-2. In `SKILL.md`, in schema item 10, replace `reasoning visible, biggest swing factor named, followed on its own line by: *"Screening output only, not investment advice."*; who it suits` with `followed immediately on its own line by: *"Screening output only, not investment advice."*; then reasoning visible, biggest swing factor named; who it suits`
-3. In `evals/evals.json`, fixture 13, replace `Fee step-down and hurdle/high-water-mark present (02).` with `Hurdle/high-water-mark present (02). The 1.0% coverage tier is a leverage-linked fee tier, not a time-based step-down, so a report need not treat it as a step-down.`
-
-Confirm `SKILL.md` stays under 10,000 bytes and `evals.json` still parses. Commit and push; call this commit's short hash `<H>`.
-
-**Step 2 — Make the blind copy.** Copy only `SKILL.md`, `references/` and `scripts/` to a new temp folder outside the repo. Create a temp output folder beside it.
-
-**Step 3 — Run 15 generators.** Fresh-context subagents, model Opus, at most 4 running at once; start the next as each finishes (7 at once hit a rate limit before). Paste each fixture's `prompt` from `evals/evals.json` verbatim. Never show a generator `expected_output`. Fixture 01 runs 3 times, each by a new agent; every other fixture runs once. For fixture 11, give fixture 10's prompt as the user's first message and fixture 11's as the second, the one being answered. Use neutral output names (`fixture-01a.txt`, `fixture-01b.txt`, `fixture-01c.txt`, `fixture-02.txt`, and so on), because the slugged names reveal the expected result. Subagents may be blocked from writing `.md`, which is why these are `.txt`. Each generator's prompt:
-
-> You are a generator in a blind eval run. Apply a skill to one user message and write the report it produces. Skill folder: `<blind copy>`. Read SKILL.md there and follow it exactly, loading the references it directs you to, and run its scripts with `python3`. Work only from that folder. Do not read the repository checkout or look for other copies of this skill, prior outputs, or expected answers. Do not use the Skill tool or spawn agents. The user's message: `<prompt>`. Use the Write tool to create `<output path>`, UTF-8, beginning with exactly these two lines and a blank line, then the complete report as you would deliver it to the user, nothing summarized: `# Eval fixture NN` and `*Iteration-7 run, <date>, blind generation by fresh-context agent (model: Opus), against SKILL.md @ <H>.*`. Reply with one line only: DONE and the file path.
-
-**Step 4 — Scan.** Copy the reports into `evals/iteration-7/` without reading them. Use the same file names as `evals/iteration-6/`; the fixture 01 extras are `01-multifamily-value-add-run2.md` and `-run3.md`. Run `python3 evals/scan_reports.py evals/iteration-7 --expected 15`. It exits 1 if a report needs attention; that is input for the grader, not a reason to stop.
-
-**Step 5 — Grade.** One fresh-context Opus subagent that did not write anything above. It reads `evals/evals.json` (each `expected_output` is the criterion), `evals/TESTING-PLAN.md` sections 4 and 8, all 15 reports in full, `SKILL.md`, and `references/`, verifying every flag and question ID against `03` and `04`. It must not read `evals/iteration-1` through `iteration-6`, `examples/`, `README.md`, `ROADMAP.md`, or git history. It grades each report PASS, PASS w/ notes, or FAIL, with these rules:
-- Criterion 4.7 means the exact sentence sits on its own line directly under both the top verdict and section 10's verdict. A two-line verdict comparing two deals counts as one verdict.
-- A verdict that differs from `expected_output` with no FAIL clause attached is PASS w/ notes, and the strict count (treating those as FAIL) is stated alongside.
-- Fixture 01 is graded on all three runs: state each run's verdict, and whether any flag or verdict reason rests on an unstated input.
-
-It also reports the same five observations as `evals/iteration-6/scorecard.md`: discrimination (3 vs 4, 10 vs 11, 12 and 13 both positive, 5 vs 13), fee-input honesty, assumed-number discipline, verdict calibration, and fixture 07's variable-class discipline. Scorecard structure: Headline, Results table, Notes, Observations, Gate. It writes to a `.txt` in the temp folder.
-
-**Step 6 — Record and stop.**
-1. Save the scorecard as `evals/iteration-7/scorecard.md`, adding a Method paragraph like iteration-6's.
-2. In this file, rewrite Current status, tick "Clear the gate" only if there are 0 FAIL, and add a dated decision-log entry with the results.
-3. Commit and push `eval/cycle-7`.
-4. Finish with: headline counts, the strict count, discrimination out of 4, fixture 01's three verdicts, every FAIL with its reason, and the branch name.
+- [x] **Trigger A/B, old vs new description** — run locally 2026-11-01: no difference (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
+- [x] **Fix the scanner** — `evals/scan_reports.py` checks the line right after each verdict line before extending the verdict paragraph. It still catches 06 and 09 in cycle 6, and cycle 7 is now 15/15.
 
 ---
 
@@ -231,7 +187,7 @@ count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
 
 | Item | Why v2 | Trigger |
 |---|---|---|
-| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,742 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
+| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,705 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
 | **Benchmark staleness warning** — surface "benchmark data is N months old" when `05` loads | `tools/refresh_benchmarks.py` automates the pull, but nothing *detects* stale snapshots | Before the next material rate move; the 10yr Treasury is the most time-sensitive input |
 | **`deal_scorer.py`** — composite 0–100 score for comparing deals | Multi-deal comparison | Only if evals show it adds signal rather than false precision |
 | **Sector deep-dives** (senior housing, self-storage, industrial) | Coverage | Real deal flow shows gaps |
@@ -250,6 +206,36 @@ since been reached.
 *Project and architectural decisions live here, newest first. Changes to this
 repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
 rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — Trigger A/B: the new description fires as well as the old one
+
+Tested because the rewrite dropped "hard money", the sample phrases and the explicit
+operator-side exclusion. The result supports keeping the new description.
+
+| Prompts | New | Old |
+|---|---|---|
+| 6 that should fire (upstream's 2, plus hard money, what to ask the GP, offering memo, analyze this deal) | 12/12 | 12/12 |
+| 2 that should not (operator underwriting, corporate DCF) | 0/4 | 0/4 |
+
+The corporate DCF prompt went to `financial-analyst` on both.
+
+**Method.** This follows upstream's trigger run: `claude -p`, `--plugin-dir`, `--max-turns 2`,
+an empty folder, and "fired" means a `Skill` call for this skill. 32 runs on Sonnet: 8
+prompts, 2 descriptions, 2 runs each. Both copies came from upstream's `finance/` and
+differed only in the description. Unlike upstream, it used the existing login with
+`--setting-sources ""`, because upstream's throwaway config has no credentials; the run
+logs confirm only the finance plugin and built-ins loaded. Most runs report
+`error_max_turns`, which is that 2-turn cap and not a failure. The one-off script was not
+kept; this paragraph is enough to rebuild it.
+
+**Limits.** Only the finance plugin was loaded, so nothing outside it competed for these
+prompts, and 2 runs per prompt can't show a small difference.
+
+**Size correction.** 9,742 B in earlier entries was the on-disk size with Windows line
+endings. The committed size was 9,619 B, and is 9,705 B after the wording fix.
+
+The "Cloud session: eval cycle 7" steps are done and were removed; they are at
+`git show 843319c:ROADMAP.md`.
 
 ### 2026-11-01 — Eval cycle 7 on the notice-wording fix: gate cleared
 
@@ -270,9 +256,9 @@ Findings:
   - The split follows how each run treats the undisclosed maturity, not any stated fact.
 - **03 (note).** An illustrative fee-drag run assumes a 0% catch-up without saying so. It gives 291 bps; the calculator's default gives 410 bps.
 - **04 (note).** The expected HML-05 is held as a question, not fired. Two flag-to-question mappings are off.
-- **Scanner false negatives.** `scan_reports.py` flagged 01-run3, 02, 07 and 09. In each of them the notice is on the line right after the verdict with no blank line between, and the two-line-verdict logic absorbs it.
-  - The grader and I confirmed all four by hand.
-  - The scanner needs a fix, and a blank line before the notice would also render better in Markdown.
+- **Scanner false alarms.** `scan_reports.py` flagged 01-run3, 02, 07 and 09, but the notice was present. In each of them it is on the line right after the verdict with no blank line between, and the two-line-verdict logic absorbed it.
+  - The grader and I confirmed all four by hand. The scanner has since been fixed.
+  - Those 4 of 15 reports also render the notice in the verdict's paragraph in Markdown, because a blank line is needed to separate it.
 
 **Not done, per the instructions.** No examples were regenerated, and the skill and fixtures were not edited.
 
@@ -311,7 +297,7 @@ endings. Decisions:
 - **SKILL.md and the three example outputs now match upstream exactly.** Scripts,
   references, snapshots, `evals.json` and example inputs needed no change.
 - **New description adopted, despite what it drops.** The not-advice notice with the
-  old description would be 10,312 B, over the size budget; the new one gives 9,742 B
+  old description would be 10,312 B, over the size budget; the new one gives 9,619 B
   and keeps both copies identical. It drops "hard money" (now "bridge fund"), the
   sample trigger phrases and the explicit operator-side exclusion, and "compares
   terms" loosely describes a net-IRR comparison. The effect on triggering hasn't been
@@ -648,4 +634,4 @@ foundation invents that foundation.
 - **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
 - **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
 
-*Last updated: 2026-11-01 (eval cycle 6 recorded; cycle 7 instructions added for a cloud session).*
+*Last updated: 2026-11-01 (cycle 7 merged; trigger A/B recorded; scanner fixed).*
