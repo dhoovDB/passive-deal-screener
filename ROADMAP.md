@@ -30,15 +30,16 @@ artifact sharing the same framework. It is not contributed and not maintained he
 
 ---
 
-## Current status (2026-11-01)
+## Current status (2026-11-02)
 
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
 - **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. Merged to `main` 2026-11-01.
 - **Trigger A/B:** no difference between the old and new descriptions (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
-- **Next:** the owner decides the two items below.
+- **Next:** the owner decides the three items below.
 - **Open decisions:**
-  - **Examples.** Regenerate `examples/` so the notice also sits under section 10, with a blank line before it. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is.
+  - **Examples.** Regenerate `examples/` so the notice also sits under section 10, with a blank line before it. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is. The same change updates `examples/README.md` lines 4-5, which still name iteration 5 as the PR-gate run.
   - **Upstream PR.** Send the wording fix, the `GEN-09` line and the `evals.json` changes upstream as a PR.
+  - **LICENSE.** README states MIT, but the repo has no LICENSE file. See the audit follow-ups under v2 candidates.
 - **Blockers:** none.
 
 ---
@@ -199,13 +200,28 @@ The v2.0 multi-agent idea and its trigger come from the versioning plan removed 
 Step 7 (`git show 042b91d:ROADMAP.md`, §12); restored here because its trigger has
 since been reached.
 
+**Audit follow-ups (2026-11-02).** Repo housekeeping from the portfolio audit,
+outside v2 scope.
+
+- [ ] **Archive to `ROADMAP-ARCHIVE.md`.** This file is about 680 lines against the
+  portfolio standard of about 300. Candidates: the two Done sections (Phase 4.6 and
+  Phase 5) and decision-log entries that no longer constrain current work. Moving
+  the Done sections also restores highest-priority-first order. Done when the
+  moved text sits verbatim in the archive, a one-line pointer marks each spot, and
+  the move lands as its own markdown-only commit.
+- [ ] **LICENSE file.** README says "License: MIT, matching the upstream skills
+  repo.", and the repo has no LICENSE file. Owner decision to add one. Done when
+  a LICENSE file matches the README line.
+- **Stale `examples/README.md` citation.** Lines 4-5 name iteration 5 as the
+  PR-gate run. Tracked with the Examples open decision in Current status.
+
 ---
 
 ## Decision log
 
-*Project and architectural decisions live here, newest first. Changes to this
-repo's CLAUDE.md are logged in CLAUDE.md. Entries are condensed to decision and
-rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+*Project and architectural decisions live here. Changes to this repo's CLAUDE.md
+are logged in CLAUDE.md, not here. Newest first. Entries are condensed to decision
+and rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
 
 ### 2026-11-01 — Fixture 01's verdict flip: GEN-09 fix holds in three reruns
 
@@ -652,12 +668,14 @@ foundation invents that foundation.
 
 ## Cut ideas
 
-- **Skill-level README** — no merged finance skill ships one; content moved to the root README (2026-08-16).
-- **Committing the slash command, a CHANGELOG entry, or a top-level README row in the PR** — maintainer-owned integration work; proposed in the PR text instead (2026-08-16).
-- **Frontmatter `tags` / `metadata` / `license`** — reject-on-sight under CONVENTIONS (2026-07-03).
-- **Sixth reference for the output schema** — compression variant B; headroom it bought wasn't needed (2026-06-29).
-- **Separate `evals/inputs/` folder** — prompts inlined, per upstream's `evals.json` schema (2026-06-28).
-- **Mechanics-topic reference files** (`syndication-mechanics`, `hard-money-framework`, …) — folded into the output-based files (2026-05-29).
-- **Scripting the eval grader's ID check** — declined so the grader weighs IDs in context (2026-09-27).
+| Idea | Reason cut |
+|---|---|
+| Skill-level README | no merged finance skill ships one; content moved to the root README (2026-08-16). |
+| Committing the slash command, a CHANGELOG entry, or a top-level README row in the PR | maintainer-owned integration work; proposed in the PR text instead (2026-08-16). |
+| Frontmatter `tags` / `metadata` / `license` | reject-on-sight under CONVENTIONS (2026-07-03). |
+| Sixth reference for the output schema | compression variant B; headroom it bought wasn't needed (2026-06-29). |
+| Separate `evals/inputs/` folder | prompts inlined, per upstream's `evals.json` schema (2026-06-28). |
+| Mechanics-topic reference files (`syndication-mechanics`, `hard-money-framework`, …) | folded into the output-based files (2026-05-29). |
+| Scripting the eval grader's ID check | declined so the grader weighs IDs in context (2026-09-27). |
 
-*Last updated: 2026-11-01 (GEN-09 fix; fixture 01 reruns recorded in iteration-8).*
+*Last updated: 2026-11-02 (portfolio audit: pointer wording, Cut ideas table, backlog items)*
