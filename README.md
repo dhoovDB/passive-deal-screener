@@ -25,7 +25,7 @@ passive-deal-screener/
 ├── references/       # 01–05, loaded on demand by deal type
 ├── scripts/          # 2 stdlib-only CLIs (no pip install)
 ├── examples/         # 3 worked input/output pairs
-├── evals/            # 13 fixtures + scorecards for 5 eval cycles
+├── evals/            # 13 fixtures + 8 iteration folders (7 full cycles, then a rerun of fixture 01)
 ├── tools/            # benchmark-data refresh (maintenance only; not part of the skill)
 └── ROADMAP.md        # build plan, decision log, ship gate
 ```
@@ -76,7 +76,7 @@ Add `output as JSON` to get the structured shape instead of Markdown.
 
 ### The two scripts
 
-Both are standalone, stdlib-only (`argparse`, `json`, `math`, `sys` — nothing to install),
+Both are standalone, standard library only (nothing to install),
 and usable without the skill. They compose: the fee calculator gives you a net IRR,
 which is the input the benchmark comparator wants.
 
@@ -186,11 +186,15 @@ already knew how to fail it.
   34 red flags with `{ASSET_CLASS}-{NN}` IDs, 25 LP questions each citing the flags
   they answer, and public-market comparators. The skill loads a named slice per
   deal type, not the whole set.
-- **13 eval fixtures across 5 iteration cycles** — 11 PASS / 2 PASS-with-notes /
-  0 FAIL on the final run, with 4/4 on the discrimination tests that check the
-  screener distinguishes sound deals from bad ones instead of flagging everything.
-  Every cycle since the second ran under generator ≠ grader ≠ author separation,
-  and cycle 4's single FAIL drove the fix that cycle 5 validated.
+- **13 eval fixtures across 7 full cycles**: 11 PASS / 4 PASS-with-notes / 0 FAIL
+  on cycle 7, the latest (15 reports, because fixture 01 ran three times), with 4/4
+  on the discrimination tests that check the screener distinguishes sound deals
+  from bad ones instead of flagging everything. Every cycle since the second ran
+  under generator ≠ grader ≠ author separation. Cycle 4's single FAIL drove the
+  fix that cycle 5 validated, and cycle 6's single FAIL (fixture 09, the
+  not-investment-advice check) drove the fix that cycle 7 validated. Iteration 8
+  reran fixture 01 three times after a one-line `GEN-09` fix: 3 PASS-with-notes,
+  0 FAIL, all on the expected verdict.
 - **No invented numbers.** Where a fee range or market norm isn't well established,
   it is flagged as *variable* rather than fabricated. Benchmark figures trace to
   dated snapshots in `references/data/`.
@@ -210,6 +214,20 @@ A companion React artifact (`deal-evaluator.jsx`) exists for the claude.ai chat
 surface. It shares the analytical framework but is a separate deliverable on a
 separate maintenance path, and is gitignored here — the skill stays Markdown-first
 and free of UI concerns.
+
+---
+
+## Tech stack
+
+| Area | Choice |
+|---|---|
+| Language | Python 3, standard library only |
+| Runtime/platform | Claude Code skill (`SKILL.md` + `references/`) |
+| External services & data | FRED and Yahoo Finance chart API, called only by `tools/refresh_benchmarks.py` (dev-only); NCREIF (via IREI) and Preqin (via CAIS) figures collected by hand into `references/data/` |
+| Distribution | Upstream `alirezarezvani/claude-skills`, `finance-skills` plugin |
+| Testing/evals | `--self-check` in each script; fixtures in `evals/evals.json`, run by blind generator agents and graded by an independent grader agent, with `evals/scan_reports.py` as a pre-grading check |
+| Package manager | none |
+| CI | none in this repo |
 
 ---
 
