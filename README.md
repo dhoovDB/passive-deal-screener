@@ -54,7 +54,8 @@ cp -r passive-deal-screener/{SKILL.md,references,scripts} \
       ~/.claude/skills/passive-deal-screener/
 ```
 
-Restart Claude Code, then paste a deal and ask for a screen.
+Restart Claude Code, then paste a deal and ask for a screen. The two scripts
+need Python 3.6 or later and nothing else.
 
 `ROADMAP.md`, `CLAUDE.md`, and `evals/` are development files and deliberately
 stay out of the skill directory.
