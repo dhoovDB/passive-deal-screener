@@ -145,8 +145,10 @@ One more universal criterion, added 2026-11-01 (numbered 7 so existing reference
 stay valid):
 
 7. **Not-investment-advice line present.** *"Screening output only, not investment
-   advice."* appears on its own line directly under the report's verdict. Upstream's
-   maintainer requires it, so a report without it fails the case.
+   advice."* appears as its own paragraph directly under the report's verdict, with a
+   blank line before it so it renders separately. Upstream's maintainer requires it, so
+   a report without it fails the case. (Tightened 2026-11-01; cycles 6 to 8 were graded
+   against the earlier "own line" wording.)
 
 ---
 

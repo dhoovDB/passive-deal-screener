@@ -2,7 +2,7 @@
 """Mechanical checks on one eval iteration, run before the grader.
 
 Checks that every cited flag and question ID exists in references 03 and 04, and that the
-required notice sits on its own line directly under both the top verdict and section 10's.
+required notice is its own paragraph directly under both the top verdict and section 10's.
 Exit codes: 0 all clean, 1 a report needs the grader's attention, 2 bad input.
 Stdlib only. Not part of the shipped skill.
 """
@@ -35,17 +35,15 @@ def is_notice(line):
 
 
 def notice_follows(lines, verdict_at):
-    """True if the next line after the verdict is the notice and nothing else.
+    """True if the paragraph after the verdict is the notice and nothing else.
 
-    A comparison has one verdict line per deal, so walk the verdict paragraph, checking the
-    line after each verdict line before treating it as more of the verdict.
+    A comparison has one verdict line per deal, so skip to the end of the verdict paragraph.
+    A notice with no blank line before it renders inside the verdict, so it doesn't count.
     """
     if verdict_at is None:
         return False
     end = verdict_at
     while end + 1 < len(lines) and lines[end + 1].strip():
-        if is_notice(lines[end + 1]):
-            return True
         end += 1
     i = next_text_line(lines, end)
     return i is not None and is_notice(lines[i])

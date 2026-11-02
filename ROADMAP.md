@@ -37,8 +37,8 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - **Trigger A/B:** no difference between the old and new descriptions (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
 - **Next:** the owner decides the three items below.
 - **Open decisions:**
-  - **Examples.** Regenerate `examples/` so the notice also sits under section 10, with a blank line before it. Fixture 03's cycle 7 run hides a 0% catch-up, so it can't be used as is. The same change updates `examples/README.md` lines 4-5, which still name iteration 5 as the PR-gate run.
-  - **Upstream PR.** Send the wording fix, the `GEN-09` line and the `evals.json` changes upstream as a PR.
+  - **Examples.** The equity example fires `GEN-09` from a usual term, so it needs replacing; cycle 7's fixture 01 run 1 is the candidate. Neither fixture 03 candidate is ready (`evals/iteration-9/scorecard.md`), so the other two could keep their current text and gain the section 10 notice. The same change updates `examples/README.md` lines 4-5, which still name iteration 5 as the PR-gate run.
+  - **Upstream PR.** Send the notice wording, the `GEN-09` line, the `evals.json` changes and the examples upstream as one PR.
   - **LICENSE.** README states MIT, but the repo has no LICENSE file. See the audit follow-ups under v2 candidates.
 - **Blockers:** none.
 
@@ -54,6 +54,7 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - [x] **Trigger A/B, old vs new description** — run locally 2026-11-01: no difference (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
 - [x] **Fix the scanner** — `evals/scan_reports.py` checks the line right after each verdict line before extending the verdict paragraph. It still catches 06 and 09 in cycle 6, and cycle 7 is now 15/15.
 - [x] **Fixture 01's verdict flip** — one line in SKILL.md: an unstated maturity is a `GEN-09` probe, never fired. Three reruns all gave Pursue with conditions (`evals/iteration-8/`). See the decision log.
+- [x] **Notice as its own paragraph** — wording, criterion 4.7 and the scanner now require a blank line before it. See the decision log.
 
 ---
 
@@ -188,7 +189,7 @@ count lines only. Still **not** CHANGELOG (maintainers own it post-merge), and
 
 | Item | Why v2 | Trigger |
 |---|---|---|
-| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,864 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
+| **Multi-agent split** — orchestrator + deal-type specialists (equity, debt, GP track record) | The structural answer to the SKILL.md size ceiling | **Met:** SKILL.md is 9,874 / 10,000 B, so a sizable new capability needs a matching cut. Measure the split against the cycle-5 baseline |
 | **Benchmark staleness warning** — surface "benchmark data is N months old" when `05` loads | `tools/refresh_benchmarks.py` automates the pull, but nothing *detects* stale snapshots | Before the next material rate move; the 10yr Treasury is the most time-sensitive input |
 | **`deal_scorer.py`** — composite 0–100 score for comparing deals | Multi-deal comparison | Only if evals show it adds signal rather than false precision |
 | **Sector deep-dives** (senior housing, self-storage, industrial) | Coverage | Real deal flow shows gaps |
@@ -222,6 +223,31 @@ outside v2 scope.
 *Project and architectural decisions live here. Changes to this repo's CLAUDE.md
 are logged in CLAUDE.md, not here. Newest first. Entries are condensed to decision
 and rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — Notice must be its own paragraph; fixture 03 rerun is not example-ready
+
+**Change.** A notice with no blank line before it renders inside the verdict paragraph,
+which happened in 4 of 15 cycle 7 reports and 1 of 3 fixture 01 reruns. SKILL.md, criterion
+4.7, the `evals.json` sentence and `scan_reports.py` now all require a separate paragraph.
+SKILL.md is 9,874 B. The scanner again flags a missing blank line, which reverses its
+leniency from earlier the same day; those flags on cycles 6 to 8 don't change their
+scorecards, which were graded against the earlier "own line" wording.
+
+**Result (`evals/iteration-9/`, 1 blind Opus run, independent grader).** Pursue with
+conditions, PASS w/ notes, 4.7 met, and no hidden catch-up: every script figure reproduces.
+One run is a thin test of the new wording.
+
+**Not shippable unedited, by the grader's call, which it describes as close.** Four
+statements, none of which changes the verdict, a flag or a condition:
+- Line 225 gives a loss budget of about 142bps, untagged, when the range is about 117-142.
+- Line 201 calls as-is LTV "within norm", but `01`'s norm is on ARV.
+- Line 221 sets a Pass trigger that contradicts line 46's own test.
+- Line 101 tags a "15% metro cap" 🟢, a limit the deal doesn't state.
+
+**Found while checking.** `examples/equity-syndication/output.md` line 94 fires `GEN-09` from
+bridge debt's usual term. This is the slip the `GEN-09` line fixes, and it is live upstream.
+The hard-money and private-credit examples have the notice only under their top verdict,
+and were not held to this cycle's "publishable unedited" bar.
 
 ### 2026-11-01 — Fixture 01's verdict flip: GEN-09 fix holds in three reruns
 
@@ -678,4 +704,4 @@ foundation invents that foundation.
 | Mechanics-topic reference files (`syndication-mechanics`, `hard-money-framework`, …) | folded into the output-based files (2026-05-29). |
 | Scripting the eval grader's ID check | declined so the grader weighs IDs in context (2026-09-27). |
 
-*Last updated: 2026-11-02 (portfolio audit: pointer wording, Cut ideas table, backlog items)*
+*Last updated: 2026-11-02 (notice as its own paragraph; fixture 03 rerun in iteration-9; portfolio audit: pointer wording, Cut ideas table, backlog items).*

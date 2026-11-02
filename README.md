@@ -25,7 +25,7 @@ passive-deal-screener/
 ├── references/       # 01–05, loaded on demand by deal type
 ├── scripts/          # 2 stdlib-only CLIs (no pip install)
 ├── examples/         # 3 worked input/output pairs
-├── evals/            # 13 fixtures + 8 iteration folders (7 full cycles, then a rerun of fixture 01)
+├── evals/            # 13 fixtures + 9 iteration folders (7 full cycles, then reruns of fixtures 01 and 03)
 ├── tools/            # benchmark-data refresh (maintenance only; not part of the skill)
 └── ROADMAP.md        # build plan, decision log, ship gate
 ```
@@ -195,7 +195,8 @@ already knew how to fail it.
   fix that cycle 5 validated, and cycle 6's single FAIL (fixture 09, the
   not-investment-advice check) drove the fix that cycle 7 validated. Iteration 8
   reran fixture 01 three times after a one-line `GEN-09` fix: 3 PASS-with-notes,
-  0 FAIL, all on the expected verdict.
+  0 FAIL, all on the expected verdict. Iteration 9 reran fixture 03 once after
+  tightening the notice's placement: PASS-with-notes.
 - **No invented numbers.** Where a fee range or market norm isn't well established,
   it is flagged as *variable* rather than fabricated. Benchmark figures trace to
   dated snapshots in `references/data/`.
