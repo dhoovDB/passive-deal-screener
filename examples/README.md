@@ -1,9 +1,10 @@
 # Examples
 
 Three input/output pairs, one per deal type, showing what the skill produces.
-Each `output.md` is a validated run from the eval suite (iteration 5, the run
-that cleared the PR gate) with the eval-harness header removed — the analysis
-itself is unedited.
+Each `output.md` is a validated run from the eval suite with the eval-harness
+header replaced — the analysis itself is unedited. `equity-syndication/` comes from
+iteration 7. The other two come from iteration 5, the run that cleared the PR gate;
+the only later change to them is the not-investment-advice line under each verdict.
 
 | Folder | Deal type | Input | Verdict |
 |---|---|---|---|

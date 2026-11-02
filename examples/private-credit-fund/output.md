@@ -162,6 +162,8 @@ Against the `01` Private Credit essentials and the `02` private-credit fee inven
 
 **Pursue with conditions.**
 
+*Screening output only, not investment advice.*
+
 **Reasoning.** This is a merits verdict, not "as presented." The fund discloses the essentials that normally sink credit-fund screens: leverage (moderate, ~1.1x), diversification (400+ loans, cross-sector), through-cycle default and recovery, and levered vs unlevered IRR. No RED fires, and the `CREDIT-01` concern is answered in the disclosure itself. On the `01` range (8–12% net), a 5-yr lock-up clears HYG + illiquidity hurdle at the base and bull cases, and is thin at 8% (§2).
 
 **Biggest swing factor.** The **unlevered net IRR after the true fee load**. The gross-assets fee base alone costs about 310 bps a year on equity. Whether the fund still pays you a premium over HYG and the ~4.87% 2yr Treasury *without* leverage depends on that figure and the undisclosed incentive terms.

@@ -35,9 +35,8 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - **Phase:** v1.0 merged via #1026 and #1041, released in v2.13.0 on 2026-10-21. The maintainer's edits (upstream `bc01047e`, `b078bb89`) are pulled back here.
 - **Gate:** cleared by eval cycle 7 (`evals/iteration-7/`, against SKILL.md @ `181fdd7`). Result: 11 PASS / 4 w-notes / 0 FAIL, strict 14/15, discrimination 4/4, notice correct in all 15. Merged to `main` 2026-11-01.
 - **Trigger A/B:** no difference between the old and new descriptions (12/12 fired on both, 0/4 wrongly fired on both). See the decision log.
-- **Next:** the owner decides the three items below.
+- **Next:** the owner decides the two items below.
 - **Open decisions:**
-  - **Examples.** The equity example fires `GEN-09` from a usual term, so it needs replacing; cycle 7's fixture 01 run 1 is the candidate. Neither fixture 03 candidate is ready (`evals/iteration-9/scorecard.md`), so the other two could keep their current text and gain the section 10 notice. The same change updates `examples/README.md` lines 4-5, which still name iteration 5 as the PR-gate run.
   - **Upstream PR.** Send the notice wording, the `GEN-09` line, the `evals.json` changes and the examples upstream as one PR.
   - **LICENSE.** README states MIT, but the repo has no LICENSE file. See the audit follow-ups under v2 candidates.
 - **Blockers:** none.
@@ -55,6 +54,7 @@ artifact sharing the same framework. It is not contributed and not maintained he
 - [x] **Fix the scanner** — `evals/scan_reports.py` checks the line right after each verdict line before extending the verdict paragraph. It still catches 06 and 09 in cycle 6, and cycle 7 is now 15/15.
 - [x] **Fixture 01's verdict flip** — one line in SKILL.md: an unstated maturity is a `GEN-09` probe, never fired. Three reruns all gave Pursue with conditions (`evals/iteration-8/`). See the decision log.
 - [x] **Notice as its own paragraph** — wording, criterion 4.7 and the scanner now require a blank line before it. See the decision log.
+- [x] **Examples** — equity example replaced from cycle 7; the other two gain the section 10 notice. See the decision log.
 
 ---
 
@@ -213,8 +213,6 @@ outside v2 scope.
 - [ ] **LICENSE file.** README says "License: MIT, matching the upstream skills
   repo.", and the repo has no LICENSE file. Owner decision to add one. Done when
   a LICENSE file matches the README line.
-- **Stale `examples/README.md` citation.** Lines 4-5 name iteration 5 as the
-  PR-gate run. Tracked with the Examples open decision in Current status.
 
 ---
 
@@ -223,6 +221,22 @@ outside v2 scope.
 *Project and architectural decisions live here. Changes to this repo's CLAUDE.md
 are logged in CLAUDE.md, not here. Newest first. Entries are condensed to decision
 and rationale; the full-length originals are at `git show 042b91d:ROADMAP.md`.*
+
+### 2026-11-01 — Examples: replace the equity example, keep the other two
+
+Neither fixture 03 candidate was ready, and regenerating until one graded clean would
+cost more each round without an obvious end. So regeneration was limited to what the
+skill now gets wrong.
+- **`equity-syndication/` replaced** with cycle 7's fixture 01 run 1, header replaced and
+  otherwise unedited. The old one fired `GEN-09` from bridge debt's usual term, which is the
+  slip the new SKILL.md line fixes. The new one graded PASS with `GEN-09` as a probe.
+- **`hard-money-fund/` and `private-credit-fund/` kept**, gaining only the notice under
+  section 10. This is a second exception to "examples are never hand-edited" (2026-09-27),
+  for the same one line of boilerplate.
+- **Known limits.** The new equity example says a maturity inside the hold is "likely" (🟡) while
+  probing, and fires `EQUITY-07` from the word "bridge". It predates the `GEN-09` line and
+  the own-paragraph wording, though it meets both, and its notice isn't italic. The two kept
+  examples were not held to iteration 9's "publishable unedited" bar.
 
 ### 2026-11-01 — Notice must be its own paragraph; fixture 03 rerun is not example-ready
 
@@ -704,4 +718,4 @@ foundation invents that foundation.
 | Mechanics-topic reference files (`syndication-mechanics`, `hard-money-framework`, …) | folded into the output-based files (2026-05-29). |
 | Scripting the eval grader's ID check | declined so the grader weighs IDs in context (2026-09-27). |
 
-*Last updated: 2026-11-02 (notice as its own paragraph; fixture 03 rerun in iteration-9; portfolio audit: pointer wording, Cut ideas table, backlog items).*
+*Last updated: 2026-11-02 (examples updated; notice as its own paragraph; fixture 03 rerun in iteration-9).*

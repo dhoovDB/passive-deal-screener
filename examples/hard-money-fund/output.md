@@ -158,6 +158,8 @@ Not asked, because the flags do not apply to a debt fund: `Q-DS-01`, `Q-DS-02` (
 
 **Pursue.** 🟢 on the core story.
 
+*Screening output only, not investment advice.*
+
 **Reasoning.** The essential hard-money disclosures in `01` are present:
 - as-is and ARV LTV
 - default rate
